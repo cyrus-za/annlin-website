@@ -75,7 +75,7 @@ export default function EditServiceGroupPage({
         <Card>
           <CardContent className="p-8">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
               <span className="ml-3 text-gray-600">Laai...</span>
             </div>
           </CardContent>
@@ -110,7 +110,7 @@ export default function EditServiceGroupPage({
               </p>
               <button
                 onClick={() => router.push('/admin/diensgroepe')}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
               >
                 Terug na Diensgroepe
               </button>

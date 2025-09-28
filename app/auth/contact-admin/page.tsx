@@ -90,8 +90,8 @@ export default function ContactAdminPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="max-w-lg w-full mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <MessageSquare className="h-6 w-6 text-blue-600" />
+          <div className="mx-auto w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+            <MessageSquare className="h-6 w-6 text-amber-600" />
           </div>
           <CardTitle>Versoek Toegang</CardTitle>
           <CardDescription>

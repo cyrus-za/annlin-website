@@ -116,7 +116,7 @@ export default function AcceptInvitationPage() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="p-8">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Laai uitnodiging...</p>
             </div>
           </CardContent>
@@ -201,8 +201,8 @@ export default function AcceptInvitationPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="max-w-md w-full mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <UserPlus className="h-6 w-6 text-blue-600" />
+          <div className="mx-auto w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+            <UserPlus className="h-6 w-6 text-amber-600" />
           </div>
           <CardTitle>Aanvaar Uitnodiging</CardTitle>
           <CardDescription>
@@ -211,8 +211,8 @@ export default function AcceptInvitationPage() {
         </CardHeader>
         <CardContent>
           {invitation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
-              <div className="text-sm text-blue-800">
+            <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-6">
+              <div className="text-sm text-amber-800">
                 <p><strong>Naam:</strong> {invitation.name}</p>
                 <p><strong>E-pos:</strong> {invitation.email}</p>
                 <p><strong>Rol:</strong> {invitation.role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'}</p>

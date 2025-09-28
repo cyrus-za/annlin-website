@@ -139,7 +139,7 @@ export function DataTable<T extends Record<string, any>>({
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Laai data...</p>
             </div>
           </div>
@@ -210,7 +210,7 @@ export function DataTable<T extends Record<string, any>>({
                           Probeer ʼn ander soekterm of{' '}
                           <button
                             onClick={() => setSearchQuery('')}
-                            className="text-blue-600 hover:text-blue-500 underline"
+                            className="text-amber-600 hover:text-amber-500 underline"
                           >
                             verwyder filters
                           </button>

@@ -155,7 +155,7 @@ export default function DiensgroepeListPage() {
       render: (value: string) => (
         <a 
           href={`mailto:${value}`}
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-amber-600 hover:text-amber-800 text-sm"
         >
           {value}
         </a>
@@ -262,7 +262,7 @@ export default function DiensgroepeListPage() {
                     <span className="text-sm font-medium">E-pos:</span>
                     <a 
                       href={`mailto:${selectedServiceGroup.contactEmail}`}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="text-sm text-amber-600 hover:text-amber-800"
                     >
                       {selectedServiceGroup.contactEmail}
                     </a>
@@ -274,7 +274,7 @@ export default function DiensgroepeListPage() {
                       <span className="text-sm font-medium">Telefoon:</span>
                       <a 
                         href={`tel:${selectedServiceGroup.contactPhone}`}
-                        className="text-sm text-blue-600 hover:text-blue-800"
+                        className="text-sm text-amber-600 hover:text-amber-800"
                       >
                         {selectedServiceGroup.contactPhone}
                       </a>

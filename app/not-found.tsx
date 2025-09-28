@@ -11,13 +11,13 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Main Content */}
         <div className="text-center mb-12">
           {/* 404 Number */}
           <div className="mb-8">
-            <h1 className="text-9xl md:text-[12rem] font-bold text-blue-200 leading-none select-none">
+            <h1 className="text-9xl md:text-[12rem] font-bold text-amber-200 leading-none select-none">
               404
             </h1>
           </div>
@@ -35,7 +35,7 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild size="lg" className="bg-amber-600 hover:bg-amber-700">
               <Link href="/">
                 <Home className="mr-2 h-5 w-5" />
                 Terug Na Tuis
@@ -55,8 +55,8 @@ export default function NotFound() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Home className="h-6 w-6 text-blue-600" />
+              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <Home className="h-6 w-6 text-amber-600" />
               </div>
               <CardTitle>Tuisblad</CardTitle>
               <CardDescription>

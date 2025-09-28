@@ -240,7 +240,7 @@ export function ArticleEditor({
       <Card className={className}>
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
             <span className="ml-3 text-gray-600">Laai redigeerder...</span>
           </div>
         </CardContent>

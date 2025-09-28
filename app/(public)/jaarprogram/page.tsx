@@ -11,7 +11,7 @@ export default function JaarprogramPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-white py-16">
+      <section className="bg-gradient-to-b from-amber-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
@@ -41,7 +41,7 @@ export default function JaarprogramPage() {
                 Gereelde Eredienste
               </h2>
               <div className="space-y-6">
-                <div className="border-l-4 border-blue-600 pl-6">
+                <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Sondag Oggend</h3>
                   <p className="text-gray-600 mb-2">09:00 - 10:30</p>
                   <p className="text-sm text-gray-500">
@@ -70,7 +70,7 @@ export default function JaarprogramPage() {
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-8">
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">
                 Spesiale Gebeure
               </h3>
@@ -105,25 +105,25 @@ export default function JaarprogramPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-blue-600">
+      <section className="py-16 bg-amber-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
               Sluit by Ons Aan
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
               Al ons gebeure is oop vir die publiek. Kom soos jy is - jy is altyd welkom!
             </p>
             <div className="space-x-4">
               <a
                 href="/kontak"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-800 bg-white hover:bg-amber-50 transition-colors duration-200"
               >
                 Kontak Ons vir Meer Info
               </a>
               <a
                 href="/diensgroepe"
-                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-blue-600 transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-amber-800 transition-colors duration-200"
               >
                 Raak Betrokke
               </a>

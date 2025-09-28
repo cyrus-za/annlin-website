@@ -11,7 +11,7 @@ export default function DiensgroepePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-white py-16">
+      <section className="bg-gradient-to-b from-amber-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
@@ -30,25 +30,25 @@ export default function DiensgroepePage() {
       <ServiceGroups showAll={true} />
 
       {/* Call to Action */}
-      <section className="py-16 bg-blue-600">
+      <section className="py-16 bg-amber-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
               Gereed om betrokke te raak?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
               Kontak ons vandag om uit te vind hoe jy by een van ons diensgroepe kan aansluit.
             </p>
             <div className="space-x-4">
               <a
                 href="/kontak"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-600 bg-white hover:bg-amber-50 transition-colors duration-200"
               >
                 Kontak Ons
               </a>
               <a
                 href="tel:012-345-6789"
-                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-blue-600 transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-amber-600 transition-colors duration-200"
               >
                 Bel Ons: 012 345 6789
               </a>
@@ -67,7 +67,7 @@ export default function DiensgroepePage() {
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-blue-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
                     <span className="text-white text-sm font-bold">1</span>
                   </div>
                   <div className="ml-4">
@@ -79,7 +79,7 @@ export default function DiensgroepePage() {
                 </div>
                 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-blue-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
                     <span className="text-white text-sm font-bold">2</span>
                   </div>
                   <div className="ml-4">
@@ -91,7 +91,7 @@ export default function DiensgroepePage() {
                 </div>
                 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-blue-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
                     <span className="text-white text-sm font-bold">3</span>
                   </div>
                   <div className="ml-4">
@@ -109,21 +109,21 @@ export default function DiensgroepePage() {
                 Hoe om aan te sluit
               </h3>
               <div className="space-y-4">
-                <div className="border-l-4 border-blue-600 pl-4">
+                <div className="border-l-4 border-amber-600 pl-4">
                   <h4 className="font-semibold text-gray-900">Stap 1: Kies 'n Diensgroep</h4>
                   <p className="text-gray-600 text-sm">
                     Kyk deur ons verskillende diensgroepe en kies een wat by jou belangstellings pas.
                   </p>
                 </div>
                 
-                <div className="border-l-4 border-blue-600 pl-4">
+                <div className="border-l-4 border-amber-600 pl-4">
                   <h4 className="font-semibold text-gray-900">Stap 2: Maak Kontak</h4>
                   <p className="text-gray-600 text-sm">
                     Gebruik die kontak besonderhede om die diensgroep leier te kontak.
                   </p>
                 </div>
                 
-                <div className="border-l-4 border-blue-600 pl-4">
+                <div className="border-l-4 border-amber-600 pl-4">
                   <h4 className="font-semibold text-gray-900">Stap 3: Sluit Aan</h4>
                   <p className="text-gray-600 text-sm">
                     Kom na die volgende byeenkoms en begin jou reis van diensbaarheid!

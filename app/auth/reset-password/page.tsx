@@ -61,8 +61,8 @@ export default function ResetPasswordPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                <p className="text-sm text-blue-800">
+              <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
+                <p className="text-sm text-amber-800">
                   Ons het ʼn wagwoord herstel skakel gestuur na <strong>{email}</strong>. 
                   Kontroleer jou inkassie (en spam gids) en volg die instruksies om jou wagwoord te verander.
                 </p>
@@ -103,8 +103,8 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="max-w-md w-full mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <Mail className="h-6 w-6 text-blue-600" />
+          <div className="mx-auto w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+            <Mail className="h-6 w-6 text-amber-600" />
           </div>
           <CardTitle>Herstel Wagwoord</CardTitle>
           <CardDescription>

@@ -102,7 +102,7 @@ export default function SignInPage() {
           <div className="text-center">
             <Link 
               href="/auth/reset-password" 
-              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              className="text-sm text-amber-600 hover:text-amber-500 font-medium"
             >
               Wagwoord vergeet?
             </Link>
@@ -113,7 +113,7 @@ export default function SignInPage() {
               Het jy nie \u2019n rekening nie?{' '}
               <Link 
                 href="/auth/contact-admin" 
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-amber-600 hover:text-amber-500 font-medium"
               >
                 Kontak \u2019n administrateur
               </Link>

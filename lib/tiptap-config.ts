@@ -83,7 +83,7 @@ const CustomLink = Link.extend({
 }).configure({
   openOnClick: false,
   HTMLAttributes: {
-    class: 'text-blue-600 hover:text-blue-800 underline',
+    class: 'text-amber-600 hover:text-amber-800 underline',
   },
 })
 
@@ -175,11 +175,11 @@ export const editorContentClasses = `
   prose-strong:text-gray-900
   prose-em:text-gray-700
   prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-  prose-blockquote:border-l-4 prose-blockquote:border-blue-300 prose-blockquote:pl-4 prose-blockquote:italic
+  prose-blockquote:border-l-4 prose-blockquote:border-amber-300 prose-blockquote:pl-4 prose-blockquote:italic
   prose-ul:list-disc prose-ul:pl-6 prose-ul:mb-4
   prose-ol:list-decimal prose-ol:pl-6 prose-ol:mb-4
   prose-li:mb-1
-  prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:underline
+  prose-a:text-amber-600 prose-a:hover:text-amber-800 prose-a:underline
   prose-img:rounded-lg prose-img:shadow-sm
   prose-hr:border-gray-300 prose-hr:my-6
   focus:outline-none

@@ -152,7 +152,7 @@ export default async function AdminDashboard() {
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
                 <div key={index} className="flex items-center space-x-4">
-                  <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                  <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">
                       {activity.title}
@@ -185,7 +185,7 @@ export default async function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Newspaper className="h-4 w-4 text-blue-600" />
+                  <Newspaper className="h-4 w-4 text-amber-600" />
                   <span className="text-sm font-medium">Gepubliseerde Artikels</span>
                 </div>
                 <span className="text-sm text-gray-600">32</span>

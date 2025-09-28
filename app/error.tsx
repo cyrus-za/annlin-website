@@ -91,8 +91,8 @@ export default function Error({ error, reset }: ErrorProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Home className="h-6 w-6 text-blue-600" />
+              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <Home className="h-6 w-6 text-amber-600" />
               </div>
               <CardTitle>Tuisblad</CardTitle>
               <CardDescription>

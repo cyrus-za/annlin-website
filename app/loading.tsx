@@ -3,18 +3,18 @@ import { Loader2, Church } from 'lucide-react'
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           {/* Main Loading Content */}
-          <Card className="w-full max-w-md mx-auto shadow-lg border-blue-100">
+          <Card className="w-full max-w-md mx-auto shadow-lg border-amber-100">
             <CardContent className="p-8">
               <div className="text-center">
                 {/* Church Icon */}
-                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 relative">
-                  <Church className="h-8 w-8 text-blue-600" />
+                <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-6 relative">
+                  <Church className="h-8 w-8 text-amber-600" />
                   {/* Animated Ring */}
-                  <div className="absolute inset-0 rounded-full border-2 border-blue-200 border-t-blue-600 animate-spin"></div>
+                  <div className="absolute inset-0 rounded-full border-2 border-amber-200 border-t-amber-600 animate-spin"></div>
                 </div>
                 
                 {/* Loading Text */}
@@ -27,7 +27,7 @@ export default function Loading() {
                 
                 {/* Animated Loading Indicator */}
                 <div className="flex items-center justify-center space-x-2">
-                  <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+                  <Loader2 className="h-5 w-5 text-amber-600 animate-spin" />
                   <span className="text-sm text-gray-500">
                     Een oomblik asseblief...
                   </span>
@@ -59,9 +59,9 @@ export default function Loading() {
 
           {/* Subtle Animation Dots */}
           <div className="mt-8 flex space-x-2">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
           </div>
         </div>
 

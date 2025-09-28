@@ -358,12 +358,12 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <Mail className="h-5 w-5 text-blue-600 mt-1" />
+                  <Mail className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
                     <h4 className="font-medium text-gray-900">E-pos</h4>
                     <a 
                       href="mailto:info@annlin-gemeente.co.za"
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-amber-600 hover:text-amber-800"
                     >
                       info@annlin-gemeente.co.za
                     </a>
@@ -371,12 +371,12 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <Phone className="h-5 w-5 text-blue-600 mt-1" />
+                  <Phone className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
                     <h4 className="font-medium text-gray-900">Telefoon</h4>
                     <a 
                       href="tel:012-345-6789"
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-amber-600 hover:text-amber-800"
                     >
                       012 345 6789
                     </a>
@@ -384,7 +384,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <MapPin className="h-5 w-5 text-blue-600 mt-1" />
+                  <MapPin className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
                     <h4 className="font-medium text-gray-900">Adres</h4>
                     <p className="text-gray-600">
@@ -396,7 +396,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <Clock className="h-5 w-5 text-blue-600 mt-1" />
+                  <Clock className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
                     <h4 className="font-medium text-gray-900">Kantoor Ure</h4>
                     <p className="text-gray-600">
@@ -418,17 +418,17 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="border-l-4 border-blue-600 pl-4">
+                  <div className="border-l-4 border-amber-600 pl-4">
                     <h4 className="font-medium text-gray-900">Sondag Oggend</h4>
                     <p className="text-gray-600">09:00 - Hooferediens</p>
                   </div>
                   
-                  <div className="border-l-4 border-blue-600 pl-4">
+                  <div className="border-l-4 border-amber-600 pl-4">
                     <h4 className="font-medium text-gray-900">Sondag Aand</h4>
                     <p className="text-gray-600">18:00 - Aanderediens</p>
                   </div>
                   
-                  <div className="border-l-4 border-blue-600 pl-4">
+                  <div className="border-l-4 border-amber-600 pl-4">
                     <h4 className="font-medium text-gray-900">Woensdag</h4>
                     <p className="text-gray-600">19:00 - Biduur & Bybelstudie</p>
                   </div>
@@ -448,7 +448,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">Dominee</h4>
                     <p className="text-gray-600">
-                      <a href="tel:082-123-4567" className="text-blue-600 hover:text-blue-800">
+                      <a href="tel:082-123-4567" className="text-amber-600 hover:text-amber-800">
                         082 123 4567
                       </a>
                     </p>
@@ -457,7 +457,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">Kerkraad Voorsitter</h4>
                     <p className="text-gray-600">
-                      <a href="tel:083-765-4321" className="text-blue-600 hover:text-blue-800">
+                      <a href="tel:083-765-4321" className="text-amber-600 hover:text-amber-800">
                         083 765 4321
                       </a>
                     </p>
