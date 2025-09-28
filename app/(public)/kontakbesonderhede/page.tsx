@@ -157,11 +157,6 @@ export default function ContactDetailsPage() {
                       <p className="text-sm text-muted-foreground/70">Informele atmosfeer</p>
                     </div>
                     
-                    <div className="border-l-4 border-amber-600 pl-4">
-                      <h4 className="font-medium text-foreground">Woensdag</h4>
-                      <p className="text-muted-foreground">19:00 - Biduur & Bybelstudie</p>
-                      <p className="text-sm text-muted-foreground/70">Alle ouderdomme welkom</p>
-                    </div>
                   </div>
                   
                   <div className="mt-6">
