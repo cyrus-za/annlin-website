@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { useToast } from '@/hooks/use-toast'
+import { showSuccessToast, showErrorToast, showSavingToast } from '@/lib/toast-helpers'
 import { Loader2, Save, X } from 'lucide-react'
 
 interface AdminFormProps<T extends z.ZodType> {
@@ -47,7 +47,6 @@ export function AdminForm<T extends z.ZodType>({
   submitText = 'Stoor',
   cancelText = 'Kanselleer'
 }: AdminFormProps<T>) {
-  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const form = useForm<z.infer<T>>({
@@ -56,20 +55,28 @@ export function AdminForm<T extends z.ZodType>({
   })
 
   const handleSubmit = async (data: z.infer<T>) => {
+    let loadingToast: any
+    
     try {
       setIsSubmitting(true)
+      loadingToast = showSavingToast()
+      
       await onSubmit(data)
-      toast({
-        title: "Sukses",
-        description: "Veranderinge is suksesvol gestoor.",
-        variant: "success",
-      })
+      
+      // Dismiss loading toast
+      if (loadingToast) {
+        loadingToast.dismiss()
+      }
+      
+      showSuccessToast("Suksesvol gestoor!", "Jou veranderinge is suksesvol gestoor.")
     } catch (error) {
-      toast({
-        title: "Fout",
-        description: error instanceof Error ? error.message : "ʼn Onverwagte fout het voorgekom.",
-        variant: "destructive",
-      })
+      // Dismiss loading toast
+      if (loadingToast) {
+        loadingToast.dismiss()
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : "ʼn Onverwagte fout het voorgekom."
+      showErrorToast(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

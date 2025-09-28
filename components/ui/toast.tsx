@@ -3,7 +3,8 @@
 import * as React from "react"
 import * as ToastPrimitives from "@radix-ui/react-toast"
 import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -25,17 +26,19 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center space-x-4 overflow-hidden rounded-lg border p-4 shadow-lg backdrop-blur-sm",
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
+        default: "border-gray-200 bg-white/95 text-gray-900",
         destructive:
-          "destructive border-destructive bg-destructive text-destructive-foreground",
+          "border-red-200 bg-red-50/95 text-red-800",
         success:
-          "border-green-200 bg-green-50 text-green-800",
+          "border-green-200 bg-green-50/95 text-green-800",
         warning:
-          "border-yellow-200 bg-yellow-50 text-yellow-800",
+          "border-yellow-200 bg-yellow-50/95 text-yellow-800",
+        info:
+          "border-blue-200 bg-blue-50/95 text-blue-800",
       },
     },
     defaultVariants: {
@@ -44,17 +47,73 @@ const toastVariants = cva(
   }
 )
 
+// Toast animation variants
+const toastAnimations = {
+  initial: {
+    opacity: 0,
+    y: -50,
+    scale: 0.95,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 500,
+      damping: 30,
+    },
+  },
+  exit: {
+    opacity: 0,
+    x: 300,
+    scale: 0.95,
+    transition: {
+      duration: 0.2,
+    },
+  },
+}
+
+// Toast icon mapping
+const toastIcons = {
+  default: Info,
+  success: CheckCircle,
+  destructive: AlertCircle,
+  warning: AlertTriangle,
+  info: Info,
+}
+
 const Toast = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+    VariantProps<typeof toastVariants> & {
+      showIcon?: boolean
+    }
+>(({ className, variant = "default", showIcon = true, children, ...props }, ref) => {
+  const IconComponent = toastIcons[variant || "default"]
+
   return (
     <ToastPrimitives.Root
       ref={ref}
       className={cn(toastVariants({ variant }), className)}
       {...props}
-    />
+    >
+      <motion.div
+        className="flex items-center space-x-3 flex-1"
+        {...toastAnimations}
+      >
+        {showIcon && (
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 500 }}
+          >
+            <IconComponent className="h-5 w-5 flex-shrink-0" />
+          </motion.div>
+        )}
+        <div className="flex-1">{children}</div>
+      </motion.div>
+    </ToastPrimitives.Root>
   )
 })
 Toast.displayName = ToastPrimitives.Root.displayName
@@ -81,13 +140,18 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+      "absolute right-2 top-2 rounded-full p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200",
       className
     )}
     toast-close=""
     {...props}
   >
-    <X className="h-4 w-4" />
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+    >
+      <X className="h-4 w-4" />
+    </motion.div>
   </ToastPrimitives.Close>
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName
