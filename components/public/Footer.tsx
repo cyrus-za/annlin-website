@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Calendar, Clock, Facebook, Youtube } from 'lucide-react'
+import { Mail, Phone, MapPin, Calendar, Facebook, Youtube } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -99,13 +99,6 @@ export function Footer() {
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <Clock className="h-4 w-4 text-amber-400 mt-1" />
-                <div className="text-sm">
-                  <p className="text-white font-medium">Woensdag</p>
-                  <p className="text-amber-200">19:00 - Biduur & Bybelstudie</p>
-                </div>
-              </div>
             </div>
           </div>
 
