@@ -32,7 +32,7 @@ function validateEnv(): Env {
     return envSchema.parse(process.env)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const missingVars = error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join('\n')
+      const missingVars = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join('\n')
       throw new Error(`Environment validation failed:\n${missingVars}`)
     }
     throw error
