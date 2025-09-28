@@ -3,9 +3,8 @@
 
 export { ServiceGroups, ServiceGroupsCompact } from './ServiceGroups'
 export { PublicCalendar, UpcomingEvents } from './Calendar'
+export { Navigation, Breadcrumb } from './Navigation'
+export { Footer } from './Footer'
 
 // Additional components to be added:
-// export { Header } from './Header'
-// export { Footer } from './Footer'
-// export { Navigation } from './Navigation'
 // export { ContactForm } from './ContactForm'

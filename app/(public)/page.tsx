@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 text-white py-20" style={{
         backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.9), rgba(120, 53, 15, 0.9)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grain" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23000000;stop-opacity:0.1"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>')`,
@@ -223,5 +223,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-  );
+  )
 }
