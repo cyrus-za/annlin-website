@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   /* Church Brown Color Scheme - Based on Annlin.co.za */
@@ -13,7 +15,7 @@
   --secondary: 30 25% 85%; /* Light tan */
   --secondary-foreground: 25 25% 15%; /* Dark brown text on light tan */
   --muted: 30 20% 92%; /* Very light tan */
-  --muted-foreground: 25 15% 35%; /* Darker brown for better contrast */
+  --muted-foreground: 25 15% 25%; /* Much darker brown for better contrast */
   --accent: 30 30% 88%; /* Warm accent */
   --accent-foreground: 25 25% 15%; /* Dark brown text */
   --destructive: 0 84.2% 60.2%;
@@ -54,36 +56,6 @@
   }
 }
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius: var(--radius);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  /* Church-specific color utilities */
-  --color-church-brown: hsl(var(--church-brown));
-  --color-church-tan: hsl(var(--church-tan));
-  --color-church-cream: hsl(var(--church-cream));
-  --color-church-gold: hsl(var(--church-gold));
-}
 
 body {
   background: hsl(var(--background));
@@ -94,3 +66,4 @@ body {
 * {
   border-color: hsl(var(--border));
 }
+
