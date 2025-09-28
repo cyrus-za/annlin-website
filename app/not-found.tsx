@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button'
+import { BackButton } from '@/components/ui/back-button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Home, ArrowLeft, Search, MessageCircle } from 'lucide-react'
+import { Home, Search, MessageCircle } from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -42,12 +43,9 @@ export default function NotFound() {
               </Link>
             </Button>
             
-            <Button asChild variant="outline" size="lg">
-              <Link href="javascript:history.back()">
-                <ArrowLeft className="mr-2 h-5 w-5" />
-                Vorige Bladsy
-              </Link>
-            </Button>
+            <BackButton>
+              Vorige Bladsy
+            </BackButton>
           </div>
         </div>
 
