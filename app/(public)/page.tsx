@@ -219,8 +219,9 @@ export default function Home() {
                 <div>
                   <h4 className="font-semibold text-gray-900">Kontak</h4>
                   <p className="text-gray-600">
-                    Tel: 012 345 6789<br />
-                    E-pos: info@annlin-gemeente.co.za
+                    Tel: 012 567 1492<br />
+                    Sel: 079 162 3453<br />
+                    E-pos: kerkkantoor@annlin.co.za
                   </p>
                 </div>
               </div>
