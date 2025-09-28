@@ -2,7 +2,7 @@
 // This file contains all application-wide constants
 
 export const APP_CONFIG = {
-  name: 'Annlin Church Website',
+  name: 'Annlin Gemeente Webwerf',
   description: 'Gereformeerde Kerk Pretoria-Annlin',
   url: 'https://annlin.co.za',
   email: 'info@annlin.co.za',

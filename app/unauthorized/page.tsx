@@ -23,30 +23,30 @@ export default function UnauthorizedPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Access Denied
+            Toegang Geweier
           </h1>
           <p className="text-gray-600">
-            You don&apos;t have permission to access this page. Please contact an administrator if you believe this is an error.
+            Jy het nie toestemming om hierdie bladsy te benader nie. Kontak asseblief 'n administrateur as jy glo dit is 'n fout.
           </p>
         </div>
         
         <div className="space-y-3">
           <Button asChild className="w-full">
             <Link href="/">
-              Go to Homepage
+              Gaan na Tuisblad
             </Link>
           </Button>
           
           <Button variant="outline" asChild className="w-full">
             <Link href="/auth/sign-in">
-              Sign In with Different Account
+              Meld Aan met Ander Rekening
             </Link>
           </Button>
         </div>
         
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            If you need access to administrative features, please contact your church administrator.
+            As jy toegang tot administratiewe funksies benodig, kontak asseblief jou kerk administrateur.
           </p>
         </div>
       </Card>

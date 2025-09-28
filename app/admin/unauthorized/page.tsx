@@ -23,30 +23,30 @@ export default function AdminUnauthorizedPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Administrator Access Required
+            Administrateur Toegang Vereis
           </h1>
           <p className="text-gray-600">
-            This section requires administrator privileges. You are currently signed in as an Editor.
+            Hierdie afdeling vereis administrateur voorregte. Jy is tans aangemeld as 'n Redigeerder.
           </p>
         </div>
         
         <div className="space-y-3">
           <Button asChild className="w-full">
             <Link href="/admin">
-              Back to Dashboard
+              Terug na Paneelbord
             </Link>
           </Button>
           
           <Button variant="outline" asChild className="w-full">
             <Link href="/auth/sign-in">
-              Sign In as Administrator
+              Meld Aan as Administrateur
             </Link>
           </Button>
         </div>
         
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            Administrator features include user management, system settings, and invitation management.
+            Administrateur funksies sluit in gebruiker bestuur, sisteem instellings, en uitnodiging bestuur.
           </p>
         </div>
       </Card>

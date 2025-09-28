@@ -9,52 +9,52 @@ export default function Home() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-foreground">
-            Annlin Website Development
+            Annlin Webwerf Ontwikkeling
           </h1>
           <p className="text-xl text-muted-foreground">
-            Church website migration from WordPress to Next.js
+            Kerkwebwerf migrasie van WordPress na Next.js
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>UI Components Test</CardTitle>
+              <CardTitle>UI Komponente Toets</CardTitle>
               <CardDescription>
-                Testing 21st.dev inspired components with proper design tokens
+                Toets van 21st.dev geïnspireerde komponente met behoorlike ontwerp tokens
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="test-input">Test Input</Label>
-                <Input id="test-input" placeholder="Enter some text..." />
+                <Label htmlFor="test-input">Toets Invoer</Label>
+                <Input id="test-input" placeholder="Voer teks in..." />
               </div>
               <div className="flex gap-2">
-                <Button>Primary Button</Button>
-                <Button variant="outline">Outline Button</Button>
-                <Button variant="secondary">Secondary</Button>
+                <Button>Primêre Knoppie</Button>
+                <Button variant="outline">Omlyn Knoppie</Button>
+                <Button variant="secondary">Sekondêr</Button>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Project Status</CardTitle>
+              <CardTitle>Projek Status</CardTitle>
               <CardDescription>
-                Current progress on the church website migration
+                Huidige vordering op die kerkwebwerf migrasie
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Foundation Setup</span>
-                  <span className="text-sm text-muted-foreground">In Progress</span>
+                  <span className="text-sm font-medium">Grondslag Opstelling</span>
+                  <span className="text-sm text-muted-foreground">In Proses</span>
                 </div>
                 <div className="w-full bg-secondary rounded-full h-2">
                   <div className="bg-primary h-2 rounded-full" style={{ width: '60%' }}></div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Next.js project initialized with TypeScript, Tailwind CSS, and core dependencies
+                  Next.js projek geïnisialiseer met TypeScript, Tailwind CSS, en kern afhanklikhede
                 </p>
               </div>
             </CardContent>

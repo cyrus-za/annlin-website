@@ -54,15 +54,15 @@ export function generateInvitationEmailHtml({
   role,
 }: InvitationEmailData): string {
   const inviteUrl = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
-  const roleDisplay = role === 'ADMIN' ? 'Administrator' : 'Editor'
+  const roleDisplay = role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'
 
   return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="af">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invitation to Annlin Church Website</title>
+        <title>Uitnodiging na Annlin Kerk Webwerf</title>
         <style>
             body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -145,45 +145,45 @@ export function generateInvitationEmailHtml({
         <div class="container">
             <div class="header">
                 <div class="logo">Annlin Gemeente</div>
-                <h1 class="title">You're Invited!</h1>
+                <h1 class="title">Jy is Genooi!</h1>
             </div>
             
             <div class="content">
-                <p>Hello ${recipientName},</p>
+                <p>Hallo ${recipientName},</p>
                 
-                <p>${inviterName} has invited you to join the Annlin Church website administration team as a <span class="role-badge">${roleDisplay}</span>.</p>
+                <p>${inviterName} het jou genooi om by die Annlin Gemeente webwerf administrasie span aan te sluit as 'n <span class="role-badge">${roleDisplay}</span>.</p>
                 
-                <p>As a ${roleDisplay}, you'll be able to:</p>
+                <p>As 'n ${roleDisplay}, sal jy kan:</p>
                 <ul>
                     ${role === 'ADMIN' ? `
-                    <li>Manage all website content</li>
-                    <li>Invite and manage other users</li>
-                    <li>Access all administrative features</li>
-                    <li>Configure system settings</li>
+                    <li>Bestuur alle webwerf inhoud</li>
+                    <li>Nooi en bestuur ander gebruikers</li>
+                    <li>Toegang tot alle administratiewe funksies</li>
+                    <li>Konfigureer sisteem instellings</li>
                     ` : `
-                    <li>Create and edit news articles</li>
-                    <li>Manage service groups information</li>
-                    <li>Update calendar events</li>
-                    <li>Upload and manage reading materials</li>
+                    <li>Skep en redigeer nuus artikels</li>
+                    <li>Bestuur diensgroepe inligting</li>
+                    <li>Opdateer kalender gebeurtenisse</li>
+                    <li>Laai op en bestuur leesstof</li>
                     `}
                 </ul>
                 
                 <div style="text-align: center;">
-                    <a href="${inviteUrl}" class="cta-button">Accept Invitation</a>
+                    <a href="${inviteUrl}" class="cta-button">Aanvaar Uitnodiging</a>
                 </div>
                 
                 <div class="warning">
-                    <strong>Important:</strong> This invitation link will expire in 7 days. If you don't accept the invitation within this time, please contact ${inviterName} for a new invitation.
+                    <strong>Belangrik:</strong> Hierdie uitnodiging skakel sal verval in 7 dae. As jy nie die uitnodiging binne hierdie tyd aanvaar nie, kontak asseblief ${inviterName} vir 'n nuwe uitnodiging.
                 </div>
                 
-                <p>If you have any questions about using the system or need help getting started, please don't hesitate to reach out.</p>
+                <p>As jy enige vrae het oor die gebruik van die sisteem of hulp nodig het om te begin, moet asseblief nie huiwer om uit te reik nie.</p>
                 
-                <p>Blessings,<br>The Annlin Church Website Team</p>
+                <p>Seëninge,<br>Die Annlin Gemeente Webwerf Span</p>
             </div>
             
             <div class="footer">
-                <p>If you didn't expect this invitation, you can safely ignore this email.</p>
-                <p>This email was sent from the Annlin Church Website Administration System.</p>
+                <p>As jy nie hierdie uitnodiging verwag het nie, kan jy hierdie e-pos veilig ignoreer.</p>
+                <p>Hierdie e-pos is gestuur vanaf die Annlin Gemeente Webwerf Administrasie Sisteem.</p>
             </div>
         </div>
     </body>
@@ -201,41 +201,41 @@ export function generateInvitationEmailText({
   role,
 }: InvitationEmailData): string {
   const inviteUrl = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
-  const roleDisplay = role === 'ADMIN' ? 'Administrator' : 'Editor'
+  const roleDisplay = role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'
 
   return `
-Annlin Gemeente - You're Invited!
+Annlin Gemeente - Jy is Genooi!
 
-Hello ${recipientName},
+Hallo ${recipientName},
 
-${inviterName} has invited you to join the Annlin Church website administration team as a ${roleDisplay}.
+${inviterName} het jou genooi om by die Annlin Gemeente webwerf administrasie span aan te sluit as 'n ${roleDisplay}.
 
-As a ${roleDisplay}, you'll be able to:
+As 'n ${roleDisplay}, sal jy kan:
 ${role === 'ADMIN' ? `
-- Manage all website content
-- Invite and manage other users
-- Access all administrative features
-- Configure system settings
+- Bestuur alle webwerf inhoud
+- Nooi en bestuur ander gebruikers
+- Toegang tot alle administratiewe funksies
+- Konfigureer sisteem instellings
 ` : `
-- Create and edit news articles
-- Manage service groups information
-- Update calendar events
-- Upload and manage reading materials
+- Skep en redigeer nuus artikels
+- Bestuur diensgroepe inligting
+- Opdateer kalender gebeurtenisse
+- Laai op en bestuur leesstof
 `}
 
-To accept your invitation, please visit:
+Om jou uitnodiging te aanvaar, besoek asseblief:
 ${inviteUrl}
 
-IMPORTANT: This invitation link will expire in 7 days. If you don't accept the invitation within this time, please contact ${inviterName} for a new invitation.
+BELANGRIK: Hierdie uitnodiging skakel sal verval in 7 dae. As jy nie die uitnodiging binne hierdie tyd aanvaar nie, kontak asseblief ${inviterName} vir 'n nuwe uitnodiging.
 
-If you have any questions about using the system or need help getting started, please don't hesitate to reach out.
+As jy enige vrae het oor die gebruik van die sisteem of hulp nodig het om te begin, moet asseblief nie huiwer om uit te reik nie.
 
-Blessings,
-The Annlin Church Website Team
+Seëninge,
+Die Annlin Gemeente Webwerf Span
 
 ---
-If you didn't expect this invitation, you can safely ignore this email.
-This email was sent from the Annlin Church Website Administration System.
+As jy nie hierdie uitnodiging verwag het nie, kan jy hierdie e-pos veilig ignoreer.
+Hierdie e-pos is gestuur vanaf die Annlin Gemeente Webwerf Administrasie Sisteem.
   `.trim()
 }
 
@@ -248,7 +248,7 @@ export async function sendInvitationEmail(data: InvitationEmailData): Promise<bo
   
   return sendEmail({
     to: data.recipientEmail,
-    subject: `Invitation to join Annlin Church Website (${data.role === 'ADMIN' ? 'Administrator' : 'Editor'})`,
+    subject: `Uitnodiging om by Annlin Gemeente Webwerf aan te sluit (${data.role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'})`,
     html,
     text,
   })

@@ -279,7 +279,7 @@ export async function canDeleteUser(userId: string): Promise<{ canDelete: boolea
     })
 
     if (!user) {
-      return { canDelete: false, reason: 'User not found' }
+        return { canDelete: false, reason: 'Gebruiker nie gevind nie' }
     }
 
     if (user.role === 'ADMIN') {
@@ -291,13 +291,13 @@ export async function canDeleteUser(userId: string): Promise<{ canDelete: boolea
       })
 
       if (adminCount <= 1) {
-        return { canDelete: false, reason: 'Cannot delete the last active admin user' }
+        return { canDelete: false, reason: 'Kan nie die laaste aktiewe admin gebruiker verwyder nie' }
       }
     }
 
     return { canDelete: true }
   } catch (error) {
     console.error('Error checking if user can be deleted:', error)
-    return { canDelete: false, reason: 'Error checking user deletion eligibility' }
+    return { canDelete: false, reason: 'Fout tydens kontrole van gebruiker verwydering geskiktheid' }
   }
 }

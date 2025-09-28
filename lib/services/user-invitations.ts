@@ -24,7 +24,7 @@ export async function createUserInvitation(data: CreateInvitationData): Promise<
     })
 
     if (existingUser) {
-      throw new Error('User with this email already exists')
+      throw new Error('Gebruiker met hierdie e-pos bestaan reeds')
     }
 
     // Check if there's already a pending invitation
@@ -36,7 +36,7 @@ export async function createUserInvitation(data: CreateInvitationData): Promise<
     })
 
     if (existingInvitation) {
-      throw new Error('Pending invitation already exists for this email')
+      throw new Error('Hangende uitnodiging bestaan reeds vir hierdie e-pos')
     }
 
     // Create the invitation
@@ -106,11 +106,11 @@ export async function acceptInvitation(token: string, _password: string): Promis
     const invitation = await getInvitationByToken(token)
 
     if (!invitation) {
-      return { success: false, error: 'Invalid invitation token' }
+      return { success: false, error: 'Ongeldige uitnodiging token' }
     }
 
     if (invitation.status !== 'PENDING') {
-      return { success: false, error: 'Invitation is no longer valid' }
+      return { success: false, error: 'Uitnodiging is nie meer geldig nie' }
     }
 
     if (new Date() > invitation.expiresAt) {
@@ -119,7 +119,7 @@ export async function acceptInvitation(token: string, _password: string): Promis
         where: { id: invitation.id },
         data: { status: 'EXPIRED' }
       })
-      return { success: false, error: 'Invitation has expired' }
+      return { success: false, error: 'Uitnodiging het verval' }
     }
 
     // Check if user already exists (race condition check)
@@ -128,7 +128,7 @@ export async function acceptInvitation(token: string, _password: string): Promis
     })
 
     if (existingUser) {
-      return { success: false, error: 'User already exists' }
+      return { success: false, error: 'Gebruiker bestaan reeds' }
     }
 
     // Create the user (this will be handled by better-auth registration)
@@ -145,7 +145,7 @@ export async function acceptInvitation(token: string, _password: string): Promis
 
   } catch (error) {
     console.error('Error accepting invitation:', error)
-    return { success: false, error: 'Failed to accept invitation' }
+    return { success: false, error: 'Kon nie uitnodiging aanvaar nie' }
   }
 }
 

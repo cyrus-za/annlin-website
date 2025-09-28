@@ -32,12 +32,12 @@ export default function SignInPage() {
       })
 
       if (result.error) {
-        setError(result.error.message || 'Sign in failed')
+        setError(result.error.message || 'Aanmelding het misluk')
       } else {
         router.push(callbackUrl)
       }
     } catch (error) {
-      setError('An unexpected error occurred')
+      setError('\u2019n Onverwagte fout het voorgekom')
       console.error('Sign in error:', error)
     } finally {
       setIsLoading(false)
@@ -49,10 +49,10 @@ export default function SignInPage() {
       <Card className="max-w-md w-full mx-4 p-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Sign In
+            Meld Aan
           </h1>
           <p className="text-gray-600">
-            Access the Annlin Church administration panel
+            Toegang tot die Annlin Gemeente administrasie paneel
           </p>
         </div>
 
@@ -64,26 +64,26 @@ export default function SignInPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">E-pos Adres</Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Voer jou e-pos in"
               required
               disabled={isLoading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Wagwoord</Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Voer jou wagwoord in"
               required
               disabled={isLoading}
             />
@@ -94,18 +94,18 @@ export default function SignInPage() {
             className="w-full"
             disabled={isLoading}
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? 'Meld tans aan...' : 'Meld Aan'}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
+            Het jy nie \u2019n rekening nie?{' '}
             <Link 
               href="/auth/contact-admin" 
               className="text-blue-600 hover:text-blue-500 font-medium"
             >
-              Contact an administrator
+              Kontak \u2019n administrateur
             </Link>
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function SignInPage() {
             href="/" 
             className="text-sm text-gray-500 hover:text-gray-700"
           >
-            ← Back to website
+            ← Terug na webwerf
           </Link>
         </div>
       </Card>

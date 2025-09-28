@@ -11,10 +11,10 @@ export default async function AdminDashboard() {
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Admin Dashboard
+            Bestuurder Paneelbord
           </h1>
           <p className="mt-2 text-gray-600">
-            Welcome back, {user.name}! You are signed in as {user.role}.
+            Welkom terug, {user.name}! Jy is aangemeld as {user.role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'}.
           </p>
         </div>
 
@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Service Groups
+                Diensgroepe
               </h3>
               <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,11 +32,11 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <p className="text-gray-600 mb-4">
-              Manage church service groups and ministries
+              Bestuur kerkdiensgroepe en bedienings
             </p>
             <Button asChild className="w-full">
               <Link href="/admin/diensgroepe">
-                Manage Service Groups
+                Bestuur Diensgroepe
               </Link>
             </Button>
           </Card>
@@ -45,7 +45,7 @@ export default async function AdminDashboard() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Calendar
+                Kalender
               </h3>
               <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,11 +54,11 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <p className="text-gray-600 mb-4">
-              Manage church events and yearly program
+              Bestuur kerkgebeure en jaarlikse program
             </p>
             <Button asChild className="w-full">
               <Link href="/admin/jaarprogram">
-                Manage Calendar
+                Bestuur Kalender
               </Link>
             </Button>
           </Card>
@@ -67,7 +67,7 @@ export default async function AdminDashboard() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                News & Articles
+                Nuus & Artikels
               </h3>
               <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
                 <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,11 +76,11 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <p className="text-gray-600 mb-4">
-              Create and manage news articles and announcements
+              Skep en bestuur nuusartikels en aankondigings
             </p>
             <Button asChild className="w-full">
               <Link href="/admin/nuus">
-                Manage News
+                Bestuur Nuus
               </Link>
             </Button>
           </Card>
@@ -89,7 +89,7 @@ export default async function AdminDashboard() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Reading Materials
+                Leesstof
               </h3>
               <div className="h-8 w-8 bg-orange-100 rounded-lg flex items-center justify-center">
                 <svg className="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,11 +98,11 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <p className="text-gray-600 mb-4">
-              Upload and manage documents and reading materials
+              Laai op en bestuur dokumente en leesstof
             </p>
             <Button asChild className="w-full">
               <Link href="/admin/leesstof">
-                Manage Materials
+                Bestuur Materiaal
               </Link>
             </Button>
           </Card>
@@ -111,7 +111,7 @@ export default async function AdminDashboard() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Contact Forms
+                Kontak Vorms
               </h3>
               <div className="h-8 w-8 bg-red-100 rounded-lg flex items-center justify-center">
                 <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,11 +120,11 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <p className="text-gray-600 mb-4">
-              View and respond to contact form submissions
+              Bekyk en reageer op kontak vorm indiening
             </p>
             <Button asChild className="w-full">
               <Link href="/admin/contact">
-                View Submissions
+                Bekyk Indienings
               </Link>
             </Button>
           </Card>
@@ -134,7 +134,7 @@ export default async function AdminDashboard() {
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  User Management
+                  Gebruiker Bestuur
                 </h3>
                 <div className="h-8 w-8 bg-indigo-100 rounded-lg flex items-center justify-center">
                   <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -143,11 +143,11 @@ export default async function AdminDashboard() {
                 </div>
               </div>
               <p className="text-gray-600 mb-4">
-                Manage users and send invitations
+                Bestuur gebruikers en stuur uitnodigings
               </p>
               <Button asChild className="w-full">
                 <Link href="/admin/users">
-                  Manage Users
+                  Bestuur Gebruikers
                 </Link>
               </Button>
             </Card>
@@ -157,28 +157,28 @@ export default async function AdminDashboard() {
         {/* Quick Actions */}
         <div className="mt-12">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            Quick Actions
+            Vinnige Aksies
           </h2>
           <div className="flex flex-wrap gap-4">
             <Button asChild>
               <Link href="/admin/nuus/new">
-                Create New Article
+                Skep Nuwe Artikel
               </Link>
             </Button>
             <Button variant="outline" asChild>
               <Link href="/admin/jaarprogram">
-                Add Event
+                Voeg Gebeurtenis By
               </Link>
             </Button>
             <Button variant="outline" asChild>
               <Link href="/admin/diensgroepe/new">
-                Add Service Group
+                Voeg Diensgroep By
               </Link>
             </Button>
             {user.role === 'ADMIN' && (
               <Button variant="outline" asChild>
                 <Link href="/admin/users/invite">
-                  Invite User
+                  Nooi Gebruiker
                 </Link>
               </Button>
             )}
