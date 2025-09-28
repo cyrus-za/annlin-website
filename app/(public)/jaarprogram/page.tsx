@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Jaarprogram | Annlin Gemeente',
-  description: 'Bekyk ons kerk kalender met eredienste, gebeure en belangrike datums. Bly op hoogte met wat gebeur by Annlin Gemeente.',
-  keywords: ['jaarprogram', 'kalender', 'eredienste', 'gebeure', 'kerk', 'Annlin Gemeente'],
+  description: 'Bekyk ons kerk kalender met vergaderings, gebeurtenisse en belangrike datums. Bly op hoogte met wat gebeur by Annlin Gemeente.',
+  keywords: ['jaarprogram', 'kalender', 'vergaderings', 'gebeure', 'kerk', 'Annlin Gemeente'],
 }
 
 export default function JaarprogramPage() {
@@ -18,7 +18,7 @@ export default function JaarprogramPage() {
               Jaarprogram
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
-              Bly op hoogte met al ons eredienste, spesiale gebeure en belangrike datums. 
+              Bly op hoogte met al ons vergaderings, spesiale gebeure en belangrike datums. 
               Ons nooi jou uit om deel te wees van ons gemeente aktiwiteite.
             </p>
           </div>
@@ -38,33 +38,33 @@ export default function JaarprogramPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-6">
-                Gereelde Eredienste
+                Gereelde Vergaderings & Gebeure
               </h2>
               <div className="space-y-6">
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Oggend</h3>
-                  <p className="text-muted-foreground mb-2">08:30 - 09:30</p>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Kerkraad Vergaderings</h3>
+                  <p className="text-muted-foreground mb-2">Maandeliks</p>
                   <p className="text-sm text-muted-foreground/70">
-                    Ons hooferediens met tradisionele liturgie, koor musiek en kindergeleenthede. 
-                    Alle ouderdomme is welkom.
+                    Bestuur en beplanning van kerk aktiwiteite. 
+                    Alle kerkraad lede word verwelkom.
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Aand</h3>
-                  <p className="text-muted-foreground mb-2">18:30 - 19:30</p>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Jeugbediening Vergaderings</h3>
+                  <p className="text-muted-foreground mb-2">Weekliks</p>
                   <p className="text-sm text-muted-foreground/70">
-                    Informele aanderediens met moderne aanbidding en praktiese Bybel onderrig. 
-                    Perfek vir jong families.
+                    Beplanning en koördinasie van jeug aktiwiteite. 
+                    Aktiewe jeugleiers is welkom.
                   </p>
                 </div>
                 
-                <div className="border-l-4 border-amber-700 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Woensdag Aand</h3>
-                  <p className="text-muted-foreground mb-2">19:00 - 20:00</p>
+                <div className="border-l-4 border-amber-600 pl-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Diensgroep Vergaderings</h3>
+                  <p className="text-muted-foreground mb-2">Maandeliks</p>
                   <p className="text-sm text-muted-foreground/70">
-                    Biduur en Bybelstudie vir geestelike groei en gemeenskap. 
-                    Alle lidmate word aangemoedig om by te woon.
+                    Koördinasie van verskillende diensgroepe en hul aktiwiteite. 
+                    Alle diensgroep leiers is welkom.
                   </p>
                 </div>
               </div>

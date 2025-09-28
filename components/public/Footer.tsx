@@ -120,6 +120,12 @@ export function Footer() {
                 Kalender & Gebeure
               </Link>
               <Link 
+                href="/uitsendings"
+                className="block text-sm text-amber-200 hover:text-white transition-colors"
+              >
+                Video Uitsendings
+              </Link>
+              <Link 
                 href="/diensgroepe"
                 className="block text-sm text-amber-200 hover:text-white transition-colors"
               >

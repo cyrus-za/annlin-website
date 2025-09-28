@@ -28,6 +28,10 @@ const navigationItems: NavigationItem[] = [
     href: '/jaarprogram',
   },
   {
+    name: 'Uitsendings',
+    href: '/uitsendings',
+  },
+  {
     name: 'Nuus',
     href: '/nuus',
   },
