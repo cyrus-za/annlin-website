@@ -29,9 +29,9 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
   },
-  trustedOrigins: [env.server.NEXT_PUBLIC_APP_URL],
-  secret: env.server.BETTER_AUTH_SECRET,
-  baseURL: env.server.BETTER_AUTH_URL,
+  trustedOrigins: [env.NEXT_PUBLIC_APP_URL],
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
   plugins: [],
 })
 
