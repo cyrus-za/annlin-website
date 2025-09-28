@@ -95,10 +95,10 @@ export default function UitsendingsPage() {
               <Clock className="h-5 w-5 text-amber-600" />
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-amber-800">
+              <h3 className="text-sm font-medium text-foreground">
                 Belangrike Inligting
               </h3>
-              <p className="mt-1 text-sm text-amber-700">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Indien u na 'n spesifieke uitsending soek wat voor die afgelope 2 maande uitgesaai is, 
                 kan u met die kerkkantoor skakel of eenvoudig die eposvormpie op die Kontakbesonderhede-blad invul.
               </p>
@@ -121,7 +121,7 @@ export default function UitsendingsPage() {
                     </CardDescription>
                   </div>
                   {sermon.isRecent && (
-                    <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                    <Badge variant="secondary" className="bg-amber-100 text-foreground">
                       Onlangs
                     </Badge>
                   )}
