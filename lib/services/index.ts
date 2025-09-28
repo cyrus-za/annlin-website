@@ -8,9 +8,11 @@ export * from './user-management'
 // Audit and Logging Services
 export * from './audit-log'
 
-// Content Management Services (to be implemented)
+// Content Management Services
+export * from './events'
+
+// To be implemented:
 // export * from './diensgroepe'
-// export * from './events'
 // export * from './articles'
 // export * from './reading-materials'
 // export * from './contact'
