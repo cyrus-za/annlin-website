@@ -4,6 +4,8 @@ This document explains how to set up the required environment variables for the 
 
 ## Required Environment Variables
 
+**IMPORTANT**: You must create a `.env.local` file in the root directory of the project before running the development server.
+
 Create a `.env.local` file in the root directory with the following variables:
 
 ```bash
@@ -30,6 +32,37 @@ NODE_ENV="development"
 ADMIN_EMAIL="admin@yourdomain.com"
 ADMIN_PASSWORD="your-secure-password"
 ```
+
+### Development/Testing Values
+
+For development and testing purposes, you can use these placeholder values:
+
+```bash
+# Development Database Configuration (placeholder - won't work without real DB)
+DATABASE_URL="postgresql://dev:dev@localhost:5432/annlin_dev"
+DIRECT_URL="postgresql://dev:dev@localhost:5432/annlin_dev"
+
+# Authentication (better-auth) - development
+BETTER_AUTH_SECRET="dev-secret-key-that-is-at-least-32-characters-long"
+BETTER_AUTH_URL="http://localhost:3000"
+
+# Email Service (Resend) - development placeholders
+RESEND_API_KEY="re_development_api_key_placeholder"
+FROM_EMAIL="dev@localhost.local"
+
+# File Storage (Vercel Blob) - development placeholder
+BLOB_READ_WRITE_TOKEN="dev_blob_token_placeholder"
+
+# Application Configuration
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NODE_ENV="development"
+
+# Optional: Admin User Setup
+ADMIN_EMAIL="admin@localhost.local"
+ADMIN_PASSWORD="admin123456"
+```
+
+**Note**: These development values will allow the application to start, but database operations and email sending will not work until you configure real services.
 
 ## Service Setup Instructions
 
