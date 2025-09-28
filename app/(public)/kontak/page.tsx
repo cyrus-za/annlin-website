@@ -428,9 +428,9 @@ export default function ContactPage() {
                     <p className="text-muted-foreground">18:00 - Aanderediens</p>
                   </div>
                   
-                  <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-foreground">Woensdag</h4>
-                    <p className="text-muted-foreground">19:00 - Biduur & Bybelstudie</p>
+                   <div className="border-l-4 border-amber-600 pl-4">
+                     <h4 className="font-medium text-foreground">Woensdag</h4>
+                     <p className="text-muted-foreground">19:00 - Biduur & Bybelstudie</p>
                   </div>
                 </div>
               </CardContent>
