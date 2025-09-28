@@ -6,8 +6,8 @@ export { AdminHeader } from './AdminHeader'
 export { AdminLayoutClient } from './AdminLayoutClient'
 export { AdminForm, FormFieldInput, FormFieldTextarea, FormFieldSelect, StatusBadge } from './AdminForm'
 export { DataTable } from './DataTable'
+export { DiensgroepeForm } from './DiensgroepeForm'
 
 // Additional components to be added:
-// export { DiensgroepeForm } from './DiensgroepeForm'
 // export { ArticleEditor } from './ArticleEditor'
 // export { CalendarAdmin } from './CalendarAdmin'

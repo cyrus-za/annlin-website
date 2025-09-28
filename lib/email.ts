@@ -1,7 +1,7 @@
 import { Resend } from 'resend'
 import { env } from './env'
 
-const resend = new Resend(env.RESEND_API_KEY)
+const resend = new Resend(env.server.RESEND_API_KEY)
 
 export interface EmailTemplate {
   to: string
@@ -24,7 +24,7 @@ export interface InvitationEmailData {
 export async function sendEmail({ to, subject, html, text }: EmailTemplate): Promise<boolean> {
   try {
     const response = await resend.emails.send({
-      from: env.FROM_EMAIL,
+      from: env.server.FROM_EMAIL,
       to,
       subject,
       html,
@@ -53,7 +53,7 @@ export function generateInvitationEmailHtml({
   inviteToken,
   role,
 }: InvitationEmailData): string {
-  const inviteUrl = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
+  const inviteUrl = `${env.server.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
   const roleDisplay = role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'
 
   return `
@@ -200,7 +200,7 @@ export function generateInvitationEmailText({
   inviteToken,
   role,
 }: InvitationEmailData): string {
-  const inviteUrl = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
+  const inviteUrl = `${env.server.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${inviteToken}`
   const roleDisplay = role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'
 
   return `
