@@ -16,10 +16,12 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 text-white py-20" style={{
-        backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.9), rgba(120, 53, 15, 0.9)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grain" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23000000;stop-opacity:0.1"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>')`,
-        backgroundSize: 'cover, 100px 100px'
-      }}>
+      <section 
+        className="relative text-white py-20 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.85), rgba(120, 53, 15, 0.85)), url('/church-building-main.jpg')`
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -186,11 +188,22 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Besoek Ons
-              </h3>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="h-48 bg-cover bg-center" style={{
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/church-building-1974.jpg')`
+              }}>
+                <div className="h-full flex items-end p-6">
+                  <div className="text-white">
+                    <h3 className="text-xl font-bold mb-2">Ons Geskiedenis</h3>
+                    <p className="text-sm text-gray-200">Gestig in 1965</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                  Besoek Ons
+                </h3>
+                <div className="space-y-4">
                 <div>
                   <h4 className="font-semibold text-gray-900">Eredienste</h4>
                   <p className="text-gray-600">Sondae om 09:00 en 18:00</p>
@@ -217,6 +230,7 @@ export default function Home() {
                     Volledige Kontak Besonderhede
                   </Link>
                 </Button>
+                </div>
               </div>
             </div>
           </div>
