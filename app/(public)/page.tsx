@@ -61,8 +61,8 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Verken Ons Webwerf</h2>
-            <p className="mt-4 text-lg text-gray-600">
+            <h2 className="text-3xl font-bold text-foreground">Verken Ons Webwerf</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
               Vind alles wat jy nodig het om betrokke te raak by ons gemeente
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-amber-900 mb-6">
                 Oor Annlin Gemeente
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-lg text-muted-foreground mb-6">
                 Ons is 'n lewendige gemeente wat toegewy is aan die verkondiging van God se Woord 
                 en die bou van 'n gemeenskap waar almal welkom is. Ons glo in die krag van geloof, 
                 hoop en liefde om lewens te transformeer.
@@ -167,15 +167,15 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Eredienste elke Sondag om 09:00 en 18:00</span>
+                  <span className="text-foreground/80">Eredienste elke Sondag om 09:00 en 18:00</span>
                 </div>
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Aktiewe jeug- en kinderprogramme</span>
+                  <span className="text-foreground/80">Aktiewe jeug- en kinderprogramme</span>
                 </div>
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-gray-700">Gemeenskapsbetrokkenheid en uitreikprogramme</span>
+                  <span className="text-foreground/80">Gemeenskapsbetrokkenheid en uitreikprogramme</span>
                 </div>
               </div>
               <div className="mt-8">
@@ -200,25 +200,25 @@ export default function Home() {
                 </div>
               </div>
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                <h3 className="text-2xl font-bold text-foreground mb-6">
                   Besoek Ons
                 </h3>
                 <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900">Eredienste</h4>
-                  <p className="text-gray-600">Sondae om 09:00 en 18:00</p>
+                  <h4 className="font-semibold text-foreground">Eredienste</h4>
+                  <p className="text-muted-foreground">Sondae om 09:00 en 18:00</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Adres</h4>
-                  <p className="text-gray-600">
+                  <h4 className="font-semibold text-foreground">Adres</h4>
+                  <p className="text-muted-foreground">
                     Annlin Gemeente<br />
                     [Adres sal hier wees]<br />
                     Pretoria, Gauteng
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Kontak</h4>
-                  <p className="text-gray-600">
+                  <h4 className="font-semibold text-foreground">Kontak</h4>
+                  <p className="text-muted-foreground">
                     Tel: 012 567 1492<br />
                     Sel: 079 162 3453<br />
                     E-pos: kerkkantoor@annlin.co.za

@@ -14,10 +14,10 @@ export default function DiensgroepePage() {
       <section className="bg-gradient-to-b from-amber-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
               Diensgroepe
             </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
               By Annlin Gemeente glo ons dat elke lidmaat 'n belangrike rol het om te speel. 
               Ons diensgroepe bied geleenthede vir jou om jou talente te gebruik en 'n verskil 
               te maak in ons gemeente en gemeenskap.
@@ -62,7 +62,7 @@ export default function DiensgroepePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-6">
                 Waarom by 'n diensgroep aansluit?
               </h2>
               <div className="space-y-4">
@@ -71,8 +71,8 @@ export default function DiensgroepePage() {
                     <span className="text-white text-sm font-bold">1</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Maak 'n Verskil</h3>
-                    <p className="text-gray-600">
+                    <h3 className="text-lg font-semibold text-foreground">Maak 'n Verskil</h3>
+                    <p className="text-muted-foreground">
                       Gebruik jou talente en passies om 'n positiewe impak te maak in ons gemeente en gemeenskap.
                     </p>
                   </div>
@@ -83,8 +83,8 @@ export default function DiensgroepePage() {
                     <span className="text-white text-sm font-bold">2</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Bou Verhoudings</h3>
-                    <p className="text-gray-600">
+                    <h3 className="text-lg font-semibold text-foreground">Bou Verhoudings</h3>
+                    <p className="text-muted-foreground">
                       Ontmoet nuwe mense en bou betekenisvolle vriendskappe met ander wat dieselfde waardes deel.
                     </p>
                   </div>
@@ -95,8 +95,8 @@ export default function DiensgroepePage() {
                     <span className="text-white text-sm font-bold">3</span>
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Groei Geestelik</h3>
-                    <p className="text-gray-600">
+                    <h3 className="text-lg font-semibold text-foreground">Groei Geestelik</h3>
+                    <p className="text-muted-foreground">
                       Ontwikkel jou geloof en geestelike gawes deur diensbaarheid en samewerking met ander.
                     </p>
                   </div>
@@ -105,27 +105,27 @@ export default function DiensgroepePage() {
             </div>
             
             <div className="bg-white rounded-lg shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="text-2xl font-bold text-foreground mb-6">
                 Hoe om aan te sluit
               </h3>
               <div className="space-y-4">
                 <div className="border-l-4 border-amber-600 pl-4">
-                  <h4 className="font-semibold text-gray-900">Stap 1: Kies 'n Diensgroep</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground">Stap 1: Kies 'n Diensgroep</h4>
+                  <p className="text-muted-foreground text-sm">
                     Kyk deur ons verskillende diensgroepe en kies een wat by jou belangstellings pas.
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-4">
-                  <h4 className="font-semibold text-gray-900">Stap 2: Maak Kontak</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground">Stap 2: Maak Kontak</h4>
+                  <p className="text-muted-foreground text-sm">
                     Gebruik die kontak besonderhede om die diensgroep leier te kontak.
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-4">
-                  <h4 className="font-semibold text-gray-900">Stap 3: Sluit Aan</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground">Stap 3: Sluit Aan</h4>
+                  <p className="text-muted-foreground text-sm">
                     Kom na die volgende byeenkoms en begin jou reis van diensbaarheid!
                   </p>
                 </div>

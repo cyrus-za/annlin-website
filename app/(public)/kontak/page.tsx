@@ -159,8 +159,8 @@ export default function ContactPage() {
       <section className="bg-white border-b border-gray-200 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900">Kontak Ons</h1>
-            <p className="mt-4 text-xl text-gray-600">
+            <h1 className="text-4xl font-bold text-foreground">Kontak Ons</h1>
+            <p className="mt-4 text-xl text-muted-foreground">
               Ons is hier om jou te help. Stuur vir ons 'n boodskap of gebruik ons kontak besonderhede.
             </p>
           </div>
@@ -360,7 +360,7 @@ export default function ContactPage() {
                 <div className="flex items-start space-x-3">
                   <Mail className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
-                    <h4 className="font-medium text-gray-900">E-pos</h4>
+                    <h4 className="font-medium text-foreground">E-pos</h4>
                     <a 
                       href="mailto:info@annlin-gemeente.co.za"
                       className="text-amber-600 hover:text-amber-800"
@@ -373,7 +373,7 @@ export default function ContactPage() {
                 <div className="flex items-start space-x-3">
                   <Phone className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Telefoon</h4>
+                    <h4 className="font-medium text-foreground">Telefoon</h4>
                     <a 
                       href="tel:012-345-6789"
                       className="text-amber-600 hover:text-amber-800"
@@ -386,8 +386,8 @@ export default function ContactPage() {
                 <div className="flex items-start space-x-3">
                   <MapPin className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Adres</h4>
-                    <p className="text-gray-600">
+                    <h4 className="font-medium text-foreground">Adres</h4>
+                    <p className="text-muted-foreground">
                       Annlin Gemeente<br />
                       [Kerk Adres]<br />
                       Pretoria, 0181
@@ -398,8 +398,8 @@ export default function ContactPage() {
                 <div className="flex items-start space-x-3">
                   <Clock className="h-5 w-5 text-amber-600 mt-1" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Kantoor Ure</h4>
-                    <p className="text-gray-600">
+                    <h4 className="font-medium text-foreground">Kantoor Ure</h4>
+                    <p className="text-muted-foreground">
                       Maandag - Vrydag: 08:00 - 16:00<br />
                       Saterdag: 08:00 - 12:00<br />
                       Sondag: Na eredienste
@@ -419,18 +419,18 @@ export default function ContactPage() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-gray-900">Sondag Oggend</h4>
-                    <p className="text-gray-600">09:00 - Hooferediens</p>
+                    <h4 className="font-medium text-foreground">Sondag Oggend</h4>
+                    <p className="text-muted-foreground">09:00 - Hooferediens</p>
                   </div>
                   
                   <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-gray-900">Sondag Aand</h4>
-                    <p className="text-gray-600">18:00 - Aanderediens</p>
+                    <h4 className="font-medium text-foreground">Sondag Aand</h4>
+                    <p className="text-muted-foreground">18:00 - Aanderediens</p>
                   </div>
                   
                   <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-gray-900">Woensdag</h4>
-                    <p className="text-gray-600">19:00 - Biduur & Bybelstudie</p>
+                    <h4 className="font-medium text-foreground">Woensdag</h4>
+                    <p className="text-muted-foreground">19:00 - Biduur & Bybelstudie</p>
                   </div>
                 </div>
               </CardContent>
@@ -446,8 +446,8 @@ export default function ContactPage() {
               <CardContent>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-medium text-gray-900">Dominee</h4>
-                    <p className="text-gray-600">
+                    <h4 className="font-medium text-foreground">Predikant</h4>
+                    <p className="text-muted-foreground">
                       <a href="tel:082-123-4567" className="text-amber-600 hover:text-amber-800">
                         082 123 4567
                       </a>
@@ -455,8 +455,8 @@ export default function ContactPage() {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-gray-900">Kerkraad Voorsitter</h4>
-                    <p className="text-gray-600">
+                    <h4 className="font-medium text-foreground">Kerkraad Voorsitter</h4>
+                    <p className="text-muted-foreground">
                       <a href="tel:083-765-4321" className="text-amber-600 hover:text-amber-800">
                         083 765 4321
                       </a>

@@ -14,10 +14,10 @@ export default function JaarprogramPage() {
       <section className="bg-gradient-to-b from-amber-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
               Jaarprogram
             </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
               Bly op hoogte met al ons eredienste, spesiale gebeure en belangrike datums. 
               Ons nooi jou uit om deel te wees van ons gemeente aktiwiteite.
             </p>
@@ -37,32 +37,32 @@ export default function JaarprogramPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-6">
                 Gereelde Eredienste
               </h2>
               <div className="space-y-6">
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Sondag Oggend</h3>
-                  <p className="text-gray-600 mb-2">09:00 - 10:30</p>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Oggend</h3>
+                  <p className="text-muted-foreground mb-2">09:00 - 10:30</p>
+                  <p className="text-sm text-muted-foreground/70">
                     Ons hooferediens met tradisionele liturgie, koor musiek en kindergeleenthede. 
                     Alle ouderdomme is welkom.
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Sondag Aand</h3>
-                  <p className="text-gray-600 mb-2">18:00 - 19:15</p>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Aand</h3>
+                  <p className="text-muted-foreground mb-2">18:00 - 19:15</p>
+                  <p className="text-sm text-muted-foreground/70">
                     Informele aanderediens met moderne aanbidding en praktiese Bybel onderrig. 
                     Perfek vir jong families.
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-700 pl-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Woensdag Aand</h3>
-                  <p className="text-gray-600 mb-2">19:00 - 20:00</p>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Woensdag Aand</h3>
+                  <p className="text-muted-foreground mb-2">19:00 - 20:00</p>
+                  <p className="text-sm text-muted-foreground/70">
                     Biduur en Bybelstudie vir geestelike groei en gemeenskap. 
                     Alle lidmate word aangemoedig om by te woon.
                   </p>
@@ -71,29 +71,29 @@ export default function JaarprogramPage() {
             </div>
             
             <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="text-2xl font-bold text-foreground mb-6">
                 Spesiale Gebeure
               </h3>
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <h4 className="font-semibold text-gray-900 mb-2">Jeugkampe</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground mb-2">Jeugkampe</h4>
+                  <p className="text-muted-foreground text-sm">
                     Jaarliks hou ons spesiale kampe vir ons jeug met aktiwiteite, 
                     aanbidding en geleenthede om nuwe vriende te maak.
                   </p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <h4 className="font-semibold text-gray-900 mb-2">Gemeente Uitstappies</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground mb-2">Gemeente Uitstappies</h4>
+                  <p className="text-muted-foreground text-sm">
                     Gereelde uitstappies en sosiale geleenthede vir die hele gemeente 
                     om saam te kom en verhoudings te bou.
                   </p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <h4 className="font-semibold text-gray-900 mb-2">Spesiale Eredienste</h4>
-                  <p className="text-gray-600 text-sm">
+                  <h4 className="font-semibold text-foreground mb-2">Spesiale Eredienste</h4>
+                  <p className="text-muted-foreground text-sm">
                     Kersfees, Paasfees en ander spesiale eredienste met 
                     besondere programme en gasspreker.
                   </p>
