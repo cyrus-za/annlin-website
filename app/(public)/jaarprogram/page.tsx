@@ -50,7 +50,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="border-l-4 border-green-600 pl-6">
+                <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Sondag Aand</h3>
                   <p className="text-gray-600 mb-2">18:00 - 19:15</p>
                   <p className="text-sm text-gray-500">
@@ -59,7 +59,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="border-l-4 border-purple-600 pl-6">
+                <div className="border-l-4 border-amber-700 pl-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">Woensdag Aand</h3>
                   <p className="text-gray-600 mb-2">19:00 - 20:00</p>
                   <p className="text-sm text-gray-500">

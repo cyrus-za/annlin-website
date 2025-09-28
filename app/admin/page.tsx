@@ -192,14 +192,14 @@ export default async function AdminDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-green-600" />
+                  <Calendar className="h-4 w-4 text-amber-600" />
                   <span className="text-sm font-medium">Aktiewe Gebeure</span>
                 </div>
                 <span className="text-sm text-gray-600">18</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-purple-600" />
+                  <Users className="h-4 w-4 text-amber-700" />
                   <span className="text-sm font-medium">Diensgroepe</span>
                 </div>
                 <span className="text-sm text-gray-600">8</span>

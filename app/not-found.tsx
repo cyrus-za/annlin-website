@@ -74,8 +74,8 @@ export default function NotFound() {
 
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <Search className="h-6 w-6 text-green-600" />
+              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <Search className="h-6 w-6 text-amber-600" />
               </div>
               <CardTitle>Diensgroepe</CardTitle>
               <CardDescription>
@@ -93,8 +93,8 @@ export default function NotFound() {
 
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                <MessageCircle className="h-6 w-6 text-purple-600" />
+              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
+                <MessageCircle className="h-6 w-6 text-amber-600" />
               </div>
               <CardTitle>Kontak Ons</CardTitle>
               <CardDescription>

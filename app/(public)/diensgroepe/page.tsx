@@ -47,10 +47,10 @@ export default function DiensgroepePage() {
                 Kontak Ons
               </a>
               <a
-                href="tel:012-345-6789"
+                href="tel:012-567-1492"
                 className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-amber-600 transition-colors duration-200"
               >
-                Bel Ons: 012 345 6789
+                Bel Ons: 012 567 1492
               </a>
             </div>
           </div>

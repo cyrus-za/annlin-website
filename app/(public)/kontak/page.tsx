@@ -113,8 +113,8 @@ export default function ContactPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="max-w-lg w-full">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <Mail className="h-8 w-8 text-green-600" />
+            <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+              <Mail className="h-8 w-8 text-amber-600" />
             </div>
             <CardTitle className="text-2xl">Boodskap Gestuur!</CardTitle>
             <CardDescription>
@@ -123,8 +123,8 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-green-800">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
                   Jou navraag is suksesvol gestuur. Ons span sal jou binne 24-48 uur kontak 
                   om jou te help met jou versoek.
                 </p>
