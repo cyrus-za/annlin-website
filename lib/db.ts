@@ -43,6 +43,8 @@ export type {
   Account,
   Session,
   VerificationToken,
+  UserInvitation,
+  UserInvitationStatus,
   ServiceGroup,
   Event,
   EventCategory,

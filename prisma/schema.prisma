@@ -23,10 +23,11 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  articles  Article[]
-  auditLogs AuditLog[]
-  accounts  Account[]
-  sessions  Session[]
+  articles     Article[]
+  auditLogs    AuditLog[]
+  accounts     Account[]
+  sessions     Session[]
+  invitations  UserInvitation[]
 
   @@map("users")
 }
@@ -79,6 +80,32 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model UserInvitation {
+  id          String                @id @default(cuid())
+  email       String
+  name        String
+  role        UserRole              @default(EDITOR)
+  token       String                @unique @default(cuid())
+  status      UserInvitationStatus  @default(PENDING)
+  invitedBy   String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  // Relations
+  inviter User @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@map("user_invitations")
+}
+
+enum UserInvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
 }
 
 // Service Groups (Diensgroepe)
