@@ -104,7 +104,7 @@ const nextConfig: NextConfig = {
   
   // Environment variables that should be available to the client
   env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    CUSTOM_KEY: process.env['CUSTOM_KEY'],
   },
 };
 
