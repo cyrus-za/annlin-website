@@ -100,7 +100,7 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
         {!isCollapsed && (
           <div className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-amber-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">AG</span>
+              <span className="text-white font-bold text-sm">GK</span>
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">Annlin Gemeente</h2>
