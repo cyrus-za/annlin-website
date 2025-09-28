@@ -10,7 +10,7 @@ const globalForPrisma = globalThis as unknown as {
 
 // Create Neon connection pool
 const neonPool = globalForPrisma.neonPool ?? new Pool({ 
-  connectionString: env.server.DATABASE_URL 
+  connectionString: env.DATABASE_URL 
 })
 
 if (env.NODE_ENV !== 'production') globalForPrisma.neonPool = neonPool
