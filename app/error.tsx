@@ -27,18 +27,18 @@ export default function Error({ error, reset }: ErrorProps) {
             <div className="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
               <AlertTriangle className="h-12 w-12 text-red-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Oeps! Iets Het Verkeerd Geloop
             </h1>
           </div>
           
           {/* Error Message */}
           <div className="mb-8">
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
               Ons het 'n onverwagte fout ondervind. Moenie bekommerd wees nie - 
               ons span werk hard om sulke probleme op te los.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground/70">
               Probeer asseblief weer, of keer terug na die tuisblad.
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
         {/* Additional Help Text */}
         <div className="text-center mt-12">
-          <p className="text-gray-500">
+          <p className="text-muted-foreground/70">
             As hierdie probleem voortduur, kontak ons asseblief sodat ons dit kan ondersoek.
           </p>
         </div>

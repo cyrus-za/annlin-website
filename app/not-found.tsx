@@ -24,10 +24,10 @@ export default function NotFound() {
           
           {/* Error Message */}
           <div className="mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Bladsy Nie Gevind
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Jammer, ons kon nie die bladsy vind wat jy soek nie. 
               Dit mag dalk geskuif of verwyder gewees het.
             </p>
@@ -113,7 +113,7 @@ export default function NotFound() {
 
         {/* Additional Help Text */}
         <div className="text-center mt-12">
-          <p className="text-gray-500">
+          <p className="text-muted-foreground/70">
             As jy dink hierdie 'n fout is, kontak ons asseblief sodat ons dit kan regstel.
           </p>
         </div>

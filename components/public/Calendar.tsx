@@ -139,17 +139,17 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                 <div key={event.id} className="border-l-4 pl-4" style={{ borderColor: event.category.color }}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 text-sm mb-1">
+                      <h4 className="font-medium text-foreground text-sm mb-1">
                         {event.title}
                       </h4>
-                      <div className="flex items-center text-xs text-gray-500 mb-1">
+                      <div className="flex items-center text-xs text-muted-foreground/70 mb-1">
                         <CalendarIcon className="h-3 w-3 mr-1" />
                         {format(new Date(event.startDate), 'dd MMM', { locale: af })}
                         <Clock className="h-3 w-3 ml-2 mr-1" />
                         {format(new Date(event.startDate), 'HH:mm')}
                       </div>
                       {event.location && (
-                        <div className="flex items-center text-xs text-gray-500">
+                        <div className="flex items-center text-xs text-muted-foreground/70">
                           <MapPin className="h-3 w-3 mr-1" />
                           {event.location}
                         </div>
@@ -176,8 +176,8 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
             </div>
           ) : (
             <div className="text-center py-4">
-              <CalendarIcon className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-500">Geen komende gebeure nie</p>
+              <CalendarIcon className="mx-auto h-8 w-8 text-muted-foreground/50 mb-2" />
+              <p className="text-sm text-muted-foreground/70">Geen komende gebeure nie</p>
             </div>
           )}
         </CardContent>
@@ -217,7 +217,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
-                  <span className="ml-3 text-gray-600">Laai kalender...</span>
+                  <span className="ml-3 text-muted-foreground">Laai kalender...</span>
                 </div>
               ) : (
                 <CalendarComponent
@@ -277,10 +277,10 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                         style={{ borderColor: event.category.color }}
                         onClick={() => handleEventClick(event)}
                       >
-                        <h4 className="font-medium text-gray-900 text-sm mb-1">
+                        <h4 className="font-medium text-foreground text-sm mb-1">
                           {event.title}
                         </h4>
-                        <div className="flex items-center text-xs text-gray-500 mb-2">
+                        <div className="flex items-center text-xs text-muted-foreground/70 mb-2">
                           <Clock className="h-3 w-3 mr-1" />
                           {format(new Date(event.startDate), 'HH:mm')}
                           {event.endDate && (
@@ -288,7 +288,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                           )}
                         </div>
                         {event.location && (
-                          <div className="flex items-center text-xs text-gray-500 mb-2">
+                          <div className="flex items-center text-xs text-muted-foreground/70 mb-2">
                             <MapPin className="h-3 w-3 mr-1" />
                             {event.location}
                           </div>
@@ -311,8 +311,8 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                     exit={{ opacity: 0 }}
                     className="text-center py-8"
                   >
-                    <CalendarIcon className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">
+                    <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground/70">
                       Geen gebeure vir hierdie datum nie
                     </p>
                   </motion.div>
@@ -342,23 +342,23 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
           {selectedEvent && (
             <div className="space-y-6">
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-600">{selectedEvent.description}</p>
+                <p className="text-muted-foreground">{selectedEvent.description}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <CalendarIcon className="h-4 w-4 text-gray-400" />
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground/50" />
                     <span className="text-sm font-medium">Datum:</span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {format(new Date(selectedEvent.startDate), 'dd MMMM yyyy', { locale: af })}
                     </span>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
+                    <Clock className="h-4 w-4 text-muted-foreground/50" />
                     <span className="text-sm font-medium">Tyd:</span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {format(new Date(selectedEvent.startDate), 'HH:mm')}
                       {selectedEvent.endDate && (
                         <> - {format(new Date(selectedEvent.endDate), 'HH:mm')}</>
@@ -368,9 +368,9 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   
                   {selectedEvent.location && (
                     <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <MapPin className="h-4 w-4 text-muted-foreground/50" />
                       <span className="text-sm font-medium">Lokasie:</span>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-muted-foreground">
                         {selectedEvent.location}
                       </span>
                     </div>
@@ -379,7 +379,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-gray-400" />
+                    <Users className="h-4 w-4 text-muted-foreground/50" />
                     <span className="text-sm font-medium">Kategorie:</span>
                     <Badge 
                       style={{ backgroundColor: selectedEvent.category.color + '20', color: selectedEvent.category.color }}
@@ -391,7 +391,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   
                   {selectedEvent.isRecurring && (
                     <div className="flex items-center space-x-2">
-                      <CalendarIcon className="h-4 w-4 text-gray-400" />
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground/50" />
                       <span className="text-sm font-medium">Herhalend:</span>
                       <Badge variant="outline" className="text-xs">
                         {selectedEvent.recurringPattern === 'WEEKLY' && 'Weekliks'}
@@ -405,7 +405,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
               {selectedEvent.sermonUrl && (
                 <div className="pt-4 border-t border-gray-200">
-                  <h4 className="font-medium text-gray-900 mb-3">Preek Opname</h4>
+                  <h4 className="font-medium text-foreground mb-3">Preek Opname</h4>
                   <Button asChild variant="outline">
                     <a 
                       href={selectedEvent.sermonUrl} 
@@ -422,7 +422,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground/70">
                     Wil jy meer weet? Kontak ons vir meer besonderhede.
                   </p>
                   <Button asChild size="sm">
@@ -482,7 +482,7 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Komende Gebeure</h2>
+            <h2 className="text-3xl font-bold text-foreground">Komende Gebeure</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
@@ -501,8 +501,8 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Komende Gebeure</h2>
-            <p className="text-gray-600">Geen komende gebeure geskeduleer nie.</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Komende Gebeure</h2>
+            <p className="text-muted-foreground">Geen komende gebeure geskeduleer nie.</p>
           </div>
         </div>
       </section>
@@ -551,13 +551,13 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
                 </CardHeader>
 
                 <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <CalendarIcon className="h-4 w-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground/50" />
                     {format(new Date(event.startDate), 'EEEE, dd MMMM yyyy', { locale: af })}
                   </div>
                   
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="h-4 w-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4 mr-2 text-muted-foreground/50" />
                     {format(new Date(event.startDate), 'HH:mm')}
                     {event.endDate && (
                       <> - {format(new Date(event.endDate), 'HH:mm')}</>
@@ -565,8 +565,8 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
                   </div>
                   
                   {event.location && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4 mr-2 text-muted-foreground/50" />
                       {event.location}
                     </div>
                   )}

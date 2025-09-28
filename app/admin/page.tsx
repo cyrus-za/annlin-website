@@ -35,10 +35,10 @@ export default async function AdminDashboard() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-foreground">
           Bestuurder Paneelbord
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-muted-foreground">
           Welkom terug, {user.name}! Jy is aangemeld as {user.role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'}.
         </p>
       </div>
@@ -154,10 +154,10 @@ export default async function AdminDashboard() {
                 <div key={index} className="flex items-center space-x-4">
                   <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-foreground">
                       {activity.title}
                     </p>
-                    <p className="text-xs text-gray-500 flex items-center">
+                    <p className="text-xs text-muted-foreground/70 flex items-center">
                       <Clock className="mr-1 h-3 w-3" />
                       {activity.time}
                     </p>
@@ -188,28 +188,28 @@ export default async function AdminDashboard() {
                   <Newspaper className="h-4 w-4 text-amber-600" />
                   <span className="text-sm font-medium">Gepubliseerde Artikels</span>
                 </div>
-                <span className="text-sm text-gray-600">32</span>
+                <span className="text-sm text-muted-foreground">32</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-amber-600" />
                   <span className="text-sm font-medium">Aktiewe Gebeure</span>
                 </div>
-                <span className="text-sm text-gray-600">18</span>
+                <span className="text-sm text-muted-foreground">18</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Users className="h-4 w-4 text-amber-700" />
                   <span className="text-sm font-medium">Diensgroepe</span>
                 </div>
-                <span className="text-sm text-gray-600">8</span>
+                <span className="text-sm text-muted-foreground">8</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <BookOpen className="h-4 w-4 text-orange-600" />
                   <span className="text-sm font-medium">Leesstof Items</span>
                 </div>
-                <span className="text-sm text-gray-600">15</span>
+                <span className="text-sm text-muted-foreground">15</span>
               </div>
             </div>
             <div className="mt-4">
