@@ -12,7 +12,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="h-10 w-10 bg-amber-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">AG</span>
+                <span className="text-white font-bold text-lg">GK</span>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">Annlin Gemeente</h3>
@@ -60,20 +60,20 @@ export function Footer() {
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-amber-400" />
                 <a 
-                  href="tel:012-345-6789"
+                  href="tel:012-567-1492"
                   className="text-sm text-amber-200 hover:text-white transition-colors"
                 >
-                  012 345 6789
+                  012 567 1492
                 </a>
               </div>
               
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-amber-400" />
                 <a 
-                  href="mailto:info@annlin-gemeente.co.za"
+                  href="mailto:kerkkantoor@annlin.co.za"
                   className="text-sm text-amber-200 hover:text-white transition-colors"
                 >
-                  info@annlin-gemeente.co.za
+                  kerkkantoor@annlin.co.za
                 </a>
               </div>
             </div>
