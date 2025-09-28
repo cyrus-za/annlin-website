@@ -68,7 +68,7 @@ export default function Loading() {
         {/* Optional: Loading Tips */}
         <div className="text-center mt-12">
           <p className="text-sm text-gray-500">
-            Terwyl jy wag, onthou dat ons eredienste Sondae om 09:00 en 18:00 is
+            Terwyl jy wag, onthou dat ons eredienste Sondae om 08:30 en 18:30 is
           </p>
         </div>
       </div>

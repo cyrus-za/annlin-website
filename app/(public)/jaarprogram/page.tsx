@@ -43,7 +43,7 @@ export default function JaarprogramPage() {
               <div className="space-y-6">
                 <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Oggend</h3>
-                  <p className="text-muted-foreground mb-2">09:00 - 10:30</p>
+                  <p className="text-muted-foreground mb-2">08:30 - 09:30</p>
                   <p className="text-sm text-muted-foreground/70">
                     Ons hooferediens met tradisionele liturgie, koor musiek en kindergeleenthede. 
                     Alle ouderdomme is welkom.
@@ -52,7 +52,7 @@ export default function JaarprogramPage() {
                 
                 <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-foreground mb-2">Sondag Aand</h3>
-                  <p className="text-muted-foreground mb-2">18:00 - 19:15</p>
+                  <p className="text-muted-foreground mb-2">18:30 - 19:30</p>
                   <p className="text-sm text-muted-foreground/70">
                     Informele aanderediens met moderne aanbidding en praktiese Bybel onderrig. 
                     Perfek vir jong families.

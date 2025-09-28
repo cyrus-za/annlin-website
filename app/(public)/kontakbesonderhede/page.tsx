@@ -147,13 +147,13 @@ export default function ContactDetailsPage() {
                   <div className="space-y-4">
                     <div className="border-l-4 border-amber-600 pl-4">
                       <h4 className="font-medium text-foreground">Sondag Oggend</h4>
-                      <p className="text-muted-foreground">09:00 - Hooferediens</p>
+                      <p className="text-muted-foreground">08:30 - 09:30</p>
                       <p className="text-sm text-muted-foreground/70">Kinderkerk beskikbaar</p>
                     </div>
                     
                     <div className="border-l-4 border-amber-600 pl-4">
                       <h4 className="font-medium text-foreground">Sondag Aand</h4>
-                      <p className="text-muted-foreground">18:00 - Aanderediens</p>
+                      <p className="text-muted-foreground">18:30 - 19:30</p>
                       <p className="text-sm text-muted-foreground/70">Informele atmosfeer</p>
                     </div>
                     

@@ -167,7 +167,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-foreground/80">Eredienste elke Sondag om 09:00 en 18:00</span>
+                  <span className="text-foreground/80">Eredienste elke Sondag om 08:30 en 18:30</span>
                 </div>
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
@@ -206,7 +206,7 @@ export default function Home() {
                 <div className="space-y-4">
                 <div>
                   <h4 className="font-semibold text-foreground">Eredienste</h4>
-                  <p className="text-muted-foreground">Sondae om 09:00 en 18:00</p>
+                  <p className="text-muted-foreground">Sondae om 08:30 en 18:30</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground">Adres</h4>

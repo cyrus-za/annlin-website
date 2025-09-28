@@ -87,7 +87,7 @@ export function Footer() {
                 <Calendar className="h-4 w-4 text-amber-400 mt-1" />
                 <div className="text-sm">
                   <p className="text-white font-medium">Sondag Oggend</p>
-                  <p className="text-amber-200">09:00 - 10:30</p>
+                  <p className="text-amber-200">08:30 - 09:30</p>
                 </div>
               </div>
               
@@ -95,7 +95,7 @@ export function Footer() {
                 <Calendar className="h-4 w-4 text-amber-400 mt-1" />
                 <div className="text-sm">
                   <p className="text-white font-medium">Sondag Aand</p>
-                  <p className="text-amber-200">18:00 - 19:15</p>
+                  <p className="text-amber-200">18:30 - 19:30</p>
                 </div>
               </div>
               
