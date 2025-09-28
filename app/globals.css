@@ -3,19 +3,19 @@
 :root {
   /* Church Brown Color Scheme - Based on Annlin.co.za */
   --background: 0 0% 100%;
-  --foreground: 25 25% 15%; /* Dark brown text */
+  --foreground: 25 25% 15%; /* Dark brown text - good contrast on white */
   --card: 0 0% 100%;
-  --card-foreground: 25 25% 15%;
+  --card-foreground: 25 25% 15%; /* Dark brown text */
   --popover: 0 0% 100%;
   --popover-foreground: 25 25% 15%;
   --primary: 25 45% 35%; /* Rich brown primary */
   --primary-foreground: 30 15% 95%; /* Cream white */
   --secondary: 30 25% 85%; /* Light tan */
-  --secondary-foreground: 25 25% 15%;
+  --secondary-foreground: 25 25% 15%; /* Dark brown text on light tan */
   --muted: 30 20% 92%; /* Very light tan */
-  --muted-foreground: 25 15% 45%; /* Medium brown */
+  --muted-foreground: 25 15% 35%; /* Darker brown for better contrast */
   --accent: 30 30% 88%; /* Warm accent */
-  --accent-foreground: 25 25% 15%;
+  --accent-foreground: 25 25% 15%; /* Dark brown text */
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 30 20% 88%; /* Tan border */
@@ -33,19 +33,19 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: 25 15% 8%; /* Dark brown background */
-    --foreground: 30 15% 95%; /* Cream text */
+    --foreground: 30 15% 95%; /* Cream text - good contrast on dark */
     --card: 25 20% 12%; /* Dark brown card */
-    --card-foreground: 30 15% 95%;
+    --card-foreground: 30 15% 95%; /* Cream text on dark cards */
     --popover: 25 20% 12%;
     --popover-foreground: 30 15% 95%;
     --primary: 30 65% 55%; /* Amber primary for dark mode */
     --primary-foreground: 25 15% 8%; /* Dark text on amber */
     --secondary: 25 25% 20%; /* Dark brown secondary */
-    --secondary-foreground: 30 15% 95%;
+    --secondary-foreground: 30 15% 95%; /* Cream text on dark secondary */
     --muted: 25 20% 15%; /* Muted dark brown */
-    --muted-foreground: 30 25% 70%; /* Light tan text */
+    --muted-foreground: 30 25% 80%; /* Lighter tan text for better contrast */
     --accent: 25 25% 20%; /* Dark brown accent */
-    --accent-foreground: 30 15% 95%;
+    --accent-foreground: 30 15% 95%; /* Cream text on dark accent */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 30 15% 95%;
     --border: 25 20% 20%; /* Dark brown border */
