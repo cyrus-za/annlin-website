@@ -1,5 +1,6 @@
 import { prisma } from '../db'
 import type { User, UserRole } from '../db'
+import { createAuditLog, AUDIT_ACTIONS, ENTITY_TYPES } from './audit-log'
 
 export interface UpdateUserData {
   name?: string
@@ -102,16 +103,14 @@ export async function updateUser(id: string, data: UpdateUserData, updatedBy: st
     })
 
     // Log the update (audit trail)
-    await prisma.auditLog.create({
-      data: {
-        userId: updatedBy,
-        action: 'UPDATE_USER',
-        entityType: 'User',
-        entityId: id,
-        changes: {
-          before: {}, // We'd need to fetch the old data first for a complete audit
-          after: data
-        }
+    await createAuditLog({
+      userId: updatedBy,
+      action: AUDIT_ACTIONS.UPDATE_USER,
+      entityType: ENTITY_TYPES.USER,
+      entityId: id,
+      changes: {
+        before: {}, // We'd need to fetch the old data first for a complete audit
+        after: data
       }
     })
 
@@ -133,15 +132,13 @@ export async function activateUser(id: string, activatedBy: string): Promise<boo
     })
 
     // Log the activation
-    await prisma.auditLog.create({
-      data: {
-        userId: activatedBy,
-        action: 'ACTIVATE_USER',
-        entityType: 'User',
-        entityId: id,
-        changes: {
-          emailVerified: true
-        }
+    await createAuditLog({
+      userId: activatedBy,
+      action: AUDIT_ACTIONS.ACTIVATE_USER,
+      entityType: ENTITY_TYPES.USER,
+      entityId: id,
+      changes: {
+        emailVerified: true
       }
     })
 
@@ -168,16 +165,14 @@ export async function deactivateUser(id: string, deactivatedBy: string): Promise
     })
 
     // Log the deactivation
-    await prisma.auditLog.create({
-      data: {
-        userId: deactivatedBy,
-        action: 'DEACTIVATE_USER',
-        entityType: 'User',
-        entityId: id,
-        changes: {
-          emailVerified: false,
-          sessionsCleared: true
-        }
+    await createAuditLog({
+      userId: deactivatedBy,
+      action: AUDIT_ACTIONS.DEACTIVATE_USER,
+      entityType: ENTITY_TYPES.USER,
+      entityId: id,
+      changes: {
+        emailVerified: false,
+        sessionsCleared: true
       }
     })
 
@@ -219,17 +214,15 @@ export async function deleteUser(id: string, deletedBy: string): Promise<boolean
     })
 
     // Log the deletion
-    await prisma.auditLog.create({
-      data: {
-        userId: deletedBy,
-        action: 'DELETE_USER',
-        entityType: 'User',
-        entityId: id,
-        changes: {
-          anonymized: true,
-          email: anonymizedEmail,
-          name: anonymizedName
-        }
+    await createAuditLog({
+      userId: deletedBy,
+      action: AUDIT_ACTIONS.DELETE_USER,
+      entityType: ENTITY_TYPES.USER,
+      entityId: id,
+      changes: {
+        anonymized: true,
+        email: anonymizedEmail,
+        name: anonymizedName
       }
     })
 

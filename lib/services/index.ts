@@ -5,6 +5,9 @@
 export * from './user-invitations'
 export * from './user-management'
 
+// Audit and Logging Services
+export * from './audit-log'
+
 // Content Management Services (to be implemented)
 // export * from './diensgroepe'
 // export * from './events'
