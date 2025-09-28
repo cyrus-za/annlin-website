@@ -16,24 +16,30 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-600 to-blue-800 text-white py-20">
+      <section className="relative bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 text-white py-20" style={{
+        backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.9), rgba(120, 53, 15, 0.9)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grain" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23000000;stop-opacity:0.1"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>')`,
+        backgroundSize: 'cover, 100px 100px'
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Welkom by Annlin Gemeente
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              'n Plek waar geloof, gemeenskap en liefde saamkom. 
-              Sluit by ons aan vir betekenisvolle aanbidding en geestelike groei.
+            <p className="text-xl md:text-2xl text-amber-100 mb-4 max-w-3xl mx-auto">
+              Gereformeerde Kerk Pretoria-Annlin
+            </p>
+            <p className="text-lg text-amber-200 mb-8 max-w-4xl mx-auto">
+              Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik. 
+              H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom, Pretoria.
             </p>
             <div className="space-x-4">
-              <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+              <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0">
                 <Link href="/jaarprogram">
                   <Calendar className="mr-2 h-5 w-5" />
                   Bekyk Eredienste
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-amber-800">
                 <Link href="/oor-annlin-gemeente">
                   Leer Meer Oor Ons
                 </Link>
@@ -62,8 +68,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="hover:shadow-lg transition-shadow duration-300 group">
               <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
-                  <Calendar className="h-6 w-6 text-green-600" />
+                <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-200 transition-colors">
+                  <Calendar className="h-6 w-6 text-amber-700" />
                 </div>
                 <CardTitle>Jaarprogram</CardTitle>
                 <CardDescription>
@@ -82,8 +88,8 @@ export default function Home() {
 
             <Card className="hover:shadow-lg transition-shadow duration-300 group">
               <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
-                  <Newspaper className="h-6 w-6 text-purple-600" />
+                <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+                  <Newspaper className="h-6 w-6 text-orange-700" />
                 </div>
                 <CardTitle>Nuus & Aankondigings</CardTitle>
                 <CardDescription>
@@ -102,8 +108,8 @@ export default function Home() {
 
             <Card className="hover:shadow-lg transition-shadow duration-300 group">
               <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
-                  <BookOpen className="h-6 w-6 text-orange-600" />
+                <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-yellow-200 transition-colors">
+                  <BookOpen className="h-6 w-6 text-yellow-700" />
                 </div>
                 <CardTitle>Leesstof</CardTitle>
                 <CardDescription>
@@ -122,8 +128,8 @@ export default function Home() {
 
             <Card className="hover:shadow-lg transition-shadow duration-300 group">
               <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
-                  <Mail className="h-6 w-6 text-blue-600" />
+                <div className="mx-auto w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-stone-200 transition-colors">
+                  <Mail className="h-6 w-6 text-stone-700" />
                 </div>
                 <CardTitle>Kontak Ons</CardTitle>
                 <CardDescription>
@@ -144,11 +150,11 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-amber-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl font-bold text-amber-900 mb-6">
                 Oor Annlin Gemeente
               </h2>
               <p className="text-lg text-gray-600 mb-6">
@@ -158,15 +164,15 @@ export default function Home() {
               </p>
               <div className="space-y-4">
                 <div className="flex items-center">
-                  <div className="h-2 w-2 bg-blue-600 rounded-full mr-3"></div>
+                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
                   <span className="text-gray-700">Eredienste elke Sondag om 09:00 en 18:00</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="h-2 w-2 bg-blue-600 rounded-full mr-3"></div>
+                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
                   <span className="text-gray-700">Aktiewe jeug- en kinderprogramme</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="h-2 w-2 bg-blue-600 rounded-full mr-3"></div>
+                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
                   <span className="text-gray-700">Gemeenskapsbetrokkenheid en uitreikprogramme</span>
                 </div>
               </div>

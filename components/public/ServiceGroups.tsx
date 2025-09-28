@@ -96,11 +96,11 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
   }
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-amber-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">Diensgroepe</h2>
-          <p className="mt-4 text-lg text-gray-600">
+          <h2 className="text-3xl font-bold text-amber-900">Diensgroepe</h2>
+          <p className="mt-4 text-lg text-amber-800">
             Raak betrokke by ons verskillende bedienings en help maak 'n verskil
           </p>
         </div>
@@ -126,7 +126,7 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
                 )}
                 
                 <CardHeader className={group.thumbnailUrl ? 'pb-4' : ''}>
-                  <CardTitle className="text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
+                  <CardTitle className="text-xl text-amber-900 group-hover:text-amber-700 transition-colors">
                     {group.name}
                   </CardTitle>
                   <CardDescription className="text-gray-600 line-clamp-2">
@@ -146,7 +146,7 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
                       <Mail className="h-4 w-4 mr-2 text-gray-400" />
                       <a 
                         href={`mailto:${group.contactEmail}`}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-amber-700 hover:text-amber-900 transition-colors"
                       >
                         {group.contactEmail}
                       </a>
@@ -157,7 +157,7 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
                         <Phone className="h-4 w-4 mr-2 text-gray-400" />
                         <a 
                           href={`tel:${group.contactPhone}`}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          className="text-amber-700 hover:text-amber-900 transition-colors"
                         >
                           {group.contactPhone}
                         </a>

@@ -513,8 +513,8 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">Komende Gebeure</h2>
-          <p className="mt-4 text-lg text-gray-600">
+          <h2 className="text-3xl font-bold text-amber-900">Komende Gebeure</h2>
+          <p className="mt-4 text-lg text-amber-800">
             Sluit by ons aan vir hierdie spesiale geleenthede
           </p>
         </div>
@@ -542,7 +542,7 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+                  <CardTitle className="text-xl group-hover:text-amber-700 transition-colors">
                     {event.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-2">

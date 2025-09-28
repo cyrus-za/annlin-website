@@ -52,18 +52,18 @@ interface EventCategory {
   }
 }
 
-// Predefined color options
+// Predefined color options - Church brown/tan theme
 const colorOptions = [
-  '#DC2626', // Red
-  '#2563EB', // Blue
-  '#059669', // Green
-  '#7C3AED', // Purple
-  '#EA580C', // Orange
-  '#0891B2', // Cyan
-  '#BE185D', // Pink
-  '#65A30D', // Lime
-  '#4338CA', // Indigo
-  '#C2410C', // Orange-red
+  '#78350F', // Amber-900 (darkest brown)
+  '#92400E', // Amber-800 (dark brown)
+  '#A16207', // Amber-700 (medium brown)
+  '#D97706', // Amber-600 (light brown)
+  '#F59E0B', // Amber-500 (golden)
+  '#FBBF24', // Amber-400 (light golden)
+  '#B45309', // Orange-700 (reddish brown)
+  '#EA580C', // Orange-600 (warm orange)
+  '#DC2626', // Red-600 (for important events)
+  '#059669', // Green-600 (for special occasions)
 ]
 
 export default function EventCategoriesPage() {

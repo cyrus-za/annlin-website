@@ -122,9 +122,9 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center space-x-2 px-3 py-2"
             >
-              <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4 text-white" />
-              </div>
+            <div className="h-8 w-8 bg-amber-700 rounded-full flex items-center justify-center">
+              <User className="h-4 w-4 text-white" />
+            </div>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
                 <p className="text-xs text-gray-500">
@@ -140,7 +140,7 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
                 <div className="p-4 border-b border-gray-200">
                   <p className="text-sm font-medium text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-500">{user.email}</p>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-amber-700 mt-1">
                     {user.role === 'ADMIN' ? 'Administrateur' : 'Redigeerder'}
                   </p>
                 </div>

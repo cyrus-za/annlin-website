@@ -99,7 +99,7 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="h-8 w-8 bg-amber-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">AG</span>
             </div>
             <div>
@@ -133,16 +133,16 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
           
           return (
             <Link key={item.href} href={item.href}>
-              <div className={cn(
+              <div                 className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive 
-                  ? "bg-blue-50 text-blue-700 border border-blue-200" 
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-900",
+                  ? "bg-amber-50 text-amber-800 border border-amber-200" 
+                  : "text-gray-700 hover:bg-amber-50 hover:text-amber-800",
                 isCollapsed && "justify-center"
               )}>
                 <item.icon className={cn(
                   "h-5 w-5 flex-shrink-0",
-                  isActive ? "text-blue-600" : "text-gray-400"
+                  isActive ? "text-amber-700" : "text-gray-400"
                 )} />
                 {!isCollapsed && (
                   <span className="truncate">{item.name}</span>

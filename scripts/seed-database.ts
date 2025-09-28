@@ -163,31 +163,31 @@ async function seedArticleCategories(skipExisting: boolean, verbose: boolean) {
       name: 'Sosiaal',
       slug: 'sosiaal',
       description: 'Sosiale gebeure en aktiwiteite',
-      color: '#3B82F6'
+      color: '#D97706' // Amber-600
     },
     {
       name: 'Jeug',
       slug: 'jeug',
       description: 'Jeugaktiwiteite en programme',
-      color: '#10B981'
+      color: '#F59E0B' // Amber-500
     },
     {
       name: 'Sinode',
       slug: 'sinode',
       description: 'Sinode nuus en aankondigings',
-      color: '#8B5CF6'
+      color: '#92400E' // Amber-800
     },
     {
       name: 'Algemeen',
       slug: 'algemeen',
       description: 'Algemene gemeente nuus',
-      color: '#F59E0B'
+      color: '#A16207' // Amber-700
     },
     {
       name: 'Eredienste',
       slug: 'eredienste',
       description: 'Erediens aankondigings en inligting',
-      color: '#EF4444'
+      color: '#78350F' // Amber-900
     }
   ]
   
@@ -236,27 +236,27 @@ async function seedEventCategories(skipExisting: boolean, verbose: boolean) {
   const categories = [
     {
       name: 'Eredienste',
-      color: '#DC2626',
+      color: '#92400E', // Amber-800
       description: 'Gereelde eredienste'
     },
     {
       name: 'Byeenkomste',
-      color: '#2563EB',
+      color: '#A16207', // Amber-700
       description: 'Spesiale byeenkomste en vergaderings'
     },
     {
       name: 'Jeugaktiwiteite',
-      color: '#059669',
+      color: '#D97706', // Amber-600
       description: 'Aktiwiteite vir die jeug'
     },
     {
       name: 'Sosiale Gebeure',
-      color: '#7C3AED',
+      color: '#F59E0B', // Amber-500
       description: 'Sosiale aktiwiteite en funksies'
     },
     {
       name: 'Opleiding',
-      color: '#EA580C',
+      color: '#78350F', // Amber-900
       description: 'Opleidingsgeleenthede en kursusse'
     }
   ]

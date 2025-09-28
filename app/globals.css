@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
 :root {
+  /* Church Brown Color Scheme - Based on Annlin.co.za */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 25 25% 15%; /* Dark brown text */
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 25 25% 15%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
+  --popover-foreground: 25 25% 15%;
+  --primary: 25 45% 35%; /* Rich brown primary */
+  --primary-foreground: 30 15% 95%; /* Cream white */
+  --secondary: 30 25% 85%; /* Light tan */
+  --secondary-foreground: 25 25% 15%;
+  --muted: 30 20% 92%; /* Very light tan */
+  --muted-foreground: 25 15% 45%; /* Medium brown */
+  --accent: 30 30% 88%; /* Warm accent */
+  --accent-foreground: 25 25% 15%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  --border: 30 20% 88%; /* Tan border */
+  --input: 30 20% 94%; /* Light tan input */
+  --ring: 25 45% 35%; /* Brown focus ring */
   --radius: 0.75rem;
+  
+  /* Additional church-specific colors */
+  --church-brown: 25 45% 35%; /* Main brown */
+  --church-tan: 30 35% 65%; /* Medium tan */
+  --church-cream: 30 15% 95%; /* Cream background */
+  --church-gold: 45 85% 60%; /* Gold accent */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -70,6 +77,12 @@
   --radius: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Church-specific color utilities */
+  --color-church-brown: hsl(var(--church-brown));
+  --color-church-tan: hsl(var(--church-tan));
+  --color-church-cream: hsl(var(--church-cream));
+  --color-church-gold: hsl(var(--church-gold));
 }
 
 body {
