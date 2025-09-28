@@ -1,78 +1,82 @@
-# Environment Setup Guide
+# Environment Setup
 
-This guide will help you set up the required environment variables for the Annlin Church Website.
+This document explains how to set up the required environment variables for the Annlin Church Website.
 
-## Required Services
+## Required Environment Variables
 
-### 1. NeonDB (Database)
-1. Visit [neon.tech](https://neon.tech) and create a free account
-2. Create a new project
-3. Copy the connection string from your dashboard
-4. Add to `.env.local`:
-   ```
-   DATABASE_URL="postgresql://username:password@hostname:port/database"
-   DIRECT_URL="postgresql://username:password@hostname:port/database"
-   ```
+Create a `.env.local` file in the root directory with the following variables:
 
-### 2. Resend (Email Service)
-1. Visit [resend.com](https://resend.com) and create an account
-2. Generate an API key from your dashboard
-3. Add to `.env.local`:
-   ```
-   RESEND_API_KEY="re_your_api_key_here"
-   FROM_EMAIL="noreply@annlin.co.za"
-   ```
-
-### 3. Vercel Blob (File Storage)
-1. Visit [vercel.com](https://vercel.com) and create an account
-2. Create a new project or use existing one
-3. Go to Storage → Create → Blob Store
-4. Generate a read-write token
-5. Add to `.env.local`:
-   ```
-   BLOB_READ_WRITE_TOKEN="vercel_blob_token_here"
-   ```
-
-## Authentication Setup
-Generate a secure secret for better-auth:
 ```bash
-# Generate a 32-character secret
-openssl rand -base64 32
-```
+# Database Configuration (NeonDB)
+DATABASE_URL="postgresql://username:password@hostname:port/database?sslmode=require"
+DIRECT_URL="postgresql://username:password@hostname:port/database?sslmode=require"
 
-Add to `.env.local`:
-```
-BETTER_AUTH_SECRET="your-generated-secret-here"
+# Authentication (better-auth)
+BETTER_AUTH_SECRET="your-32-character-secret-key-here"
 BETTER_AUTH_URL="http://localhost:3000"
-```
 
-## Application Configuration
-```
+# Email Service (Resend)
+RESEND_API_KEY="re_your_resend_api_key_here"
+FROM_EMAIL="noreply@yourdomain.com"
+
+# File Storage (Vercel Blob)
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token_here"
+
+# Application Configuration
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NODE_ENV="development"
-```
 
-## Optional Admin Setup
-For initial admin user creation:
-```
-ADMIN_EMAIL="admin@annlin.co.za"
+# Optional: Admin User Setup (for initial seeding)
+ADMIN_EMAIL="admin@yourdomain.com"
 ADMIN_PASSWORD="your-secure-password"
 ```
 
-## Complete .env.local Example
-Copy `.env.example` to `.env.local` and fill in your actual values:
+## Service Setup Instructions
 
+### 1. NeonDB Setup
+1. Create a new project at [neon.tech](https://neon.tech)
+2. Copy the connection string and set it as `DATABASE_URL`
+3. For direct connections, use the same URL as `DIRECT_URL`
+
+### 2. Better Auth Secret
+Generate a secure 32+ character secret:
 ```bash
-cp .env.example .env.local
+openssl rand -base64 32
 ```
 
-Then edit `.env.local` with your actual service credentials.
+### 3. Resend Email Service
+1. Sign up at [resend.com](https://resend.com)
+2. Create an API key and set it as `RESEND_API_KEY`
+3. Verify your domain and set `FROM_EMAIL`
 
-## Validation
-The application will validate all environment variables on startup using Zod schemas. If any required variables are missing or invalid, you'll see a clear error message.
+### 4. Vercel Blob Storage
+1. Create a Vercel project
+2. Generate a Blob token with read/write permissions
+3. Set it as `BLOB_READ_WRITE_TOKEN`
 
-## Security Notes
-- Never commit `.env.local` to version control
-- Use strong, unique passwords and API keys
-- Rotate secrets regularly
-- Use different credentials for development and production
+## Production Environment
+
+For production deployment, ensure:
+- All URLs use HTTPS
+- `DATABASE_URL` points to your production NeonDB instance
+- `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` use your production domain
+- Use strong, unique secrets for production
+
+## Database Setup
+
+After setting up environment variables:
+
+1. Generate Prisma client:
+```bash
+npx prisma generate
+```
+
+2. Run database migrations:
+```bash
+npx prisma db push
+```
+
+3. (Optional) Seed the database:
+```bash
+npm run seed
+```
