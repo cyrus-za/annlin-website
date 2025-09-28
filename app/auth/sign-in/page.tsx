@@ -98,16 +98,27 @@ export default function SignInPage() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Het jy nie \u2019n rekening nie?{' '}
+        <div className="mt-6 space-y-4">
+          <div className="text-center">
             <Link 
-              href="/auth/contact-admin" 
-              className="text-blue-600 hover:text-blue-500 font-medium"
+              href="/auth/reset-password" 
+              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
             >
-              Kontak \u2019n administrateur
+              Wagwoord vergeet?
             </Link>
-          </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Het jy nie \u2019n rekening nie?{' '}
+              <Link 
+                href="/auth/contact-admin" 
+                className="text-blue-600 hover:text-blue-500 font-medium"
+              >
+                Kontak \u2019n administrateur
+              </Link>
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 pt-6 border-t border-gray-200 text-center">
