@@ -40,6 +40,9 @@ export async function disconnectDatabase() {
 export type { 
   User,
   UserRole,
+  Account,
+  Session,
+  VerificationToken,
   ServiceGroup,
   Event,
   EventCategory,

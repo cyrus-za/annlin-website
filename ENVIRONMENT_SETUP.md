@@ -76,7 +76,29 @@ npx prisma generate
 npx prisma db push
 ```
 
-3. (Optional) Seed the database:
+3. Test database connection:
+```bash
+npm run db:test
+```
+
+4. (Optional) Seed the database:
 ```bash
 npm run seed
 ```
+
+## Authentication Setup
+
+The application uses better-auth for authentication:
+
+1. Test authentication setup:
+```bash
+npm run auth:test
+```
+
+2. The authentication system includes:
+   - Email/password authentication
+   - Email verification
+   - Session management
+   - Role-based access control (ADMIN/EDITOR)
+
+3. Admin user creation is handled through the seeding process or manual database insertion.
