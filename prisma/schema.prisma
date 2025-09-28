@@ -1,0 +1,221 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User model for admin authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(EDITOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  articles  Article[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+// Service Groups (Diensgroepe)
+model ServiceGroup {
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  contactPerson   String
+  contactEmail    String
+  contactPhone    String?
+  thumbnailUrl    String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  contactSubmissions ContactSubmission[]
+
+  @@map("service_groups")
+}
+
+// Events and Calendar
+model Event {
+  id               String             @id @default(cuid())
+  title            String
+  description      String
+  startDate        DateTime
+  endDate          DateTime?
+  location         String?
+  categoryId       String
+  isRecurring      Boolean            @default(false)
+  recurringPattern RecurringPattern?
+  sermonUrl        String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  // Relations
+  category EventCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("events")
+}
+
+model EventCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  color       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  events Event[]
+
+  @@map("event_categories")
+}
+
+enum RecurringPattern {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+// News Articles
+model Article {
+  id               String         @id @default(cuid())
+  title            String
+  slug             String         @unique
+  content          String // Markdown content
+  excerpt          String?
+  featuredImageUrl String?
+  categoryId       String
+  status           ArticleStatus  @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  authorId         String
+
+  // Relations
+  category ArticleCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author   User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("articles")
+}
+
+model ArticleCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  articles Article[]
+
+  @@map("article_categories")
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// Reading Materials
+model ReadingMaterial {
+  id           String                     @id @default(cuid())
+  title        String
+  description  String?
+  fileUrl      String?
+  externalUrl  String?
+  categoryId   String
+  fileType     ReadingMaterialFileType?
+  fileSize     Int?
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+
+  // Relations
+  category ReadingMaterialCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("reading_materials")
+}
+
+model ReadingMaterialCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  readingMaterials ReadingMaterial[]
+
+  @@map("reading_material_categories")
+}
+
+enum ReadingMaterialFileType {
+  PDF
+  DOC
+  LINK
+}
+
+// Contact Forms
+model ContactSubmission {
+  id             String                    @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  subject        String
+  message        String
+  type           ContactSubmissionType
+  serviceGroupId String?
+  status         ContactSubmissionStatus  @default(NEW)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  // Relations
+  serviceGroup ServiceGroup? @relation(fields: [serviceGroupId], references: [id], onDelete: SetNull)
+
+  @@map("contact_submissions")
+}
+
+enum ContactSubmissionType {
+  GENERAL
+  SERVICE_GROUP
+  SPECIFIC
+}
+
+enum ContactSubmissionStatus {
+  NEW
+  READ
+  REPLIED
+}
+
+// Audit Log
+model AuditLog {
+  id         String                 @id @default(cuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String
+  changes    Json
+  createdAt  DateTime               @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
