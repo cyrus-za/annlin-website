@@ -41,7 +41,7 @@ export default function Home() {
                   Bekyk Eredienste
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-amber-800">
+              <Button asChild variant="outline" size="lg" className="border-white text-amber-100 hover:bg-white hover:text-amber-800 bg-transparent">
                 <Link href="/oor-annlin-gemeente">
                   Leer Meer Oor Ons
                 </Link>
