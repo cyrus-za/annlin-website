@@ -37,7 +37,7 @@ export default function SignInPage() {
         router.push(callbackUrl)
       }
     } catch (error) {
-      setError('\u2019n Onverwagte fout het voorgekom')
+      setError("'n Onverwagte fout het voorgekom")
       console.error('Sign in error:', error)
     } finally {
       setIsLoading(false)
@@ -110,12 +110,12 @@ export default function SignInPage() {
           
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Het jy nie \u2019n rekening nie?{' '}
+              Het jy nie 'n rekening nie?{' '}
               <Link 
                 href="/auth/contact-admin" 
                 className="text-amber-600 hover:text-amber-500 font-medium"
               >
-                Kontak \u2019n administrateur
+                Kontak 'n administrateur
               </Link>
             </p>
           </div>
