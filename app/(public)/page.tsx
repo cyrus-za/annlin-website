@@ -34,14 +34,14 @@ export default function Home() {
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik. 
               H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom, Pretoria.
             </p>
-            <div className="space-x-4">
-              <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0 w-full sm:w-auto">
                 <Link href="/jaarprogram">
                   <Calendar className="mr-2 h-5 w-5" />
                   Bekyk Eredienste
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-amber-100 hover:bg-white hover:text-amber-800 bg-transparent">
+              <Button asChild variant="outline" size="lg" className="border-white text-amber-100 hover:bg-white hover:text-amber-800 bg-transparent w-full sm:w-auto">
                 <Link href="/oor-annlin-gemeente">
                   Leer Meer Oor Ons
                 </Link>
