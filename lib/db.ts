@@ -30,7 +30,7 @@ export const prisma =
     },
   })
 
-if (env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Custom error types for better error handling
 export class DatabaseConnectionError extends Error {
