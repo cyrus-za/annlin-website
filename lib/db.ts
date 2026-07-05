@@ -1,27 +1,13 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
-import { Pool } from '@neondatabase/serverless'
 import { env } from './env'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
-  neonPool: Pool | undefined
 }
-
-// Create Neon connection pool
-const neonPool = globalForPrisma.neonPool ?? new Pool({ 
-  connectionString: env.DATABASE_URL 
-})
-
-if (env.NODE_ENV !== 'production') globalForPrisma.neonPool = neonPool
-
-// Create Prisma adapter for Neon
-const adapter = new PrismaNeon(neonPool as any)
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter,
     log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     errorFormat: 'pretty',
     transactionOptions: {
@@ -163,11 +149,6 @@ export async function getDatabaseHealth(): Promise<{
   isConnected: boolean
   latency?: number
   error?: string
-  poolInfo?: {
-    idle: number
-    total: number
-    waiting: number
-  }
 }> {
   const startTime = Date.now()
   
@@ -179,17 +160,9 @@ export async function getDatabaseHealth(): Promise<{
     
     const latency = Date.now() - startTime
     
-    // Get Neon pool information
-    const poolInfo = {
-      idle: neonPool.idleCount,
-      total: neonPool.totalCount,
-      waiting: neonPool.waitingCount,
-    }
-    
     return {
       isConnected: true,
       latency,
-      poolInfo,
     }
   } catch (error) {
     return {
@@ -235,8 +208,6 @@ export async function withTransaction<T>(
 export async function disconnectDatabase(): Promise<void> {
   try {
     await prisma.$disconnect()
-    // Also end the Neon pool connections
-    await neonPool.end()
     console.log('✅ Database disconnected successfully')
   } catch (error) {
     console.error('❌ Error disconnecting from database:', error)

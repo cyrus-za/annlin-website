@@ -4,7 +4,7 @@ import * as React from 'react'
 import { z } from 'zod'
 import { AdminForm, FormFieldInput, FormFieldTextarea } from './AdminForm'
 import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form'
@@ -14,13 +14,17 @@ import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 // Validation schema
 const serviceGroupSchema = z.object({
   name: z.string().min(1, "Naam is verplig").max(100, "Naam mag nie langer as 100 karakters wees nie"),
+  slug: z.string().optional(),
   description: z.string().min(10, "Beskrywing moet ten minste 10 karakters wees").max(1000, "Beskrywing mag nie langer as 1000 karakters wees nie"),
+  category: z.enum(['DIAKONIE', 'OTHER']),
   contactPerson: z.string().min(1, "Kontak persoon is verplig").max(100, "Kontak persoon mag nie langer as 100 karakters wees nie"),
   contactEmail: z.string().email("Ongeldige e-pos adres"),
   contactPhone: z.string().optional().refine((val) => !val || val.length >= 10, {
     message: "Telefoon nommer moet ten minste 10 karakters wees",
   }),
   thumbnailUrl: z.string().optional(),
+  bannerUrl: z.string().optional(),
+  displayOrder: z.coerce.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
 })
 
@@ -45,11 +49,15 @@ export function DiensgroepeForm({
 
   const defaultValues: ServiceGroupFormData = {
     name: initialData?.name || '',
+    slug: initialData?.slug || '',
     description: initialData?.description || '',
+    category: initialData?.category || 'OTHER',
     contactPerson: initialData?.contactPerson || '',
     contactEmail: initialData?.contactEmail || '',
     contactPhone: initialData?.contactPhone || '',
     thumbnailUrl: initialData?.thumbnailUrl || '',
+    bannerUrl: initialData?.bannerUrl || '',
+    displayOrder: initialData?.displayOrder ?? 0,
     isActive: initialData?.isActive ?? true,
   }
 
@@ -158,6 +166,43 @@ export function DiensgroepeForm({
                   name="name"
                   label="Diensgroep Naam"
                   placeholder="bv. Jeugbediening, Koor, Skoonmaak span"
+                />
+
+                <FormFieldInput
+                  name="slug"
+                  label="Webadres (opsioneel)"
+                  placeholder="bv. jeugbediening"
+                />
+
+                <FormField
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kategorie</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Kies 'n kategorie" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="DIAKONIE">Diakonie</SelectItem>
+                          <SelectItem value="OTHER">Ander diensgroep</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Hierdie bepaal waar die diensgroep op die tuisblad verskyn.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormFieldInput
+                  name="displayOrder"
+                  label="Volgorde"
+                  type="number"
+                  placeholder="0"
                 />
 
                 <FormFieldTextarea

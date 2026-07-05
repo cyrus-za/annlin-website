@@ -11,7 +11,9 @@ import { motion } from 'framer-motion'
 interface ServiceGroup {
   id: string
   name: string
+  slug: string
   description: string
+  category: 'DIAKONIE' | 'OTHER'
   contactPerson: string
   contactEmail: string
   contactPhone?: string
@@ -34,7 +36,7 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
       try {
         const params = new URLSearchParams({
           isActive: 'true',
-          sortBy: 'name',
+          sortBy: 'displayOrder',
           sortOrder: 'asc',
           ...(limit && !showAll && { limit: limit.toString() }),
         })
@@ -105,79 +107,16 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {serviceGroups.map((group, index) => (
-            <motion.div
-              key={group.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover:shadow-lg transition-shadow duration-300 group">
-                {group.thumbnailUrl && (
-                  <div className="relative h-48 overflow-hidden rounded-t-lg">
-                    <img
-                      src={group.thumbnailUrl}
-                      alt={group.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  </div>
-                )}
-                
-                <CardHeader className={group.thumbnailUrl ? 'pb-4' : ''}>
-                  <CardTitle className="text-xl text-amber-900 group-hover:text-amber-700 transition-colors">
-                    {group.name}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-2">
-                    {group.description}
-                  </CardDescription>
-                </CardHeader>
+        <ServiceGroupSection
+          title="Diakonie"
+          groups={serviceGroups.filter((group) => group.category === 'DIAKONIE')}
+        />
 
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Users className="h-4 w-4 mr-2 text-gray-400" />
-                      <span className="font-medium">Kontak:</span>
-                      <span className="ml-1">{group.contactPerson}</span>
-                    </div>
-                    
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Mail className="h-4 w-4 mr-2 text-gray-400" />
-                      <a 
-                        href={`mailto:${group.contactEmail}`}
-                        className="text-amber-700 hover:text-amber-900 transition-colors"
-                      >
-                        {group.contactEmail}
-                      </a>
-                    </div>
-                    
-                    {group.contactPhone && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                        <a 
-                          href={`tel:${group.contactPhone}`}
-                          className="text-amber-700 hover:text-amber-900 transition-colors"
-                        >
-                          {group.contactPhone}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-4 border-t border-gray-100">
-                    <Button asChild className="w-full group">
-                      <Link href={`/kontak?diensgroep=${group.id}`}>
-                        Skakel In
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <ServiceGroupSection
+          title="Ander diensgroepe"
+          groups={serviceGroups.filter((group) => group.category !== 'DIAKONIE')}
+          className="mt-12"
+        />
 
         {!showAll && serviceGroups.length >= limit && (
           <div className="text-center mt-12">
@@ -191,6 +130,97 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
         )}
       </div>
     </section>
+  )
+}
+
+function ServiceGroupSection({
+  title,
+  groups,
+  className,
+}: {
+  title: string
+  groups: ServiceGroup[]
+  className?: string
+}) {
+  if (groups.length === 0) return null
+
+  return (
+    <div className={className}>
+      <h3 className="mb-6 text-2xl font-semibold text-amber-950">{title}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {groups.map((group, index) => (
+          <motion.div
+            key={group.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+          >
+            <Card className="h-full hover:shadow-lg transition-shadow duration-300 group">
+              {group.thumbnailUrl && (
+                <div className="relative h-48 overflow-hidden rounded-t-lg">
+                  <img
+                    src={group.thumbnailUrl}
+                    alt={group.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              )}
+
+              <CardHeader className={group.thumbnailUrl ? 'pb-4' : ''}>
+                <CardTitle className="text-xl text-amber-900 group-hover:text-amber-700 transition-colors">
+                  {group.name}
+                </CardTitle>
+                <CardDescription className="text-gray-600 line-clamp-2">
+                  {group.description}
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="h-4 w-4 mr-2 text-gray-400" />
+                    <span className="font-medium">Kontak:</span>
+                    <span className="ml-1">{group.contactPerson}</span>
+                  </div>
+
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                    <a
+                      href={`mailto:${group.contactEmail}`}
+                      className="text-amber-700 hover:text-amber-900 transition-colors"
+                    >
+                      {group.contactEmail}
+                    </a>
+                  </div>
+
+                  {group.contactPhone && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                      <a
+                        href={`tel:${group.contactPhone}`}
+                        className="text-amber-700 hover:text-amber-900 transition-colors"
+                      >
+                        {group.contactPhone}
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t border-gray-100">
+                  <Button asChild className="w-full group">
+                    <Link href={`/kontak?diensgroep=${group.id}`}>
+                      Skakel In
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   )
 }
 

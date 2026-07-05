@@ -47,3 +47,4 @@ try {
   console.error('❌ Error creating .env.local file:', error)
   process.exit(1)
 }
+

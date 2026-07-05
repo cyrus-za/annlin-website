@@ -305,3 +305,4 @@ export class EventsService {
       : { success: false, error: result.error }
   }
 }
+

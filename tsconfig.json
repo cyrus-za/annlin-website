@@ -2,11 +2,14 @@
   "compilerOptions": {
     // Target and output settings
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "jsx": "preserve",
-    
+    "jsx": "react-jsx",
     // Strict type checking options
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -14,7 +17,6 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noFallthroughCasesInSwitch": true,
-    
     // Module resolution and imports
     "allowJs": true,
     "skipLibCheck": true,
@@ -22,35 +24,49 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    
     // Emit settings
     "noEmit": true,
     "incremental": true,
     "tsBuildInfoFile": ".next/cache/tsbuildinfo.json",
-    
     // Advanced options
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    
     // Next.js specific
     "plugins": [
       {
         "name": "next"
       }
     ],
-    
     // Path mapping for clean imports
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./components/*"],
-      "@/lib/*": ["./lib/*"],
-      "@/app/*": ["./app/*"],
-      "@/types/*": ["./types/*"],
-      "@/hooks/*": ["./hooks/*"],
-      "@/utils/*": ["./lib/utils/*"],
-      "@/styles/*": ["./styles/*"],
-      "@/public/*": ["./public/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/types/*": [
+        "./types/*"
+      ],
+      "@/hooks/*": [
+        "./hooks/*"
+      ],
+      "@/utils/*": [
+        "./lib/utils/*"
+      ],
+      "@/styles/*": [
+        "./styles/*"
+      ],
+      "@/public/*": [
+        "./public/*"
+      ]
     }
   },
   "include": [
@@ -58,7 +74,8 @@
     "types/global.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

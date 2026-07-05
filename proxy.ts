@@ -5,9 +5,9 @@ import { auth } from './lib/auth'
 const authRoutes = ['/auth/sign-in', '/auth/sign-up', '/auth/accept-invitation']
 
 /**
- * Middleware to handle authentication and route protection
+ * Proxy to handle authentication and route protection.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   try {
@@ -97,7 +97,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
 
   } catch (error) {
-    console.error('Middleware error:', error)
+    console.error('Proxy error:', error)
     
     // On error, allow public routes but block protected routes
     if (pathname.startsWith('/admin') || pathname.startsWith('/api/')) {

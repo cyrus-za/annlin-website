@@ -32,31 +32,6 @@
   --church-gold: 45 85% 60%; /* Gold accent */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 25 15% 8%; /* Dark brown background */
-    --foreground: 30 15% 95%; /* Cream text - good contrast on dark */
-    --card: 25 20% 12%; /* Dark brown card */
-    --card-foreground: 30 15% 95%; /* Cream text on dark cards */
-    --popover: 25 20% 12%;
-    --popover-foreground: 30 15% 95%;
-    --primary: 30 65% 55%; /* Amber primary for dark mode */
-    --primary-foreground: 25 15% 8%; /* Dark text on amber */
-    --secondary: 25 25% 20%; /* Dark brown secondary */
-    --secondary-foreground: 30 15% 95%; /* Cream text on dark secondary */
-    --muted: 25 20% 15%; /* Muted dark brown */
-    --muted-foreground: 30 25% 80%; /* Lighter tan text for better contrast */
-    --accent: 25 25% 20%; /* Dark brown accent */
-    --accent-foreground: 30 15% 95%; /* Cream text on dark accent */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 30 15% 95%;
-    --border: 25 20% 20%; /* Dark brown border */
-    --input: 25 20% 15%; /* Dark brown input */
-    --ring: 30 65% 55%; /* Amber focus ring */
-  }
-}
-
-
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -66,4 +41,3 @@ body {
 * {
   border-color: hsl(var(--border));
 }
-

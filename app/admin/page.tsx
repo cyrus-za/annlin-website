@@ -157,7 +157,7 @@ export default async function AdminDashboard() {
                     <p className="text-sm font-medium text-foreground">
                       {activity.title}
                     </p>
-                    <p className="text-xs text-muted-foreground/70 flex items-center">
+                    <p className="text-xs text-muted-foreground flex items-center">
                       <Clock className="mr-1 h-3 w-3" />
                       {activity.time}
                     </p>

@@ -63,7 +63,7 @@ export function hasRole(user: User, role: "ADMIN" | "EDITOR"): boolean {
  * Check if user can edit content
  */
 export function canEdit(user: User): boolean {
-  return hasRole(user, "EDITOR")
+  return hasRole(user, "ADMIN")
 }
 
 /**

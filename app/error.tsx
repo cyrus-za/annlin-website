@@ -38,7 +38,7 @@ export default function Error({ error, reset }: ErrorProps) {
               Ons het 'n onverwagte fout ondervind. Moenie bekommerd wees nie - 
               ons span werk hard om sulke probleme op te los.
             </p>
-            <p className="text-sm text-muted-foreground/70">
+            <p className="text-sm text-muted-foreground">
               Probeer asseblief weer, of keer terug na die tuisblad.
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
         {/* Additional Help Text */}
         <div className="text-center mt-12">
-          <p className="text-muted-foreground/70">
+          <p className="text-muted-foreground">
             As hierdie probleem voortduur, kontak ons asseblief sodat ons dit kan ondersoek.
           </p>
         </div>

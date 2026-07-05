@@ -20,11 +20,15 @@ import { Edit, Trash2, Eye, Users, Mail, Phone } from 'lucide-react'
 interface ServiceGroup {
   id: string
   name: string
+  slug: string
   description: string
+  category: 'DIAKONIE' | 'OTHER'
   contactPerson: string
   contactEmail: string
   contactPhone?: string
   thumbnailUrl?: string
+  bannerUrl?: string
+  displayOrder: number
   isActive: boolean
   createdAt: string
   updatedAt: string
@@ -51,6 +55,7 @@ export default function DiensgroepeListPage() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '10',
+        includeInactive: 'true',
         ...(search && { search }),
       })
       
@@ -144,6 +149,16 @@ export default function DiensgroepeListPage() {
       ),
     },
     {
+      key: 'category' as keyof ServiceGroup,
+      label: 'Kategorie',
+      sortable: true,
+      render: (value: ServiceGroup['category']) => (
+        <Badge variant="outline">
+          {value === 'DIAKONIE' ? 'Diakonie' : 'Ander'}
+        </Badge>
+      ),
+    },
+    {
       key: 'contactPerson' as keyof ServiceGroup,
       label: 'Kontak Persoon',
       sortable: true,
@@ -193,7 +208,7 @@ export default function DiensgroepeListPage() {
       onClick: handleEdit,
     },
     {
-      label: (serviceGroup: ServiceGroup) => serviceGroup.isActive ? 'Deaktiveer' : 'Aktiveer',
+      label: 'Wysig status',
       onClick: handleToggleStatus,
     },
     {
@@ -286,6 +301,9 @@ export default function DiensgroepeListPage() {
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="flex items-center space-x-4">
                   <StatusBadge status={selectedServiceGroup.isActive ? 'Aktief' : 'Onaktief'} />
+                  <Badge variant="outline">
+                    {selectedServiceGroup.category === 'DIAKONIE' ? 'Diakonie' : 'Ander'}
+                  </Badge>
                   <Badge variant="outline">
                     {selectedServiceGroup._count.contactSubmissions} Indienings
                   </Badge>

@@ -111,7 +111,7 @@ export default function NotFound() {
 
         {/* Additional Help Text */}
         <div className="text-center mt-12">
-          <p className="text-muted-foreground/70">
+          <p className="text-muted-foreground">
             As jy dink hierdie 'n fout is, kontak ons asseblief sodat ons dit kan regstel.
           </p>
         </div>

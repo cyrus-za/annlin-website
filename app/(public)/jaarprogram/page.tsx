@@ -44,7 +44,7 @@ export default function JaarprogramPage() {
                 <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-foreground mb-2">Kerkraad Vergaderings</h3>
                   <p className="text-muted-foreground mb-2">Maandeliks</p>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-sm text-muted-foreground">
                     Bestuur en beplanning van kerk aktiwiteite. 
                     Alle kerkraad lede word verwelkom.
                   </p>
@@ -53,7 +53,7 @@ export default function JaarprogramPage() {
                 <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-foreground mb-2">Jeugbediening Vergaderings</h3>
                   <p className="text-muted-foreground mb-2">Weekliks</p>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-sm text-muted-foreground">
                     Beplanning en koördinasie van jeug aktiwiteite. 
                     Aktiewe jeugleiers is welkom.
                   </p>
@@ -62,7 +62,7 @@ export default function JaarprogramPage() {
                 <div className="border-l-4 border-amber-600 pl-6">
                   <h3 className="text-xl font-semibold text-foreground mb-2">Diensgroep Vergaderings</h3>
                   <p className="text-muted-foreground mb-2">Maandeliks</p>
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-sm text-muted-foreground">
                     Koördinasie van verskillende diensgroepe en hul aktiwiteite. 
                     Alle diensgroep leiers is welkom.
                   </p>

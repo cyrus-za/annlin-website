@@ -1,7 +1,4 @@
-import { Resend } from 'resend'
 import { env } from './env'
-
-const resend = new Resend(env.RESEND_API_KEY)
 
 export interface EmailTemplate {
   to: string
@@ -23,20 +20,28 @@ export interface InvitationEmailData {
  */
 export async function sendEmail({ to, subject, html, text }: EmailTemplate): Promise<boolean> {
   try {
-    const response = await resend.emails.send({
-      from: env.FROM_EMAIL,
-      to,
-      subject,
-      html,
-      text,
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: env.FROM_EMAIL,
+        to,
+        subject,
+        html,
+        text,
+      }),
     })
 
-    if (response.error) {
-      console.error('Email sending failed:', response.error)
+    if (!response.ok) {
+      console.error('Email sending failed:', await response.text())
       return false
     }
 
-    console.log('Email sent successfully:', response.data?.id)
+    const data = await response.json()
+    console.log('Email sent successfully:', data.id)
     return true
   } catch (error) {
     console.error('Error sending email:', error)

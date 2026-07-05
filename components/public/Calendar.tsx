@@ -142,14 +142,14 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                       <h4 className="font-medium text-foreground text-sm mb-1">
                         {event.title}
                       </h4>
-                      <div className="flex items-center text-xs text-muted-foreground/70 mb-1">
+                      <div className="flex items-center text-xs text-muted-foreground mb-1">
                         <CalendarIcon className="h-3 w-3 mr-1" />
                         {format(new Date(event.startDate), 'dd MMM', { locale: af })}
                         <Clock className="h-3 w-3 ml-2 mr-1" />
                         {format(new Date(event.startDate), 'HH:mm')}
                       </div>
                       {event.location && (
-                        <div className="flex items-center text-xs text-muted-foreground/70">
+                        <div className="flex items-center text-xs text-muted-foreground">
                           <MapPin className="h-3 w-3 mr-1" />
                           {event.location}
                         </div>
@@ -177,7 +177,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
           ) : (
             <div className="text-center py-4">
               <CalendarIcon className="mx-auto h-8 w-8 text-muted-foreground/50 mb-2" />
-              <p className="text-sm text-muted-foreground/70">Geen komende gebeure nie</p>
+              <p className="text-sm text-muted-foreground">Geen komende gebeure nie</p>
             </div>
           )}
         </CardContent>
@@ -280,7 +280,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                         <h4 className="font-medium text-foreground text-sm mb-1">
                           {event.title}
                         </h4>
-                        <div className="flex items-center text-xs text-muted-foreground/70 mb-2">
+                        <div className="flex items-center text-xs text-muted-foreground mb-2">
                           <Clock className="h-3 w-3 mr-1" />
                           {format(new Date(event.startDate), 'HH:mm')}
                           {event.endDate && (
@@ -288,7 +288,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                           )}
                         </div>
                         {event.location && (
-                          <div className="flex items-center text-xs text-muted-foreground/70 mb-2">
+                          <div className="flex items-center text-xs text-muted-foreground mb-2">
                             <MapPin className="h-3 w-3 mr-1" />
                             {event.location}
                           </div>
@@ -312,7 +312,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                     className="text-center py-8"
                   >
                     <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground/50 mb-2" />
-                    <p className="text-sm text-muted-foreground/70">
+                    <p className="text-sm text-muted-foreground">
                       Geen gebeure vir hierdie datum nie
                     </p>
                   </motion.div>
@@ -422,7 +422,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground/70">
+                  <p className="text-sm text-muted-foreground">
                     Wil jy meer weet? Kontak ons vir meer besonderhede.
                   </p>
                   <Button asChild size="sm">

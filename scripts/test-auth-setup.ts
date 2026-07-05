@@ -6,6 +6,7 @@
  */
 
 import { auth } from '../lib/auth'
+import { prisma } from '../lib/db'
 
 async function testAuthSetup() {
   console.log('🔄 Testing authentication setup...')
@@ -14,18 +15,26 @@ async function testAuthSetup() {
     // Test that auth configuration is valid
     console.log('✅ Auth configuration loaded successfully')
     console.log('📊 Auth baseURL:', auth.options.baseURL)
-    console.log('📊 Email verification enabled:', auth.options.emailVerification?.sendOnSignUp)
+    console.log('📊 Email verification required:', auth.options.emailAndPassword?.requireEmailVerification)
     console.log('📊 Session expires in:', auth.options.session?.expiresIn, 'seconds')
     
     // Test database adapter connection
     console.log('🔄 Testing database adapter...')
-    
-    // This will test if the database connection works
-    await auth.api.listSessions({
-      headers: new Headers(),
-    })
+
+    await prisma.user.count()
     
     console.log('✅ Database adapter connection successful')
+
+    // Anonymous requests should not have a session, but should not fail.
+    const session = await auth.api.getSession({
+      headers: new Headers(),
+    })
+
+    if (session !== null) {
+      throw new Error('Expected anonymous getSession call to return null')
+    }
+
+    console.log('✅ Anonymous session check successful')
     console.log('✅ Authentication setup test passed!')
     
   } catch (error) {

@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-config'
+import { getCurrentUser, requireAuth } from '@/lib/auth-config'
+import { slugify } from '@/lib/slug'
+import { createContentRevision } from '@/lib/services/revisions'
 
 // Validation schema
 const updateServiceGroupSchema = z.object({
   name: z.string().min(1, "Naam is verplig").optional(),
+  slug: z.string().optional(),
   description: z.string().min(1, "Beskrywing is verplig").optional(),
+  category: z.enum(['DIAKONIE', 'OTHER']).optional(),
   contactPerson: z.string().min(1, "Kontak persoon is verplig").optional(),
   contactEmail: z.string().email("Ongeldige e-pos adres").optional(),
   contactPhone: z.string().optional(),
   thumbnailUrl: z.string().optional(),
+  bannerUrl: z.string().optional(),
+  displayOrder: z.number().int().optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -20,7 +26,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { user } = await requireAuth()
+    const user = await getCurrentUser()
     const { id } = params
     
     const result = await safeDatabaseOperation(async () => {
@@ -48,6 +54,10 @@ export async function GET(
       })
       
       if (!serviceGroup) {
+        throw new Error('Diensgroep nie gevind nie')
+      }
+
+      if (!serviceGroup.isActive && user?.role !== 'ADMIN') {
         throw new Error('Diensgroep nie gevind nie')
       }
       
@@ -81,8 +91,7 @@ export async function PUT(
     const { user } = await requireAuth()
     const { id } = params
     
-    // Only admins and editors can update service groups
-    if (!['ADMIN', 'EDITOR'].includes(user.role)) {
+    if (user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Onvoldoende regte om diensgroepe te wysig' },
         { status: 403 }
@@ -91,6 +100,10 @@ export async function PUT(
     
     const body = await request.json()
     const validatedData = updateServiceGroupSchema.parse(body)
+    const data = {
+      ...validatedData,
+      ...(validatedData.slug ? { slug: slugify(validatedData.slug) } : {}),
+    }
     
     const result = await safeDatabaseOperation(async () => {
       // Get current service group for audit log
@@ -105,16 +118,22 @@ export async function PUT(
       // Update service group
       const updatedServiceGroup = await prisma.serviceGroup.update({
         where: { id },
-        data: validatedData,
+        data,
+      })
+      await createContentRevision({
+        entityType: 'ServiceGroup',
+        entityId: id,
+        snapshot: updatedServiceGroup,
+        createdBy: user.id,
       })
       
       // Log the changes
-      const changes = Object.keys(validatedData).reduce((acc, key) => {
-        const typedKey = key as keyof typeof validatedData
-        if (validatedData[typedKey] !== undefined) {
+      const changes = Object.keys(data).reduce((acc, key) => {
+        const typedKey = key as keyof typeof data
+        if (data[typedKey] !== undefined) {
           acc[key] = {
             from: currentServiceGroup[typedKey as keyof typeof currentServiceGroup],
-            to: validatedData[typedKey],
+            to: data[typedKey],
           }
         }
         return acc
@@ -147,7 +166,7 @@ export async function PUT(
       return NextResponse.json(
         { 
           error: 'Validasie fout',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.issues.map((e) => `${e.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       )

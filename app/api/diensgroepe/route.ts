@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-config'
+import { getCurrentUser, requireAuth } from '@/lib/auth-config'
+import { slugify } from '@/lib/slug'
+import { createContentRevision } from '@/lib/services/revisions'
 
 // Validation schemas
 const createServiceGroupSchema = z.object({
   name: z.string().min(1, "Naam is verplig"),
+  slug: z.string().optional(),
   description: z.string().min(1, "Beskrywing is verplig"),
+  category: z.enum(['DIAKONIE', 'OTHER']).default('OTHER'),
   contactPerson: z.string().min(1, "Kontak persoon is verplig"),
   contactEmail: z.string().email("Ongeldige e-pos adres"),
   contactPhone: z.string().optional(),
   thumbnailUrl: z.string().optional(),
+  bannerUrl: z.string().optional(),
+  displayOrder: z.number().int().default(0),
   isActive: z.boolean().default(true),
 })
 
@@ -19,7 +25,7 @@ const updateServiceGroupSchema = createServiceGroupSchema.partial()
 // GET /api/diensgroepe - List service groups
 export async function GET(request: NextRequest) {
   try {
-    const { user } = await requireAuth()
+    const user = await getCurrentUser()
     const { searchParams } = new URL(request.url)
     
     // Parse query parameters
@@ -27,6 +33,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const search = searchParams.get('search') || ''
     const isActive = searchParams.get('isActive')
+    const category = searchParams.get('category')
+    const includeInactive = searchParams.get('includeInactive') === 'true'
     const sortBy = searchParams.get('sortBy') || 'createdAt'
     const sortOrder = searchParams.get('sortOrder') || 'desc'
     
@@ -45,15 +53,25 @@ export async function GET(request: NextRequest) {
     
     if (isActive !== null) {
       where.isActive = isActive === 'true'
+    } else if (!includeInactive || user?.role !== 'ADMIN') {
+      where.isActive = true
     }
-    
+
+    if (category === 'DIAKONIE' || category === 'OTHER') {
+      where.category = category
+    }
+    const orderBy =
+      sortBy === 'displayOrder'
+        ? [{ displayOrder: sortOrder as 'asc' | 'desc' }, { name: 'asc' as const }]
+        : { [sortBy]: sortOrder }
+
     const result = await safeDatabaseOperation(async () => {
       const [serviceGroups, total] = await Promise.all([
         prisma.serviceGroup.findMany({
           where,
           skip,
           take: limit,
-          orderBy: { [sortBy]: sortOrder },
+          orderBy,
           include: {
             _count: {
               select: {
@@ -111,8 +129,18 @@ export async function POST(request: NextRequest) {
     const validatedData = createServiceGroupSchema.parse(body)
     
     const result = await safeDatabaseOperation(async () => {
+      const slug = slugify(validatedData.slug || validatedData.name)
       const serviceGroup = await prisma.serviceGroup.create({
-        data: validatedData,
+        data: {
+          ...validatedData,
+          slug,
+        },
+      })
+      await createContentRevision({
+        entityType: 'ServiceGroup',
+        entityId: serviceGroup.id,
+        snapshot: serviceGroup,
+        createdBy: user.id,
       })
       
       // Log the action
@@ -122,7 +150,7 @@ export async function POST(request: NextRequest) {
           action: 'CREATE',
           entityType: 'ServiceGroup',
           entityId: serviceGroup.id,
-          changes: validatedData,
+          changes: serviceGroup,
         },
       })
       
@@ -143,7 +171,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validasie fout',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.issues.map((e) => `${e.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       )

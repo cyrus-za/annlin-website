@@ -66,7 +66,7 @@ export default function ContactDetailsPage() {
                           >
                             012 567 1492
                           </a>
-                          <p className="text-xs text-muted-foreground/70">Kerkkantoor</p>
+                          <p className="text-xs text-muted-foreground">Kerkkantoor</p>
                         </div>
                         <div>
                           <a 
@@ -75,7 +75,7 @@ export default function ContactDetailsPage() {
                           >
                             079 162 3453
                           </a>
-                          <p className="text-xs text-muted-foreground/70">Selfoon</p>
+                          <p className="text-xs text-muted-foreground">Selfoon</p>
                         </div>
                       </div>
                     </div>
@@ -148,13 +148,13 @@ export default function ContactDetailsPage() {
                     <div className="border-l-4 border-amber-600 pl-4">
                       <h4 className="font-medium text-foreground">Sondag Oggend</h4>
                       <p className="text-muted-foreground">08:30 - 09:30</p>
-                      <p className="text-sm text-muted-foreground/70">Kinderkerk beskikbaar</p>
+                      <p className="text-sm text-muted-foreground">Kinderkerk beskikbaar</p>
                     </div>
                     
                     <div className="border-l-4 border-amber-600 pl-4">
                       <h4 className="font-medium text-foreground">Sondag Aand</h4>
                       <p className="text-muted-foreground">18:30 - 19:30</p>
-                      <p className="text-sm text-muted-foreground/70">Informele atmosfeer</p>
+                      <p className="text-sm text-muted-foreground">Informele atmosfeer</p>
                     </div>
                     
                   </div>
@@ -219,7 +219,7 @@ export default function ContactDetailsPage() {
                     <div>
                       <h4 className="font-medium text-foreground">Predikant</h4>
                       <p className="text-muted-foreground">Ds. Pieter Kurpershoek</p>
-                      <p className="text-sm text-muted-foreground/70">Kontak via kerkkantoor</p>
+                      <p className="text-sm text-muted-foreground">Kontak via kerkkantoor</p>
                     </div>
                     
                     <div>

@@ -6,7 +6,7 @@
  * Usage: npm run seed
  */
 
-import { hash } from 'bcryptjs'
+import { hashPassword } from 'better-auth/crypto'
 import { 
   prisma, 
   checkDatabaseConnection, 
@@ -41,13 +41,15 @@ async function seedDatabase(options: SeedOptions = {}) {
     console.log('\n🔄 Checking migration status...')
     const migrationStatus = await checkMigrationStatus()
     
-    if (migrationStatus.error) {
+    if (migrationStatus.error && !migrationStatus.error.includes('Database not initialized')) {
       console.log(`❌ Migration check failed: ${migrationStatus.error}`)
       console.log('💡 Please run: npx prisma db push')
       process.exit(1)
     }
     
-    if (!migrationStatus.isUpToDate) {
+    if (migrationStatus.error?.includes('Database not initialized')) {
+      console.log('ℹ️  No Prisma migrations table found; continuing after prisma db push sync')
+    } else if (!migrationStatus.isUpToDate) {
       console.log('⚠️  Pending migrations found. Please run: npx prisma db push')
       if (migrationStatus.pendingMigrations) {
         migrationStatus.pendingMigrations.forEach(migration => {
@@ -70,6 +72,11 @@ async function seedDatabase(options: SeedOptions = {}) {
     
     // Seed reading material categories
     await seedReadingMaterialCategories(skipExisting, verbose)
+
+    // Seed starter website content
+    await seedServiceGroups(skipExisting, verbose)
+    await seedContentPages(skipExisting, verbose)
+    await seedSermonVideos(skipExisting, verbose)
     
     console.log('\n' + '='.repeat(50))
     console.log('✅ Database seeding completed successfully!')
@@ -79,7 +86,7 @@ async function seedDatabase(options: SeedOptions = {}) {
     if (env.ADMIN_EMAIL && env.ADMIN_PASSWORD) {
       console.log('\n📋 Admin Credentials:')
       console.log(`   Email: ${env.ADMIN_EMAIL}`)
-      console.log(`   Password: ${env.ADMIN_PASSWORD}`)
+      console.log('   Password: configured in .env.local')
       console.log('   ⚠️  Please change the admin password after first login')
     }
     
@@ -105,38 +112,65 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
     const existingUser = await prisma.user.findUnique({
       where: { email: env.ADMIN_EMAIL }
     })
+
+    const legacyLocalAdmin = await prisma.user.findUnique({
+      where: { email: 'admin@localhost.local' },
+    })
     
     if (existingUser) {
       if (skipExisting) {
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            name: 'Pieter',
+            role: 'ADMIN',
+            emailVerified: true,
+          },
+        })
+        await upsertCredentialAccount(existingUser.id, env.ADMIN_PASSWORD!)
         if (verbose) {
           console.log(`   Admin user already exists: ${env.ADMIN_EMAIL}`)
         }
         return { created: false, user: existingUser }
       } else {
         // Update existing user
-        const hashedPassword = await hash(env.ADMIN_PASSWORD!, 12)
         const updatedUser = await prisma.user.update({
           where: { email: env.ADMIN_EMAIL },
           data: {
-            name: 'Admin',
+            name: 'Pieter',
             role: 'ADMIN',
             emailVerified: true,
           }
         })
+        await upsertCredentialAccount(updatedUser.id, env.ADMIN_PASSWORD!)
         return { created: false, updated: true, user: updatedUser }
       }
     }
+
+    if (legacyLocalAdmin) {
+      const updatedUser = await prisma.user.update({
+        where: { id: legacyLocalAdmin.id },
+        data: {
+          email: env.ADMIN_EMAIL!,
+          name: 'Pieter',
+          role: 'ADMIN',
+          emailVerified: true,
+        },
+      })
+      await upsertCredentialAccount(updatedUser.id, env.ADMIN_PASSWORD!)
+      return { created: false, updated: true, user: updatedUser }
+    }
     
     // Create new admin user
-    const hashedPassword = await hash(env.ADMIN_PASSWORD!, 12)
     const newUser = await prisma.user.create({
       data: {
         email: env.ADMIN_EMAIL!,
-        name: 'Admin',
+        name: 'Pieter',
         role: 'ADMIN',
         emailVerified: true,
       }
     })
+    await upsertCredentialAccount(newUser.id, env.ADMIN_PASSWORD!)
     
     return { created: true, user: newUser }
   }, 'Admin user seeding')
@@ -153,6 +187,28 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
     console.log(`❌ Failed to create admin user: ${result.error}`)
     throw new Error(result.error)
   }
+}
+
+async function upsertCredentialAccount(userId: string, password: string) {
+  const passwordHash = await hashPassword(password)
+
+  await prisma.account.upsert({
+    where: {
+      providerId_accountId: {
+        providerId: 'credential',
+        accountId: userId,
+      },
+    },
+    update: {
+      password: passwordHash,
+    },
+    create: {
+      userId,
+      providerId: 'credential',
+      accountId: userId,
+      password: passwordHash,
+    },
+  })
 }
 
 async function seedArticleCategories(skipExisting: boolean, verbose: boolean) {
@@ -361,6 +417,256 @@ async function seedReadingMaterialCategories(skipExisting: boolean, verbose: boo
       }
     } else {
       console.log(`   ❌ Failed: ${category.name} - ${result.error}`)
+    }
+  }
+}
+
+async function seedServiceGroups(skipExisting: boolean, verbose: boolean) {
+  console.log('\n🤝 Seeding diensgroepe...')
+
+  const serviceGroups = [
+    {
+      name: 'Diakonie',
+      slug: 'diakonie',
+      description: 'Ondersteuning en praktiese hulp aan lidmate en mense in nood.',
+      category: 'DIAKONIE' as const,
+      contactPerson: 'Diakonie',
+      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
+      contactPhone: null,
+      thumbnailUrl: null,
+      bannerUrl: null,
+      displayOrder: 10,
+      isActive: true,
+    },
+    {
+      name: 'Barmhartigheid',
+      slug: 'barmhartigheid',
+      description: 'Koordinering van barmhartigheidswerk in die gemeente en gemeenskap.',
+      category: 'DIAKONIE' as const,
+      contactPerson: 'Diakonie',
+      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
+      contactPhone: null,
+      thumbnailUrl: null,
+      bannerUrl: null,
+      displayOrder: 20,
+      isActive: true,
+    },
+    {
+      name: 'Jeug',
+      slug: 'jeug',
+      description: 'Geloofsvorming, aktiwiteite en betrokkenheid vir jong lidmate.',
+      category: 'OTHER' as const,
+      contactPerson: 'Jeugleiers',
+      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
+      contactPhone: null,
+      thumbnailUrl: null,
+      bannerUrl: null,
+      displayOrder: 30,
+      isActive: true,
+    },
+    {
+      name: 'Susters',
+      slug: 'susters',
+      description: 'Gemeenskap, dienswerk en ondersteuning onder die susters van die gemeente.',
+      category: 'OTHER' as const,
+      contactPerson: 'Sustersbestuur',
+      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
+      contactPhone: null,
+      thumbnailUrl: null,
+      bannerUrl: null,
+      displayOrder: 40,
+      isActive: true,
+    },
+    {
+      name: 'Musiekbediening',
+      slug: 'musiekbediening',
+      description: 'Begeleiding en ondersteuning van die gemeente se sang in eredienste.',
+      category: 'OTHER' as const,
+      contactPerson: 'Musiekkoördineerder',
+      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
+      contactPhone: null,
+      thumbnailUrl: null,
+      bannerUrl: null,
+      displayOrder: 50,
+      isActive: true,
+    },
+  ]
+
+  for (const serviceGroup of serviceGroups) {
+    const result = await safeDatabaseOperation(async () => {
+      const existing = await prisma.serviceGroup.findUnique({
+        where: { slug: serviceGroup.slug },
+      })
+
+      if (existing) {
+        if (skipExisting) {
+          return { created: false, serviceGroup: existing }
+        }
+
+        const updated = await prisma.serviceGroup.update({
+          where: { slug: serviceGroup.slug },
+          data: serviceGroup,
+        })
+        return { created: false, updated: true, serviceGroup: updated }
+      }
+
+      const newServiceGroup = await prisma.serviceGroup.create({
+        data: serviceGroup,
+      })
+
+      return { created: true, serviceGroup: newServiceGroup }
+    }, `Service group: ${serviceGroup.name}`)
+
+    if (result.success) {
+      if (result.data.created) {
+        console.log(`   ✅ Created: ${serviceGroup.name}`)
+      } else if (result.data.updated) {
+        console.log(`   ✅ Updated: ${serviceGroup.name}`)
+      } else if (verbose) {
+        console.log(`   ℹ️  Exists: ${serviceGroup.name}`)
+      }
+    } else {
+      console.log(`   ❌ Failed: ${serviceGroup.name} - ${result.error}`)
+    }
+  }
+}
+
+async function seedContentPages(skipExisting: boolean, verbose: boolean) {
+  console.log('\n📄 Seeding content pages...')
+
+  const pages = [
+    {
+      slug: 'tuis',
+      title: 'Gereformeerde Kerk Annlin',
+      description: 'Welkom by die Gereformeerde Kerk Annlin.',
+      sections: {
+        hero: {
+          eyebrow: 'Gereformeerde Kerk Annlin',
+          title: 'Tot eer van God, tot opbou van die gemeente',
+          body: 'Ons is ’n Gereformeerde gemeente in Annlin, Pretoria.',
+        },
+      },
+      status: 'PUBLISHED' as const,
+      publishedAt: new Date(),
+    },
+    {
+      slug: 'oor-annlin-gemeente',
+      title: 'Oor Annlin Gemeente',
+      description: 'Lees meer oor ons gemeente, leierskap en waardes.',
+      sections: {
+        leadership: [
+          {
+            title: 'Ds. Pieter Kurpershoek',
+            subtitle: 'Predikant',
+            body: 'Ons predikant lei die gemeente in Woordverkondiging, toerusting en pastorale sorg.',
+          },
+        ],
+      },
+      status: 'PUBLISHED' as const,
+      publishedAt: new Date(),
+    },
+  ]
+
+  for (const page of pages) {
+    const result = await safeDatabaseOperation(async () => {
+      const existing = await prisma.contentPage.findUnique({
+        where: { slug: page.slug },
+      })
+
+      if (existing) {
+        if (skipExisting) {
+          return { created: false, page: existing }
+        }
+
+        const updated = await prisma.contentPage.update({
+          where: { slug: page.slug },
+          data: page,
+        })
+        return { created: false, updated: true, page: updated }
+      }
+
+      const newPage = await prisma.contentPage.create({
+        data: page,
+      })
+
+      return { created: true, page: newPage }
+    }, `Content page: ${page.title}`)
+
+    if (result.success) {
+      if (result.data.created) {
+        console.log(`   ✅ Created: ${page.title}`)
+      } else if (result.data.updated) {
+        console.log(`   ✅ Updated: ${page.title}`)
+      } else if (verbose) {
+        console.log(`   ℹ️  Exists: ${page.title}`)
+      }
+    } else {
+      console.log(`   ❌ Failed: ${page.title} - ${result.error}`)
+    }
+  }
+}
+
+async function seedSermonVideos(skipExisting: boolean, verbose: boolean) {
+  console.log('\n🎥 Seeding uitsendings...')
+
+  const videos = [
+    {
+      title: 'YouTube-kanaal',
+      preachedAt: null,
+      preacher: null,
+      description: 'Besoek die gemeente se YouTube-kanaal vir onlangse uitsendings.',
+      videoUrl: 'https://www.youtube.com/@gkannlin',
+      source: 'YOUTUBE' as const,
+      isFeatured: true,
+      status: 'PUBLISHED' as const,
+    },
+    {
+      title: 'Kerkdienstgemist',
+      preachedAt: null,
+      preacher: null,
+      description: 'Luister na eredienste op Kerkdienstgemist.',
+      videoUrl: 'https://kerkdienstgemist.nl/stations/218-Gereformeerde-Kerk-Annlin',
+      source: 'KERKDIENSTGEMIST' as const,
+      isFeatured: false,
+      status: 'PUBLISHED' as const,
+    },
+  ]
+
+  for (const video of videos) {
+    const result = await safeDatabaseOperation(async () => {
+      const existing = await prisma.sermonVideo.findFirst({
+        where: { videoUrl: video.videoUrl },
+      })
+
+      if (existing) {
+        if (skipExisting) {
+          return { created: false, video: existing }
+        }
+
+        const updated = await prisma.sermonVideo.update({
+          where: { id: existing.id },
+          data: video,
+        })
+        return { created: false, updated: true, video: updated }
+      }
+
+      const newVideo = await prisma.sermonVideo.create({
+        data: video,
+      })
+
+      return { created: true, video: newVideo }
+    }, `Sermon video: ${video.title}`)
+
+    if (result.success) {
+      if (result.data.created) {
+        console.log(`   ✅ Created: ${video.title}`)
+      } else if (result.data.updated) {
+        console.log(`   ✅ Updated: ${video.title}`)
+      } else if (verbose) {
+        console.log(`   ℹ️  Exists: ${video.title}`)
+      }
+    } else {
+      console.log(`   ❌ Failed: ${video.title} - ${result.error}`)
     }
   }
 }

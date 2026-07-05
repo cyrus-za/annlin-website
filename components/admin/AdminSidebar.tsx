@@ -15,6 +15,8 @@ import {
   UserPlus,
   Settings,
   BarChart3,
+  Video,
+  KeyRound,
   Menu,
   X
 } from 'lucide-react'
@@ -59,6 +61,11 @@ const navigationItems: NavigationItem[] = [
     icon: BookOpen,
   },
   {
+    name: 'Uitsendings',
+    href: '/admin/uitsendings',
+    icon: Video,
+  },
+  {
     name: 'Kontak Vorms',
     href: '/admin/contact',
     icon: Mail,
@@ -80,6 +87,11 @@ const navigationItems: NavigationItem[] = [
     href: '/admin/settings',
     icon: Settings,
     adminOnly: true,
+  },
+  {
+    name: 'Wagwoord',
+    href: '/admin/profiel/wagwoord',
+    icon: KeyRound,
   },
 ]
 
