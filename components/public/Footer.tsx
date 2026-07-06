@@ -31,7 +31,7 @@ export function Footer() {
                 <Facebook className="h-5 w-5" />
               </a>
               <a 
-                href="https://kerkdienstgemist.nl/streams/1029138" 
+                href="https://www.youtube.com/@gereformeerdekerkpretoria-813" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-amber-300 hover:text-white transition-colors"
