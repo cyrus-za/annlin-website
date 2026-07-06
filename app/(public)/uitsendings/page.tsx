@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Onlangse video uitsendings van eredienste by Gereformeerde Kerk Pretoria-Annlin.',
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60 * 30
 
 const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@gereformeerdekerkpretoria-813'
 const YOUTUBE_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC4NmYnuAd0293vFhf1i-tpg'
@@ -34,7 +34,8 @@ function decodeXmlEntities(value: string) {
 
 function readXmlTag(entry: string, tagName: string) {
   const match = entry.match(new RegExp(`<${tagName}>([\\s\\S]*?)</${tagName}>`))
-  return match ? decodeXmlEntities(match[1].trim()) : null
+  const value = match?.[1]
+  return value ? decodeXmlEntities(value.trim()) : null
 }
 
 async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
@@ -51,7 +52,7 @@ async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
     return [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
       .slice(0, 3)
       .map((match) => {
-        const entry = match[1]
+        const entry = match[1] ?? ''
         const id = readXmlTag(entry, 'yt:videoId') ?? ''
         const published = readXmlTag(entry, 'published')
 
