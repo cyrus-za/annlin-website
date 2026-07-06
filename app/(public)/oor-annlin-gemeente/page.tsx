@@ -473,14 +473,14 @@ export default function AboutPage() {
               Ons nooi jou uit om deel te word van ons lewende gemeente waar geloof, 
               hoop en liefde saamkom.
             </p>
-            <div className="space-x-4">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50">
                 <Link href="/jaarprogram">
                   <Calendar className="mr-2 h-5 w-5" />
                   Besoek 'n Erediens
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-amber-800">
+              <Button asChild variant="outline" size="lg" className="border-white bg-transparent text-white hover:bg-white hover:text-amber-800">
                 <Link href="/kontak">
                   Kontak Ons
                 </Link>

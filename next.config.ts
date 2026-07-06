@@ -126,8 +126,21 @@ const nextConfig: NextConfig = {
       'evangelisasie-eie-omgewing',
     ]
 
+    const unavailableAdminSlugs = [
+      'contact',
+      'users',
+      'users/invite',
+      'statistics',
+      'settings',
+    ]
+
     return [
       { source: '/homepagenew', destination: '/', permanent: true },
+      ...unavailableAdminSlugs.map((slug) => ({
+        source: `/admin/${slug}`,
+        destination: '/admin',
+        permanent: false,
+      })),
       {
         source: '/onlangse-video-uitsendings-van-preke',
         destination: '/uitsendings',

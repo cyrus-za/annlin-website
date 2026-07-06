@@ -2,13 +2,13 @@ import { requireAuth } from '@/lib/auth-config'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { 
-  Users, 
-  Calendar, 
-  Newspaper, 
-  BookOpen, 
-  Mail, 
-  UserPlus,
+import {
+  Users,
+  Calendar,
+  Newspaper,
+  BookOpen,
+  Mail,
+  Video,
   TrendingUp,
   Clock
 } from 'lucide-react'
@@ -111,7 +111,7 @@ export default async function AdminDashboard() {
             <Button asChild>
               <Link href="/admin/nuus/new">
                 <Newspaper className="mr-2 h-4 w-4" />
-                Skep Nuwe Artikel
+                Skep Artikel
               </Link>
             </Button>
             <Button variant="outline" asChild>
@@ -126,14 +126,18 @@ export default async function AdminDashboard() {
                 Voeg Diensgroep By
               </Link>
             </Button>
-            {user.role === 'ADMIN' && (
-              <Button variant="outline" asChild>
-                <Link href="/admin/users/invite">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Nooi Gebruiker
-                </Link>
-              </Button>
-            )}
+            <Button variant="outline" asChild>
+              <Link href="/admin/leesstof/new">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Voeg Leesstof By
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/admin/uitsendings/new">
+                <Video className="mr-2 h-4 w-4" />
+                Voeg Uitsending By
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -166,7 +170,7 @@ export default async function AdminDashboard() {
               ))}
             </div>
             <div className="mt-4">
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" disabled>
                 Bekyk Alle Aktiwiteit
               </Button>
             </div>
@@ -213,7 +217,7 @@ export default async function AdminDashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" disabled>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Bekyk Statistieke
               </Button>
