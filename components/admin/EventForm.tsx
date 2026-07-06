@@ -15,6 +15,8 @@ import { format } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 
+const linkSchema = z.string().url("Ongeldige URL").or(z.string().regex(/^\/[^\s]*$/, "Ongeldige skakel"))
+
 // Validation schema
 const eventSchema = z.object({
   title: z.string().min(1, "Titel is verplig").max(200, "Titel mag nie langer as 200 karakters wees nie"),
@@ -27,7 +29,7 @@ const eventSchema = z.object({
   categoryId: z.string().min(1, "Kategorie is verplig"),
   isRecurring: z.boolean().default(false),
   recurringPattern: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']).optional(),
-  sermonUrl: z.string().url("Ongeldige URL").optional().or(z.literal("")),
+  sermonUrl: linkSchema.optional().or(z.literal("")),
 })
 
 type EventFormData = z.infer<typeof eventSchema>
@@ -442,8 +444,8 @@ export function EventForm({
                         <div className="relative">
                           <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                           <Input
-                            type="url"
-                            placeholder="https://example.com/preek"
+                            type="text"
+                            placeholder="/uitsendings"
                             className="pl-10"
                             {...field}
                           />

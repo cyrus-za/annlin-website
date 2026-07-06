@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,6 +33,10 @@ import {
 } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
+
+function isInternalHref(href: string) {
+  return href.startsWith('/')
+}
 
 interface Event {
   id: string
@@ -450,17 +455,23 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
               {selectedEvent.sermonUrl && (
                 <div className="pt-4 border-t border-gray-200">
-                  <h4 className="font-medium text-foreground mb-3">Preek Opname</h4>
+                  <h4 className="font-medium text-foreground mb-3">Uitsending</h4>
                   <Button asChild variant="outline">
-                    <a 
-                      href={selectedEvent.sermonUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Luister na Preek
-                    </a>
+                    {isInternalHref(selectedEvent.sermonUrl) ? (
+                      <Link href={selectedEvent.sermonUrl} className="inline-flex items-center">
+                        Gaan na Uitsendings
+                      </Link>
+                    ) : (
+                      <a
+                        href={selectedEvent.sermonUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center"
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Luister na Preek
+                      </a>
+                    )}
                   </Button>
                 </div>
               )}
@@ -630,13 +641,19 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
                       </Button>
                       {event.sermonUrl && (
                         <Button asChild size="sm" variant="ghost">
-                          <a 
-                            href={event.sermonUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
+                          {isInternalHref(event.sermonUrl) ? (
+                            <Link href={event.sermonUrl}>
+                              <ExternalLink className="h-4 w-4" />
+                            </Link>
+                          ) : (
+                            <a
+                              href={event.sermonUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
                         </Button>
                       )}
                     </div>

@@ -140,6 +140,14 @@ const singletonPageSlugs = new Set([
   'onlangse-video-uitsendings-van-preke',
 ])
 
+const KERKDIENSTGEMIST_STATION_URL =
+  'https://kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin'
+
+const KERKDIENSTGEMIST_STATION_PATTERN =
+  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/gi
+const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
+  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/i
+
 function replacementRouteForLegacySlug(slug: string) {
   if (serviceGroupSlugs.has(slug)) return '/diensgroepe'
   if (readingSlugs.has(slug)) return '/leesstof'
@@ -148,6 +156,21 @@ function replacementRouteForLegacySlug(slug: string) {
   if (slug === 'onlangse-video-uitsendings-van-preke') return '/uitsendings'
   if (slug === 'homepagenew' || slug === '') return '/'
   return null
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function legacySiteHostPattern() {
+  const baseUrl = process.env.WORDPRESS_BASE_URL
+  if (!baseUrl) return null
+
+  try {
+    return escapeRegExp(new URL(baseUrl).host.replace(/^www\./, ''))
+  } catch {
+    return null
+  }
 }
 
 function decodeEntities(value: string) {
@@ -175,16 +198,46 @@ function decodeEntities(value: string) {
 }
 
 function replaceLegacySiteReferences(value: string) {
+  const hostPattern = legacySiteHostPattern()
+  if (!hostPattern) return value
+
+  const uploadUrlPattern = new RegExp(
+    `\\bhttps?:\\/\\/(?:www\\.)?${hostPattern}\\/wp-content\\/uploads\\/[^\\s"')\\]]+`,
+    'gi'
+  )
+  const pageUrlPattern = new RegExp(
+    `\\bhttps?:\\/\\/(?:www\\.)?${hostPattern}\\/([a-z0-9-]+)\\/?`,
+    'gi'
+  )
+  const barePageUrlPattern = new RegExp(
+    `\\bwww\\.${hostPattern}\\/([a-z0-9-]+)\\/?`,
+    'gi'
+  )
+
   return value
-    .replace(/\bhttps?:\/\/(?:www\.)?annlin\.co\.za\/wp-content\/uploads\/[^\s"')\]]+/gi, '')
-    .replace(
-      /\bhttps?:\/\/(?:www\.)?annlin\.co\.za\/([a-z0-9-]+)\/?/gi,
-      (match, slug: string) => replacementRouteForLegacySlug(slug) ?? match
-    )
-    .replace(/\bwww\.annlin\.co\.za\/([a-z0-9-]+)\/?/gi, (match, slug: string) => {
+    .replace(uploadUrlPattern, '')
+    .replace(pageUrlPattern, (match, slug: string) => replacementRouteForLegacySlug(slug) ?? match)
+    .replace(barePageUrlPattern, (match, slug: string) => {
       const route = replacementRouteForLegacySlug(slug)
       return route ?? match
     })
+}
+
+function hasKerkdienstgemistStationLink(value: string) {
+  return KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(value)
+}
+
+function normalizeEventDescription(value: string) {
+  return value
+    .replace(
+      /(?:\s*Vir die klankuitsending,?\s*klik op die volgende skakel:\s*)?\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/gi,
+      ''
+    )
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\s+([.,;:])/g, '$1')
+    .trim()
 }
 
 function getWordPressBaseUrl() {
@@ -456,7 +509,13 @@ async function main() {
     if (Number.isNaN(startDate.getTime())) continue
 
     const endDate = event.end_date ? new Date(event.end_date) : undefined
-    const description = htmlToText(event.description || event.excerpt || '')
+    const rawDescription = htmlToText(event.description || event.excerpt || '')
+    const description = normalizeEventDescription(rawDescription)
+    const sermonUrl = hasKerkdienstgemistStationLink(rawDescription)
+      ? '/uitsendings'
+      : event.url === KERKDIENSTGEMIST_STATION_URL
+        ? '/uitsendings'
+        : null
 
     await prisma.event.upsert({
       where: { id: `wp-event-${event.id}` },
@@ -467,6 +526,7 @@ async function main() {
         endDate: endDate && !Number.isNaN(endDate.getTime()) ? endDate : undefined,
         location: locationForEvent(event),
         categoryId: eventCategory.id,
+        sermonUrl,
       },
       create: {
         id: `wp-event-${event.id}`,
@@ -476,6 +536,7 @@ async function main() {
         endDate: endDate && !Number.isNaN(endDate.getTime()) ? endDate : undefined,
         location: locationForEvent(event),
         categoryId: eventCategory.id,
+        sermonUrl,
       },
     })
     events++

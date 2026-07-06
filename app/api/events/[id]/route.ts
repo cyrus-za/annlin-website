@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-config'
 
+const linkSchema = z.string().url("Ongeldige URL").or(z.string().regex(/^\/[^\s]*$/, "Ongeldige skakel"))
+
 // Validation schema
 const updateEventSchema = z.object({
   title: z.string().min(1, "Titel is verplig").max(200, "Titel mag nie langer as 200 karakters wees nie").optional(),
@@ -13,7 +15,7 @@ const updateEventSchema = z.object({
   categoryId: z.string().min(1, "Kategorie is verplig").optional(),
   isRecurring: z.boolean().optional(),
   recurringPattern: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']).optional(),
-  sermonUrl: z.string().url("Ongeldige URL").optional().or(z.literal("")),
+  sermonUrl: linkSchema.optional().or(z.literal("")),
 })
 
 // GET /api/events/[id] - Get single event
@@ -259,4 +261,3 @@ export async function DELETE(
     )
   }
 }
-
