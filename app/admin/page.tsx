@@ -9,7 +9,6 @@ import {
   Newspaper,
   BookOpen,
   Mail,
-  Video,
 } from 'lucide-react'
 
 export default async function AdminDashboard() {
@@ -146,12 +145,6 @@ export default async function AdminDashboard() {
               <Link href="/admin/leesstof/new">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Voeg Leesstof By
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/admin/uitsendings/new">
-                <Video className="mr-2 h-4 w-4" />
-                Voeg Uitsending By
               </Link>
             </Button>
           </div>

@@ -1,6 +1,6 @@
 "use server"
 
-import { ArticleStatus, ContentStatus, ReadingMaterialFileType, SermonVideoSource } from '@prisma/client'
+import { ArticleStatus, ReadingMaterialFileType } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAuth } from '@/lib/auth-config'
@@ -184,75 +184,4 @@ export async function deleteReadingMaterial(formData: FormData) {
 
   revalidatePath('/leesstof')
   revalidatePath('/admin/leesstof')
-}
-
-export async function saveSermonVideo(formData: FormData) {
-  const user = await requireAdmin()
-  const id = text(formData, 'id')
-  const title = text(formData, 'title')
-  const videoUrl = text(formData, 'videoUrl')
-  const preachedAt = text(formData, 'preachedAt')
-  const sourceValue = text(formData, 'source')
-  const statusValue = text(formData, 'status')
-  const source = sourceValue in SermonVideoSource ? sourceValue as SermonVideoSource : SermonVideoSource.YOUTUBE
-  const status = statusValue in ContentStatus ? statusValue as ContentStatus : ContentStatus.PUBLISHED
-
-  if (!title || !videoUrl) {
-    throw new Error('Titel en video URL is verplig')
-  }
-
-  const data = {
-    title,
-    videoUrl,
-    preachedAt: preachedAt ? new Date(preachedAt) : null,
-    preacher: optionalText(formData, 'preacher'),
-    description: optionalText(formData, 'description'),
-    source,
-    status,
-    isFeatured: formData.get('isFeatured') === 'on',
-  }
-
-  const video = id
-    ? await prisma.sermonVideo.update({ where: { id }, data })
-    : await prisma.sermonVideo.create({ data })
-
-  await createContentRevision({
-    entityType: 'SermonVideo',
-    entityId: video.id,
-    snapshot: video,
-    createdBy: user.id,
-  })
-
-  await prisma.auditLog.create({
-    data: {
-      userId: user.id,
-      action: id ? 'UPDATE' : 'CREATE',
-      entityType: 'SermonVideo',
-      entityId: video.id,
-      changes: video,
-    },
-  })
-
-  revalidatePath('/uitsendings')
-  revalidatePath('/admin/uitsendings')
-  redirect('/admin/uitsendings')
-}
-
-export async function deleteSermonVideo(formData: FormData) {
-  const user = await requireAdmin()
-  const id = text(formData, 'id')
-  const video = await prisma.sermonVideo.delete({ where: { id } })
-
-  await prisma.auditLog.create({
-    data: {
-      userId: user.id,
-      action: 'DELETE',
-      entityType: 'SermonVideo',
-      entityId: id,
-      changes: { deleted: video },
-    },
-  })
-
-  revalidatePath('/uitsendings')
-  revalidatePath('/admin/uitsendings')
 }

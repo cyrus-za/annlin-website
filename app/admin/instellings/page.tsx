@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BookOpen, Calendar, KeyRound, Newspaper, Users, Video } from 'lucide-react'
+import { BookOpen, Calendar, KeyRound, Newspaper, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -27,12 +27,6 @@ const settingsLinks = [
     description: 'Bestuur dokumente, argiefmateriaal en skakels.',
     href: '/admin/leesstof',
     icon: BookOpen,
-  },
-  {
-    title: 'Uitsendings',
-    description: 'Bestuur handmatige uitsendings bo en behalwe YouTube/Kerkdienstgemist.',
-    href: '/admin/uitsendings',
-    icon: Video,
   },
   {
     title: 'Wagwoord',

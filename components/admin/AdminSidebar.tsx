@@ -12,7 +12,6 @@ import {
   Calendar,
   Newspaper,
   BookOpen,
-  Video,
   KeyRound,
   Menu,
   X
@@ -56,11 +55,6 @@ const navigationItems: NavigationItem[] = [
     name: 'Leesstof',
     href: '/admin/leesstof',
     icon: BookOpen,
-  },
-  {
-    name: 'Uitsendings',
-    href: '/admin/uitsendings',
-    icon: Video,
   },
   {
     name: 'Wagwoord',
