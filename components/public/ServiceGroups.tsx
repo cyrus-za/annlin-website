@@ -258,16 +258,20 @@ function ServiceGroupRail({
                   <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4 text-amber-700" />
-                  <span className="truncate">{group.contactPerson}</span>
+                <div className="mt-4 flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 shrink-0 text-amber-700" />
+                  <span className="min-w-0 truncate">{group.contactPerson}</span>
                 </div>
 
                 <div className="mt-auto pt-5">
-                  <Button asChild variant="ghost" className="w-full justify-between px-0 text-amber-900 hover:text-amber-950">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="min-h-11 w-full justify-between gap-3 px-3 text-amber-900 hover:text-amber-950"
+                  >
                     <Link href={`/diensgroepe/${group.slug}`}>
-                      Meer oor {group.name}
-                      <ArrowRight className="h-4 w-4" />
+                      <span className="min-w-0 truncate">Meer oor {group.name}</span>
+                      <ArrowRight className="h-4 w-4 shrink-0" />
                     </Link>
                   </Button>
                 </div>
