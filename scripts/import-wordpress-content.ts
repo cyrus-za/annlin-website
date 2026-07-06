@@ -2,11 +2,11 @@
 
 import { ArticleStatus, ReadingMaterialFileType, ServiceGroupCategory } from '@prisma/client'
 import { disconnectDatabase, prisma } from '../lib/db'
+import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
 
 const DEFAULT_CONTACT_EMAIL =
   process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'admin@localhost.local'
-const DEFAULT_CONTACT_PERSON = 'Kerkkantoor'
 
 type WpRendered = { rendered?: string }
 
@@ -416,15 +416,18 @@ async function main() {
     if (serviceGroupSlugs.has(page.slug)) {
       const serviceGroupTitle = titleForServiceGroup(page)
       const displayOrder = serviceGroupDisplayOrder.get(page.slug) ?? 100 + serviceGroups
+      const category = categoryForServiceGroup(page)
+      const contactDetails = contactDetailsForServiceGroup(page.slug, category, DEFAULT_CONTACT_EMAIL)
 
       await prisma.serviceGroup.upsert({
         where: { slug: slugify(page.slug) },
         update: {
           name: serviceGroupTitle,
           description: content,
-          category: categoryForServiceGroup(page),
-          contactPerson: DEFAULT_CONTACT_PERSON,
-          contactEmail: DEFAULT_CONTACT_EMAIL,
+          category,
+          contactPerson: contactDetails.contactPerson,
+          contactEmail: contactDetails.contactEmail,
+          contactPhone: contactDetails.contactPhone,
           thumbnailUrl: serviceGroupThumbnailUrls.get(page.slug),
           bannerUrl: serviceGroupThumbnailUrls.get(page.slug),
           displayOrder,
@@ -434,9 +437,10 @@ async function main() {
           name: serviceGroupTitle,
           slug: slugify(page.slug),
           description: content,
-          category: categoryForServiceGroup(page),
-          contactPerson: DEFAULT_CONTACT_PERSON,
-          contactEmail: DEFAULT_CONTACT_EMAIL,
+          category,
+          contactPerson: contactDetails.contactPerson,
+          contactEmail: contactDetails.contactEmail,
+          contactPhone: contactDetails.contactPhone,
           thumbnailUrl: serviceGroupThumbnailUrls.get(page.slug),
           bannerUrl: serviceGroupThumbnailUrls.get(page.slug),
           displayOrder,
