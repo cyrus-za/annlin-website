@@ -615,7 +615,7 @@ async function seedSermonVideos(skipExisting: boolean, verbose: boolean) {
       preachedAt: null,
       preacher: null,
       description: 'Besoek die gemeente se YouTube-kanaal vir onlangse uitsendings.',
-      videoUrl: 'https://www.youtube.com/@gkannlin',
+      videoUrl: 'https://www.youtube.com/@gereformeerdekerkpretoria-813',
       source: 'YOUTUBE' as const,
       isFeatured: true,
       status: 'PUBLISHED' as const,

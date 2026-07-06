@@ -12,11 +12,79 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
+const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@gereformeerdekerkpretoria-813'
+const YOUTUBE_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC4NmYnuAd0293vFhf1i-tpg'
+
+type YouTubeUpload = {
+  id: string
+  title: string
+  publishedAt: Date | null
+  url: string
+}
+
+function decodeXmlEntities(value: string) {
+  return value
+    .replaceAll('&amp;', '&')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&apos;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+}
+
+function readXmlTag(entry: string, tagName: string) {
+  const match = entry.match(new RegExp(`<${tagName}>([\\s\\S]*?)</${tagName}>`))
+  return match ? decodeXmlEntities(match[1].trim()) : null
+}
+
+async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
+  try {
+    const response = await fetch(YOUTUBE_FEED_URL, {
+      next: { revalidate: 60 * 30 },
+    })
+
+    if (!response.ok) {
+      return []
+    }
+
+    const xml = await response.text()
+    return [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
+      .slice(0, 3)
+      .map((match) => {
+        const entry = match[1]
+        const id = readXmlTag(entry, 'yt:videoId') ?? ''
+        const published = readXmlTag(entry, 'published')
+
+        return {
+          id,
+          title: readXmlTag(entry, 'title') ?? 'YouTube uitsending',
+          publishedAt: published ? new Date(published) : null,
+          url: `https://www.youtube.com/watch?v=${id}`,
+        }
+      })
+      .filter((upload) => upload.id)
+  } catch {
+    return []
+  }
+}
+
 export default async function UitsendingsPage() {
-  const videos = await prisma.sermonVideo.findMany({
-    where: { status: 'PUBLISHED' },
-    orderBy: [{ isFeatured: 'desc' }, { preachedAt: 'desc' }, { createdAt: 'desc' }],
-    take: 24,
+  const [videos, youtubeUploads] = await Promise.all([
+    prisma.sermonVideo.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: [{ isFeatured: 'desc' }, { preachedAt: 'desc' }, { createdAt: 'desc' }],
+      take: 24,
+    }),
+    getLatestYouTubeUploads(),
+  ])
+
+  const externalLinks = videos.filter((video) => {
+    const isGenericYouTubeChannel =
+      video.source === 'YOUTUBE' &&
+      !video.preachedAt &&
+      (video.title.toLowerCase().includes('youtube') || video.videoUrl.includes('youtube.com/@'))
+
+    return !isGenericYouTubeChannel
   })
 
   return (
@@ -31,9 +99,75 @@ export default async function UitsendingsPage() {
           </p>
         </div>
 
-        {videos.length > 0 ? (
+        <section className="mb-12">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Nuutste YouTube uitsendings</h2>
+              <p className="mt-2 text-muted-foreground">
+                Die drie mees onlangse opnames vanaf ons YouTube-kanaal.
+              </p>
+            </div>
+            <Button asChild variant="outline">
+              <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                YouTube-kanaal
+              </a>
+            </Button>
+          </div>
+
+          {youtubeUploads.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {youtubeUploads.map((upload) => (
+                <Card key={upload.id} className="overflow-hidden">
+                  <div className="aspect-video bg-gray-100">
+                    <iframe
+                      className="h-full w-full"
+                      src={`https://www.youtube-nocookie.com/embed/${upload.id}`}
+                      title={upload.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="line-clamp-2 text-base leading-tight">
+                      {upload.title}
+                    </CardTitle>
+                    {upload.publishedAt ? (
+                      <CardDescription>
+                        {upload.publishedAt.toLocaleDateString('af-ZA', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        })}
+                      </CardDescription>
+                    ) : null}
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild variant="outline" className="w-full">
+                      <a href={upload.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Maak oop op YouTube
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>YouTube uitsendings</CardTitle>
+                <CardDescription>
+                  Ons kon nie die jongste YouTube-video's outomaties laai nie. Gebruik intussen die kanaalskakel.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          )}
+        </section>
+
+        {externalLinks.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map((video) => (
+            {externalLinks.map((video) => (
               <Card key={video.id} className="flex h-full flex-col hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
@@ -95,7 +229,7 @@ export default async function UitsendingsPage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
-                <a href="https://www.youtube.com/channel/UC4NmYnuAd0293vFhf1i-tpg" target="_blank" rel="noopener noreferrer">
+                <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
                   YouTube
                 </a>
               </Button>
