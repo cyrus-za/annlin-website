@@ -423,111 +423,11 @@ async function seedReadingMaterialCategories(skipExisting: boolean, verbose: boo
 async function seedServiceGroups(skipExisting: boolean, verbose: boolean) {
   console.log('\n🤝 Seeding diensgroepe...')
 
-  const serviceGroups = [
-    {
-      name: 'Diakonie',
-      slug: 'diakonie',
-      description: 'Ondersteuning en praktiese hulp aan lidmate en mense in nood.',
-      category: 'DIAKONIE' as const,
-      contactPerson: 'Diakonie',
-      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
-      contactPhone: null,
-      thumbnailUrl: null,
-      bannerUrl: null,
-      displayOrder: 10,
-      isActive: true,
-    },
-    {
-      name: 'Barmhartigheid',
-      slug: 'barmhartigheid',
-      description: 'Koordinering van barmhartigheidswerk in die gemeente en gemeenskap.',
-      category: 'DIAKONIE' as const,
-      contactPerson: 'Diakonie',
-      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
-      contactPhone: null,
-      thumbnailUrl: null,
-      bannerUrl: null,
-      displayOrder: 20,
-      isActive: true,
-    },
-    {
-      name: 'Jeug',
-      slug: 'jeug',
-      description: 'Geloofsvorming, aktiwiteite en betrokkenheid vir jong lidmate.',
-      category: 'OTHER' as const,
-      contactPerson: 'Jeugleiers',
-      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
-      contactPhone: null,
-      thumbnailUrl: null,
-      bannerUrl: null,
-      displayOrder: 30,
-      isActive: true,
-    },
-    {
-      name: 'Susters',
-      slug: 'susters',
-      description: 'Gemeenskap, dienswerk en ondersteuning onder die susters van die gemeente.',
-      category: 'OTHER' as const,
-      contactPerson: 'Sustersbestuur',
-      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
-      contactPhone: null,
-      thumbnailUrl: null,
-      bannerUrl: null,
-      displayOrder: 40,
-      isActive: true,
-    },
-    {
-      name: 'Musiekbediening',
-      slug: 'musiekbediening',
-      description: 'Begeleiding en ondersteuning van die gemeente se sang in eredienste.',
-      category: 'OTHER' as const,
-      contactPerson: 'Musiekkoördineerder',
-      contactEmail: env.ADMIN_EMAIL || 'admin@annlin.co.za',
-      contactPhone: null,
-      thumbnailUrl: null,
-      bannerUrl: null,
-      displayOrder: 50,
-      isActive: true,
-    },
-  ]
-
-  for (const serviceGroup of serviceGroups) {
-    const result = await safeDatabaseOperation(async () => {
-      const existing = await prisma.serviceGroup.findUnique({
-        where: { slug: serviceGroup.slug },
-      })
-
-      if (existing) {
-        if (skipExisting) {
-          return { created: false, serviceGroup: existing }
-        }
-
-        const updated = await prisma.serviceGroup.update({
-          where: { slug: serviceGroup.slug },
-          data: serviceGroup,
-        })
-        return { created: false, updated: true, serviceGroup: updated }
-      }
-
-      const newServiceGroup = await prisma.serviceGroup.create({
-        data: serviceGroup,
-      })
-
-      return { created: true, serviceGroup: newServiceGroup }
-    }, `Service group: ${serviceGroup.name}`)
-
-    if (result.success) {
-      if (result.data.created) {
-        console.log(`   ✅ Created: ${serviceGroup.name}`)
-      } else if (result.data.updated) {
-        console.log(`   ✅ Updated: ${serviceGroup.name}`)
-      } else if (verbose) {
-        console.log(`   ℹ️  Exists: ${serviceGroup.name}`)
-      }
-    } else {
-      console.log(`   ❌ Failed: ${serviceGroup.name} - ${result.error}`)
-    }
+  if (verbose) {
+    console.log('   ℹ️  Diensgroepe word vanaf WordPress gemigreer; geen placeholder groepe word gesaai nie.')
   }
+
+  return
 }
 
 async function seedContentPages(skipExisting: boolean, verbose: boolean) {

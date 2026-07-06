@@ -336,14 +336,8 @@ async function main() {
 
   const sortedPages = [...pages].sort((a, b) => a.id - b.id)
 
-  await prisma.serviceGroup.updateMany({
+  await prisma.serviceGroup.deleteMany({
     where: { slug: { in: placeholderServiceGroupSlugs } },
-    data: { isActive: false },
-  })
-
-  await prisma.serviceGroup.updateMany({
-    where: { slug: { notIn: [...serviceGroupSlugs] } },
-    data: { isActive: false },
   })
 
   for (const page of sortedPages) {
