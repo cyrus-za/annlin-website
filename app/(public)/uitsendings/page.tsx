@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Onlangse video uitsendings van eredienste by Gereformeerde Kerk Pretoria-Annlin.',
 }
 
-export const revalidate = 60 * 30
+export const revalidate = 1800
 
 const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@gereformeerdekerkpretoria-813'
 const YOUTUBE_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC4NmYnuAd0293vFhf1i-tpg'
