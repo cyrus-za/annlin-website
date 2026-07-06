@@ -143,18 +143,27 @@ const newsSlugs = new Set([
 ])
 
 function decodeEntities(value: string) {
-  return value
-    .replaceAll('&amp;', '&')
-    .replaceAll('&#038;', '&')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#8220;', '"')
-    .replaceAll('&#8221;', '"')
-    .replaceAll('&#x27;', "'")
-    .replaceAll('&#8211;', '-')
-    .replaceAll('&#8217;', "'")
-    .replaceAll('&nbsp;', ' ')
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
+  let decoded = value
+
+  for (let index = 0; index < 2; index++) {
+    decoded = decoded
+      .replaceAll('&amp;', '&')
+      .replaceAll('&#038;', '&')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#8220;', '"')
+      .replaceAll('&#8221;', '"')
+      .replaceAll('&#8216;', "'")
+      .replaceAll('&#8217;', "'")
+      .replaceAll('&#x27;', "'")
+      .replaceAll('&#8211;', '-')
+      .replaceAll('&#8212;', '-')
+      .replaceAll('&#8230;', '...')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+  }
+
+  return decoded
 }
 
 function htmlToText(html = '') {
