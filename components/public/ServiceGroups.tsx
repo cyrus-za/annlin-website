@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Mail, Phone, Users } from 'lucide-react'
@@ -20,6 +21,7 @@ interface ServiceGroup {
   contactEmail: string
   contactPhone?: string
   thumbnailUrl?: string
+  bannerUrl?: string
   isActive: boolean
 }
 
@@ -150,7 +152,10 @@ function ServiceGroupGridSection({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: index * 0.04 }}
           >
-            <Card className="h-full border-stone-200 bg-white shadow-sm">
+            <Card className="h-full overflow-hidden border-stone-200 bg-white shadow-sm">
+              <Link href={`/diensgroepe/${group.slug}`} className="block">
+                <ServiceGroupImage group={group} className="aspect-[16/7]" />
+              </Link>
               <CardHeader className="space-y-3">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
@@ -236,35 +241,68 @@ function ServiceGroupRail({
               initial={{ opacity: 0, x: 18 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.03 }}
-              className="flex w-[18rem] shrink-0 flex-col rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm"
+              className="flex w-[18rem] shrink-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h4 className="text-lg font-semibold text-foreground">{group.name}</h4>
-                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
-                    {createExcerpt(group.description, 120)}
-                  </p>
+              <Link href={`/diensgroepe/${group.slug}`} className="block">
+                <ServiceGroupImage group={group} className="aspect-[16/9]" />
+              </Link>
+
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="text-lg font-semibold text-foreground">{group.name}</h4>
+                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                      {createExcerpt(group.description, 120)}
+                    </p>
+                  </div>
+                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
                 </div>
-                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
-              </div>
 
-              <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4 text-amber-700" />
-                <span className="truncate">{group.contactPerson}</span>
-              </div>
+                <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 text-amber-700" />
+                  <span className="truncate">{group.contactPerson}</span>
+                </div>
 
-              <div className="mt-5">
-                <Button asChild variant="ghost" className="w-full justify-between px-0 text-amber-900 hover:text-amber-950">
-                  <Link href={`/diensgroepe/${group.slug}`}>
-                    Meer oor {group.name}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                <div className="mt-auto pt-5">
+                  <Button asChild variant="ghost" className="w-full justify-between px-0 text-amber-900 hover:text-amber-950">
+                    <Link href={`/diensgroepe/${group.slug}`}>
+                      Meer oor {group.name}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </motion.article>
           ))}
         </div>
       </div>
+    </div>
+  )
+}
+
+function ServiceGroupImage({
+  group,
+  className,
+}: {
+  group: ServiceGroup
+  className: string
+}) {
+  const imageUrl = group.thumbnailUrl || group.bannerUrl
+
+  return (
+    <div className={`relative overflow-hidden bg-stone-100 ${className}`}>
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 35vw, (min-width: 640px) 50vw, 18rem"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div className="h-full w-full bg-[linear-gradient(135deg,#f5f5f4,#e7e5e4)]" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/25 via-transparent to-transparent" />
     </div>
   )
 }
