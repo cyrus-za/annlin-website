@@ -76,7 +76,6 @@ async function seedDatabase(options: SeedOptions = {}) {
     // Seed starter website content
     await seedServiceGroups(skipExisting, verbose)
     await seedContentPages(skipExisting, verbose)
-    await seedSermonVideos(skipExisting, verbose)
     
     console.log('\n' + '='.repeat(50))
     console.log('✅ Database seeding completed successfully!')
