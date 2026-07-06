@@ -77,13 +77,85 @@ const nextConfig: NextConfig = {
 
   // Redirects for SEO (will be populated during WordPress migration)
   async redirects() {
+    const serviceGroupSlugs = [
+      'fontein-redaksie',
+      'sekuriteit',
+      'vervoer-2',
+      'verwelkoming-en-gasvryheid',
+      'versorging-en-barmhartigheid-2',
+      'tradisionele-dienste',
+      'sosiale-dienste',
+      'seniors-2',
+      'terebinte',
+      'jeugbediening',
+      'mosambiek-whatsappgroep',
+      'vroue-bedieningsgroep',
+      'manne-bedieningsgroep-4',
+      'tweedehandse-goedere-verkopings',
+      'koor',
+      'verwelkoming',
+      'katkisasie-leerkragte',
+      'rousmart',
+      'susters',
+      'kleuterbediening',
+      'gebedsgroepe',
+      'verslawing2',
+      'laerskooljeug',
+      'katkisasie-fotoblad',
+      'hospitaalbesoeke',
+      'buitelandse-evangelisasie',
+      'bybelverspreiding',
+      'evangelisasie-blad',
+      'evangelisasie-omliggende-gebiede',
+      'evangelisasie-eie-omgewing',
+    ]
+
+    const readingSlugs = [
+      'leesstof-2',
+      'preke-op-skrif',
+      'oordenkings-ons-gesels-oor-jesus',
+      'kinderwerkkaarte',
+      'ek-wil-weet',
+    ]
+
+    const newsSlugs = [
+      'nuus-2025',
+      'nuus-2024',
+      'nuus-2023',
+      'nuus-2022',
+      'nuus-2021',
+      'susters-saamtrek-2024',
+      'pinksterfeesvieringe-4-5-junie-2022',
+      'uitnodiging-diensteblad',
+    ]
+
     return [
-      // Example redirects - will be populated with actual WordPress URLs
-      // {
-      //   source: '/old-wordpress-path',
-      //   destination: '/new-nextjs-path',
-      //   permanent: true,
-      // },
+      { source: '/homepagenew', destination: '/', permanent: true },
+      {
+        source: '/onlangse-video-uitsendings-van-preke',
+        destination: '/uitsendings',
+        permanent: true,
+      },
+      ...serviceGroupSlugs.map((slug) => ({
+        source: `/${slug}`,
+        destination: '/diensgroepe',
+        permanent: true,
+      })),
+      ...readingSlugs.map((slug) => ({
+        source: `/${slug}`,
+        destination: '/leesstof',
+        permanent: true,
+      })),
+      ...newsSlugs.map((slug) => ({
+        source: `/${slug}`,
+        destination: '/nuus',
+        permanent: true,
+      })),
+      {
+        source: '/event/:slug*',
+        destination: '/jaarprogram',
+        permanent: true,
+      },
     ];
   },
 

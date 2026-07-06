@@ -63,7 +63,9 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/api/')) {
       const isPublicReadRequest = request.method === 'GET' && (
         pathname === '/api/events' ||
-        pathname.startsWith('/api/events/')
+        pathname.startsWith('/api/events/') ||
+        pathname === '/api/diensgroepe' ||
+        pathname.startsWith('/api/diensgroepe/')
       )
 
       // Public API routes that don't require authentication
