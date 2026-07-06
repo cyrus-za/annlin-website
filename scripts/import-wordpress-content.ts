@@ -5,7 +5,7 @@ import { disconnectDatabase, prisma } from '../lib/db'
 import { slugify } from '../lib/slug'
 
 const DEFAULT_CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL || process.env.FROM_EMAIL || 'admin@localhost.local'
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'admin@localhost.local'
 const DEFAULT_CONTACT_PERSON = 'Kerkkantoor'
 
 type WpRendered = { rendered?: string }
