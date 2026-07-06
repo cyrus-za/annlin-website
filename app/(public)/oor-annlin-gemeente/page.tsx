@@ -99,7 +99,7 @@ export default function AboutPage() {
       </section>
 
       {/* History Section */}
-      <section className="py-16 bg-amber-50">
+      <section id="geskiedenis" className="py-16 bg-amber-50 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -130,15 +130,6 @@ export default function AboutPage() {
                     lewende gemeente van 631 belydende lidmate en 132 dooplidmate.
                   </p>
                 </div>
-              </div>
-
-              <div className="mt-8">
-                <Button asChild>
-                  <Link href="/jaarprogram">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Bekyk Ons Eredienste
-                  </Link>
-                </Button>
               </div>
             </div>
 
@@ -381,7 +372,7 @@ export default function AboutPage() {
       </section>
 
       {/* Location and Contact */}
-      <section className="py-16 bg-white">
+      <section id="besoek-ons" className="py-16 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-amber-900">Kom Besoek Ons</h2>

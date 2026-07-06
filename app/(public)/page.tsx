@@ -188,51 +188,67 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="h-48 bg-cover bg-center" style={{
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/church-building-1974.jpg')`
-              }}>
-                <div className="h-full flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-xl font-bold mb-2">Ons Geskiedenis</h3>
-                    <p className="text-sm text-gray-200">Gestig in 1965</p>
+            <div className="space-y-6">
+              <Card className="overflow-hidden">
+                <div className="h-48 bg-cover bg-center" style={{
+                  backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/church-building-1974.jpg')`
+                }}>
+                  <div className="h-full flex items-end p-6">
+                    <div className="text-white">
+                      <h3 className="text-xl font-bold mb-2">Ons Geskiedenis</h3>
+                      <p className="text-sm text-gray-200">Gestig in 1965</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-foreground mb-6">
-                  Besoek Ons
-                </h3>
-                <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-foreground">Eredienste</h4>
-                  <p className="text-muted-foreground">Sondae om 08:30 en 18:30</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">Adres</h4>
-                  <p className="text-muted-foreground">
-                    Annlin Gemeente<br />
-                    [Adres sal hier wees]<br />
-                    Pretoria, Gauteng
+                <CardContent className="p-6">
+                  <p className="text-muted-foreground mb-6">
+                    Lees meer oor die ontstaan van Gereformeerde Kerk Pretoria-Annlin en die
+                    ingebruikneming van ons kerkgebou.
                   </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-foreground">Kontak</h4>
-                  <p className="text-muted-foreground">
-                    Tel: 012 567 1492<br />
-                    Sel: 079 162 3453<br />
-                    E-pos: kerkkantoor@annlin.co.za
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6">
-                <Button asChild className="w-full">
-                  <Link href="/kontakbesonderhede">
-                    Volledige Kontak Besonderhede
-                  </Link>
-                </Button>
-                </div>
-              </div>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link href="/oor-annlin-gemeente#geskiedenis">
+                      Lees Ons Geskiedenis
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Besoek Ons</CardTitle>
+                  <CardDescription>
+                    Eredienstye, ligging en kontakbesonderhede
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-foreground">Eredienste</h4>
+                    <p className="text-muted-foreground">Sondae om 08:30 en 18:30</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground">Adres</h4>
+                    <p className="text-muted-foreground">
+                      H/v Braam Pretoriusstraat en Kaneelbaslaan<br />
+                      Wonderboom, Pretoria<br />
+                      0182
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground">Kontak</h4>
+                    <p className="text-muted-foreground">
+                      Tel: 012 567 1492<br />
+                      Sel: 079 162 3453<br />
+                      E-pos: kerkkantoor@annlin.co.za
+                    </p>
+                  </div>
+                  <Button asChild className="w-full">
+                    <Link href="/kontakbesonderhede">
+                      Volledige Kontak Besonderhede
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
