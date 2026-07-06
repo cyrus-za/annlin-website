@@ -237,7 +237,18 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                       fontWeight: 'bold',
                     },
                   }}
-                  className="rounded-md border"
+                  className="w-full rounded-md border p-4 sm:p-6"
+                  classNames={{
+                    root: 'w-full',
+                    months: 'w-full',
+                    month: 'w-full space-y-4',
+                    month_grid: 'w-full border-collapse table-fixed',
+                    weekdays: 'grid grid-cols-7',
+                    weekday: 'flex h-9 items-center justify-center rounded-md text-muted-foreground font-normal text-sm',
+                    week: 'mt-2 grid grid-cols-7',
+                    day: 'relative flex h-11 items-center justify-center p-0 text-center text-sm focus-within:relative focus-within:z-20',
+                    day_button: 'h-11 w-11 p-0 font-normal aria-selected:opacity-100',
+                  }}
                 />
               )}
             </CardContent>

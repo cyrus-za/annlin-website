@@ -61,6 +61,11 @@ export async function proxy(request: NextRequest) {
 
     // Handle API routes protection
     if (pathname.startsWith('/api/')) {
+      const isPublicReadRequest = request.method === 'GET' && (
+        pathname === '/api/events' ||
+        pathname.startsWith('/api/events/')
+      )
+
       // Public API routes that don't require authentication
       const publicApiRoutes = [
         '/api/auth',
@@ -68,7 +73,9 @@ export async function proxy(request: NextRequest) {
         '/api/invitations/accept'
       ]
 
-      const isPublicApiRoute = publicApiRoutes.some(route => pathname.startsWith(route))
+      const isPublicApiRoute =
+        isPublicReadRequest ||
+        publicApiRoutes.some(route => pathname.startsWith(route))
 
       if (!isPublicApiRoute) {
         if (!isAuthenticated) {
