@@ -13,67 +13,53 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error('Application error:', error)
   }, [error])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Main Content */}
-        <div className="text-center mb-12">
-          {/* Error Icon */}
+    <div className="min-h-screen bg-stone-50">
+      <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-12 rounded-3xl border border-stone-200 bg-white p-8 text-center shadow-sm sm:p-12">
           <div className="mb-8">
-            <div className="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
-              <AlertTriangle className="h-12 w-12 text-red-600" />
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-50">
+              <AlertTriangle className="h-10 w-10 text-red-600" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Oeps! Iets Het Verkeerd Geloop
+            <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+              Oeps. Iets het verkeerd geloop.
             </h1>
           </div>
-          
-          {/* Error Message */}
+
           <div className="mb-8">
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
-              Ons het 'n onverwagte fout ondervind. Moenie bekommerd wees nie - 
-              ons span werk hard om sulke probleme op te los.
+            <p className="mx-auto mb-4 max-w-2xl text-lg leading-8 text-muted-foreground">
+              Ons het 'n onverwagte probleem ondervind terwyl die bladsy gelaai het. Probeer asseblief weer, of gaan terug na die tuisblad.
             </p>
             <p className="text-sm text-muted-foreground">
-              Probeer asseblief weer, of keer terug na die tuisblad.
+              As dit aanhou gebeur, laat weet die kerkkantoor sodat ons dit kan ondersoek.
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button 
-              onClick={reset}
-              size="lg" 
-              className="bg-red-600 hover:bg-red-700"
-            >
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Button onClick={reset} size="lg" className="bg-red-600 hover:bg-red-700">
               <RefreshCw className="mr-2 h-5 w-5" />
-              Probeer Weer
+              Probeer weer
             </Button>
-            
             <Button asChild variant="outline" size="lg">
               <Link href="/">
                 <Home className="mr-2 h-5 w-5" />
-                Terug Na Tuis
+                Terug na tuis
               </Link>
             </Button>
           </div>
         </div>
 
-        {/* Error Details (Development Only) */}
         {process.env.NODE_ENV === 'development' && (
-          <Card className="mb-8 border-red-200">
+          <Card className="mb-8 border-red-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-red-600">Ontwikkelings Inligting</CardTitle>
-              <CardDescription>
-                Hierdie inligting is slegs sigbaar tydens ontwikkeling
-              </CardDescription>
+              <CardDescription>Hierdie inligting is slegs sigbaar tydens ontwikkeling</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-red-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-red-50 p-4">
                 <p className="text-sm font-mono text-red-800 break-all">
                   <strong>Fout:</strong> {error.message}
                 </p>
@@ -87,68 +73,54 @@ export default function Error({ error, reset }: ErrorProps) {
           </Card>
         )}
 
-        {/* Helpful Links */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <Card className="border-stone-200 shadow-sm">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
-                <Home className="h-6 w-6 text-amber-600" />
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100">
+                <Home className="h-6 w-6 text-amber-700" />
               </div>
               <CardTitle>Tuisblad</CardTitle>
-              <CardDescription>
-                Begin weer by ons hoofblad
-              </CardDescription>
+              <CardDescription>Begin weer by ons hoofblad</CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/">
-                  Besoek Tuisblad
-                </Link>
+                <Link href="/">Besoek tuisblad</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+          <Card className="border-stone-200 shadow-sm">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
-                <RefreshCw className="h-6 w-6 text-amber-600" />
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100">
+                <RefreshCw className="h-6 w-6 text-amber-700" />
               </div>
               <CardTitle>Diensgroepe</CardTitle>
-              <CardDescription>
-                Ontdek ons verskillende diensgroepe
-              </CardDescription>
+              <CardDescription>Ontdek ons verskillende diensgroepe</CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/diensgroepe">
-                  Bekyk Groepe
-                </Link>
+                <Link href="/diensgroepe">Bekyk groepe</Link>
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+          <Card className="border-stone-200 shadow-sm">
             <CardHeader className="text-center">
-              <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4">
-                <MessageCircle className="h-6 w-6 text-amber-600" />
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100">
+                <MessageCircle className="h-6 w-6 text-amber-700" />
               </div>
               <CardTitle>Rapporteer Probleem</CardTitle>
-              <CardDescription>
-                Laat ons weet van die fout
-              </CardDescription>
+              <CardDescription>Laat ons weet van die fout</CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/kontakbesonderhede">
-                  Kontak Ons
-                </Link>
+                <Link href="/kontakbesonderhede">Kontak ons</Link>
               </Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Additional Help Text */}
-        <div className="text-center mt-12">
+        <div className="mt-12 text-center">
           <p className="text-muted-foreground">
             As hierdie probleem voortduur, kontak ons asseblief sodat ons dit kan ondersoek.
           </p>

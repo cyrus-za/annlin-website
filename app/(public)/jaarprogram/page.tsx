@@ -70,12 +70,12 @@ export default function JaarprogramPage() {
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-8">
+            <div className="rounded-3xl border border-stone-200 bg-stone-50 p-8 shadow-sm">
               <h3 className="text-2xl font-bold text-foreground mb-6">
                 Spesiale Gebeure
               </h3>
               <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Jeugkampe</h4>
                   <p className="text-muted-foreground text-sm">
                     Jaarliks hou ons spesiale kampe vir ons jeug met aktiwiteite, 
@@ -83,7 +83,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Gemeente Uitstappies</h4>
                   <p className="text-muted-foreground text-sm">
                     Gereelde uitstappies en sosiale geleenthede vir die hele gemeente 
@@ -91,7 +91,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Spesiale Eredienste</h4>
                   <p className="text-muted-foreground text-sm">
                     Kersfees, Paasfees en ander spesiale eredienste met 
@@ -116,7 +116,7 @@ export default function JaarprogramPage() {
             </p>
             <div className="space-x-4">
               <a
-                href="/kontak"
+                href="/kontakbesonderhede"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-800 bg-white hover:bg-amber-50 transition-colors duration-200"
               >
                 Kontak Ons vir Meer Info

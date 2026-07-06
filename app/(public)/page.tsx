@@ -18,7 +18,7 @@ export default function Home() {
     <div>
       {/* Hero Section */}
       <section 
-        className="relative text-white py-20 bg-cover bg-center bg-no-repeat"
+        className="relative bg-cover bg-center bg-no-repeat py-16 text-white sm:py-20"
         style={{
           backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.85), rgba(120, 53, 15, 0.85)), url('/church-building-main.jpg')`
         }}
@@ -56,22 +56,22 @@ export default function Home() {
       <UpcomingEvents limit={3} />
 
       {/* Service Groups Section */}
-      <ServiceGroups limit={6} />
+      <ServiceGroups limit={16} />
 
       {/* Quick Links Section */}
-      <section className="py-16 bg-white">
+      <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-foreground">Verken Ons Webwerf</h2>
             <p className="mt-4 text-lg text-muted-foreground">
               Vind alles wat jy nodig het om betrokke te raak by ons gemeente
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="hover:shadow-lg transition-shadow duration-300 group">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-200 transition-colors">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
+              <CardHeader className="space-y-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-100 transition-colors group-hover:bg-amber-200">
                   <Calendar className="h-6 w-6 text-amber-700" />
                 </div>
                 <CardTitle>Jaarprogram</CardTitle>
@@ -89,9 +89,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow duration-300 group">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
+              <CardHeader className="space-y-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-orange-100 transition-colors group-hover:bg-orange-200">
                   <Newspaper className="h-6 w-6 text-orange-700" />
                 </div>
                 <CardTitle>Nuus & Aankondigings</CardTitle>
@@ -109,9 +109,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow duration-300 group">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-yellow-200 transition-colors">
+            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
+              <CardHeader className="space-y-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-yellow-100 transition-colors group-hover:bg-yellow-200">
                   <BookOpen className="h-6 w-6 text-yellow-700" />
                 </div>
                 <CardTitle>Leesstof</CardTitle>
@@ -129,9 +129,9 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow duration-300 group">
-              <CardHeader className="text-center">
-                <div className="mx-auto w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-stone-200 transition-colors">
+            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
+              <CardHeader className="space-y-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-stone-100 transition-colors group-hover:bg-stone-200">
                   <Mail className="h-6 w-6 text-stone-700" />
                 </div>
                 <CardTitle>Kontak Ons</CardTitle>
@@ -153,19 +153,19 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section className="py-16 bg-amber-50">
+      <section className="bg-stone-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-6">
+              <h2 className="mb-5 text-3xl font-bold text-amber-900">
                 Oor Annlin Gemeente
               </h2>
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="mb-6 text-lg text-muted-foreground">
                 Ons is 'n lewendige gemeente wat toegewy is aan die verkondiging van God se Woord 
                 en die bou van 'n gemeenskap waar almal welkom is. Ons glo in die krag van geloof, 
                 hoop en liefde om lewens te transformeer.
               </p>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center">
                   <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
                   <span className="text-foreground/80">Eredienste elke Sondag om 08:30 en 18:30</span>
@@ -189,8 +189,8 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="space-y-6">
-              <Card className="overflow-hidden">
+            <div className="grid gap-5">
+              <Card className="overflow-hidden border-stone-200 shadow-sm">
                 <div className="h-48 bg-cover bg-center" style={{
                   backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/church-building-1974.jpg')`
                 }}>
@@ -215,7 +215,7 @@ export default function Home() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-stone-200 shadow-sm">
                 <CardHeader>
                   <CardTitle>Besoek Ons</CardTitle>
                   <CardDescription>
