@@ -48,7 +48,7 @@ export default function AdminUnauthorizedPage() {
         
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">
-            Administrateur funksies sluit in gebruiker bestuur, sisteem instellings, en uitnodiging bestuur.
+            Administrateur funksies sluit in gebruiker bestuur, webwerf-verstellings, en uitnodiging bestuur.
           </p>
         </div>
       </Card>

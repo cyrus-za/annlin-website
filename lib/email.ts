@@ -164,7 +164,7 @@ export function generateInvitationEmailHtml({
                     <li>Bestuur alle webwerf inhoud</li>
                     <li>Nooi en bestuur ander gebruikers</li>
                     <li>Toegang tot alle administratiewe funksies</li>
-                    <li>Konfigureer sisteem instellings</li>
+                    <li>Konfigureer webwerf-verstellings</li>
                     ` : `
                     <li>Skep en redigeer nuus artikels</li>
                     <li>Bestuur diensgroepe inligting</li>
@@ -220,7 +220,7 @@ ${role === 'ADMIN' ? `
 - Bestuur alle webwerf inhoud
 - Nooi en bestuur ander gebruikers
 - Toegang tot alle administratiewe funksies
-- Konfigureer sisteem instellings
+- Konfigureer webwerf-verstellings
 ` : `
 - Skep en redigeer nuus artikels
 - Bestuur diensgroepe inligting
