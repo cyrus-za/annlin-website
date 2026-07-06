@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { 
   Menu,
@@ -146,14 +147,22 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
                 </div>
                 
                 <div className="py-2">
-                  <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                  <Link
+                    href="/admin/profiel"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+                  >
                     <User className="h-4 w-4" />
                     <span>Profiel</span>
-                  </button>
-                  <button className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                  </Link>
+                  <Link
+                    href="/admin/instellings"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left"
+                  >
                     <Settings className="h-4 w-4" />
                     <span>Instellings</span>
-                  </button>
+                  </Link>
                 </div>
                 
                 <div className="border-t border-gray-200 py-2">
@@ -173,4 +182,3 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
     </header>
   )
 }
-
