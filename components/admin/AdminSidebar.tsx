@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -111,8 +112,14 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         {!isCollapsed && (
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-amber-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GK</span>
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
+              <Image
+                src="/gksa-logo.png"
+                alt="Gereformeerde Kerke in Suid-Afrika"
+                width={32}
+                height={32}
+                className="h-7 w-7 object-contain"
+              />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">Annlin Gemeente</h2>

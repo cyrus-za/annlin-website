@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Mail, Phone, MapPin, Calendar, Facebook, Youtube } from 'lucide-react'
 
@@ -11,8 +12,14 @@ export function Footer() {
           {/* Church Information */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-amber-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">GK</span>
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-500/40">
+                <Image
+                  src="/gksa-logo.png"
+                  alt="Gereformeerde Kerke in Suid-Afrika"
+                  width={40}
+                  height={40}
+                  className="h-9 w-9 object-contain"
+                />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">Annlin Gemeente</h3>

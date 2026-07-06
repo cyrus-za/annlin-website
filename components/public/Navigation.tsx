@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -79,8 +80,15 @@ export function Navigation() {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="h-10 w-10 bg-amber-700 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">GK</span>
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
+                <Image
+                  src="/gksa-logo.png"
+                  alt="Gereformeerde Kerke in Suid-Afrika"
+                  width={40}
+                  height={40}
+                  className="h-9 w-9 object-contain"
+                  priority
+                />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold text-amber-900">Annlin Gemeente</h1>
@@ -199,8 +207,14 @@ export function Navigation() {
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
-                  <div className="h-8 w-8 bg-amber-700 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">GK</span>
+                  <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
+                    <Image
+                      src="/gksa-logo.png"
+                      alt="Gereformeerde Kerke in Suid-Afrika"
+                      width={32}
+                      height={32}
+                      className="h-7 w-7 object-contain"
+                    />
                   </div>
                   <div>
                     <h2 className="text-sm font-semibold text-amber-900">Annlin Gemeente</h2>
