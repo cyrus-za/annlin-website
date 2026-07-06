@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 export default function ContactDetailsPage() {
   const contactEmailHref = `mailto:${APP_CONFIG.email}`
+  const churchMapHref = 'https://maps.google.com/?q=Gereformeerde+Kerk+Pretoria-Annlin'
 
   return (
     <div className="min-h-screen bg-white">
@@ -84,14 +85,10 @@ export default function ContactDetailsPage() {
                     </div>
                   </div>
                   
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">Pos Adres</h4>
-                    <p className="text-muted-foreground">
-                      Annlin Gemeente<br />
-                      Posbus 12345<br />
-                      Pretoria, 0001
-                    </p>
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Gebruik die kerkkantoor se e-pos of telefoonnommers vir algemene navrae,
+                    terugvoer of besoekersnavrae.
+                  </p>
                 </CardContent>
               </Card>
 
@@ -120,7 +117,7 @@ export default function ContactDetailsPage() {
                     <div>
                       <Button asChild variant="outline" className="w-full">
                         <a 
-                          href="https://maps.google.com" 
+                          href={churchMapHref}
                           target="_blank" 
                           rel="noopener noreferrer"
                         >
@@ -187,7 +184,7 @@ export default function ContactDetailsPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Maandag - Vrydag</span>
-                      <span className="font-medium text-foreground">09:00 - 15:00</span>
+                      <span className="font-medium text-foreground">08:00 - 16:00</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Saterdag</span>
@@ -224,21 +221,27 @@ export default function ContactDetailsPage() {
                       <p className="text-muted-foreground">Ds. Pieter Kurpershoek</p>
                       <p className="text-sm text-muted-foreground">Kontak via kerkkantoor</p>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-medium text-foreground">Kerkraad Voorsitter</h4>
-                      <p className="text-muted-foreground">[Naam]</p>
+                      <h4 className="font-medium text-foreground">Kerkkantoor</h4>
+                      <p className="text-muted-foreground">Algemene navrae en administrasie</p>
                       <a 
-                        href="tel:083-765-4321"
-                        className="text-sm text-amber-600 hover:text-amber-800"
+                        href="tel:012-567-1492"
+                        className="block text-sm text-amber-600 hover:text-amber-800"
                       >
-                        083 765 4321
+                        012 567 1492
+                      </a>
+                      <a 
+                        href="tel:079-162-3453"
+                        className="block text-sm text-amber-600 hover:text-amber-800"
+                      >
+                        079 162 3453
                       </a>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-medium text-foreground">Administrateur</h4>
-                      <p className="text-muted-foreground">[Naam]</p>
+                      <h4 className="font-medium text-foreground">E-pos</h4>
+                      <p className="text-muted-foreground">Vir navrae, nuwe besoekers en terugvoering</p>
                       <a 
                         href={contactEmailHref}
                         className="text-sm text-amber-600 hover:text-amber-800"
