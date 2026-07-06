@@ -61,7 +61,9 @@ export default async function ReadingPage() {
     orderBy: { createdAt: 'asc' },
   })
 
-  const additionalMaterials = materials.filter((item) => item.title !== 'Leesstof')
+  const additionalMaterials = materials.filter(
+    (item) => item.title !== 'Leesstof' && !item.id.startsWith('wp-')
+  )
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -178,7 +180,7 @@ export default async function ReadingPage() {
         </div>
       </section>
 
-      {additionalMaterials.length > 0 && (
+      {additionalMaterials.length > 0 ? (
         <section className="bg-white py-14">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-foreground">Meer Leesstof</h2>
@@ -207,7 +209,7 @@ export default async function ReadingPage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
     </div>
   )
 }

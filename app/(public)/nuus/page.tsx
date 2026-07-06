@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Newspaper } from 'lucide-react'
+import { ArrowRight, Calendar, Newspaper } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { createExcerpt } from '@/lib/public-content'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -60,10 +61,16 @@ export default async function NewsPage() {
                       </div>
                     )}
                   </CardHeader>
-                  <CardContent>
-                    <p className="whitespace-pre-line text-muted-foreground">
-                      {article.content}
+                  <CardContent className="space-y-5">
+                    <p className="text-base leading-7 text-muted-foreground">
+                      {article.excerpt || createExcerpt(article.content, 220)}
                     </p>
+                    <Button asChild variant="outline">
+                      <Link href={`/nuus/${article.slug}`}>
+                        Lees volledige artikel
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
                   </CardContent>
                 </Card>
               ))}

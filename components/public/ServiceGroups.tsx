@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Mail, Phone, Users, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { ArrowRight, Mail, Phone, Users } from 'lucide-react'
+
+import { createExcerpt } from '@/lib/public-content'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ServiceGroup {
   id: string
@@ -38,19 +40,19 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
           isActive: 'true',
           sortBy: 'displayOrder',
           sortOrder: 'asc',
-          ...(limit && !showAll && { limit: limit.toString() }),
+          ...(limit && !showAll ? { limit: limit.toString() } : {}),
         })
 
         const response = await fetch(`/api/diensgroepe?${params}`)
-        
+
         if (!response.ok) {
           throw new Error('Kon nie diensgroepe laai nie')
         }
-        
+
         const data = await response.json()
         setServiceGroups(data.serviceGroups || [])
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Kon nie diensgroepe laai nie')
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : 'Kon nie diensgroepe laai nie')
       } finally {
         setLoading(false)
       }
@@ -60,35 +62,16 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
   }, [limit, showAll])
 
   if (loading) {
-    return (
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Diensgroepe</h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Raak betrokke by ons verskillende bedienings
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(limit)].map((_, index) => (
-              <div key={index} className="animate-pulse">
-                <div className="bg-white rounded-lg h-64 border"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
+    return showAll ? <ServiceGroupGridSkeleton /> : <ServiceGroupRailSkeleton />
   }
 
   if (error || serviceGroups.length === 0) {
     return (
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className={showAll ? 'bg-stone-50 py-12' : 'bg-white py-12'}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Diensgroepe</h2>
-            <p className="mt-4 text-lg text-gray-600">
+            <h2 className="text-3xl font-bold text-foreground">Diensgroepe</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
               {error || 'Geen aktiewe diensgroepe beskikbaar nie.'}
             </p>
           </div>
@@ -97,128 +80,125 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
     )
   }
 
-  return (
-    <section className="py-12 bg-amber-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-amber-900">Diensgroepe</h2>
-          <p className="mt-4 text-lg text-amber-800">
-            Raak betrokke by ons verskillende bedienings en help maak 'n verskil
-          </p>
+  const diakonieGroups = serviceGroups.filter((group) => group.category === 'DIAKONIE')
+  const otherGroups = serviceGroups.filter((group) => group.category === 'OTHER')
+
+  return showAll ? (
+    <section className="bg-stone-50 py-12">
+      <div className="mx-auto max-w-7xl space-y-14 px-4 sm:px-6 lg:px-8">
+        <ServiceGroupGridSection title="Diakonie" groups={diakonieGroups} />
+        <ServiceGroupGridSection title="Ander diensgroepe" groups={otherGroups} />
+      </div>
+    </section>
+  ) : (
+    <section className="bg-white py-10 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold text-foreground">Diensgroepe</h2>
+            <p className="mt-3 text-lg text-muted-foreground">
+              Raak betrokke by die bedieningswerk van die gemeente.
+            </p>
+          </div>
+          <Button asChild variant="outline" className="hidden sm:inline-flex">
+            <Link href="/diensgroepe">
+              Alles
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </div>
 
-        <ServiceGroupSection
-          title="Diakonie"
-          groups={serviceGroups.filter((group) => group.category === 'DIAKONIE')}
-          showAll={showAll}
-        />
+        <ServiceGroupRail title="Diakonie" groups={diakonieGroups} />
+        <ServiceGroupRail title="Ander diensgroepe" groups={otherGroups} className="mt-8" />
 
-        <ServiceGroupSection
-          title="Ander diensgroepe"
-          groups={serviceGroups.filter((group) => group.category !== 'DIAKONIE')}
-          className="mt-12"
-          showAll={showAll}
-        />
-
-        {!showAll && serviceGroups.length >= limit && (
-          <div className="text-center mt-12">
-            <Button asChild variant="outline" size="lg">
-              <Link href="/diensgroepe">
-                Bekyk Alle Diensgroepe
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        )}
+        <div className="mt-8 sm:hidden">
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/diensgroepe">
+              Bekyk alle diensgroepe
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </div>
     </section>
   )
 }
 
-function ServiceGroupSection({
+function ServiceGroupGridSection({
   title,
   groups,
-  className,
-  showAll,
 }: {
   title: string
   groups: ServiceGroup[]
-  className?: string
-  showAll: boolean
 }) {
   if (groups.length === 0) return null
 
   return (
-    <div className={className}>
-      <h3 className="mb-6 text-2xl font-semibold text-amber-950">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+        <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm">
+          {groups.length}
+        </Badge>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {groups.map((group, index) => (
           <motion.div
             key={group.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.05 }}
+            transition={{ duration: 0.35, delay: index * 0.04 }}
           >
-            <Card className="h-full hover:shadow-lg transition-shadow duration-300 group">
-              {group.thumbnailUrl && (
-                <div className="relative h-48 overflow-hidden rounded-t-lg">
-                  <img
-                    src={group.thumbnailUrl}
-                    alt={group.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            <Card className="h-full border-stone-200 bg-white shadow-sm">
+              <CardHeader className="space-y-3">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <CardTitle className="text-2xl text-amber-900">{group.name}</CardTitle>
+                    <Badge variant="outline" className="rounded-full">
+                      {group.category === 'DIAKONIE' ? 'Diakonie' : 'Ander diensgroep'}
+                    </Badge>
+                  </div>
                 </div>
-              )}
-
-              <CardHeader className={group.thumbnailUrl ? 'pb-4' : ''}>
-                <CardTitle className="text-xl text-amber-900 group-hover:text-amber-700 transition-colors">
-                  {group.name}
-                </CardTitle>
-                <CardDescription
-                  className={`whitespace-pre-line text-gray-600 ${showAll ? '' : 'line-clamp-3'}`}
-                >
-                  {group.description}
+                <CardDescription className="text-base leading-7 text-muted-foreground">
+                  {createExcerpt(group.description, 190)}
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Users className="h-4 w-4 mr-2 text-gray-400" />
-                    <span className="font-medium">Kontak:</span>
-                    <span className="ml-1">{group.contactPerson}</span>
+              <CardContent className="space-y-5">
+                <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-amber-700" />
+                    <span>{group.contactPerson}</span>
                   </div>
-
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-amber-700" />
                     <a
                       href={`mailto:${group.contactEmail}`}
-                      className="text-amber-700 hover:text-amber-900 transition-colors"
+                      className="truncate text-amber-800 hover:text-amber-950"
                     >
                       {group.contactEmail}
                     </a>
                   </div>
-
-                  {group.contactPhone && (
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Phone className="h-4 w-4 mr-2 text-gray-400" />
-                      <a
-                        href={`tel:${group.contactPhone}`}
-                        className="text-amber-700 hover:text-amber-900 transition-colors"
-                      >
+                  {group.contactPhone ? (
+                    <div className="flex items-center gap-2 sm:col-span-2">
+                      <Phone className="h-4 w-4 text-amber-700" />
+                      <a href={`tel:${group.contactPhone}`} className="text-amber-800 hover:text-amber-950">
                         {group.contactPhone}
                       </a>
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
-                <div className="pt-4 border-t border-gray-100">
-                  <Button asChild className="w-full group">
-                    <Link href={`/kontak?diensgroep=${group.id}`}>
-                      Skakel In
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button asChild className="sm:flex-1">
+                    <Link href={`/diensgroepe/${group.slug}`}>
+                      Lees meer
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="sm:flex-1">
+                    <Link href="/kontakbesonderhede">Kontak kerkkantoor</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -230,7 +210,109 @@ function ServiceGroupSection({
   )
 }
 
-// Compact version for sidebar or smaller spaces
+function ServiceGroupRail({
+  title,
+  groups,
+  className,
+}: {
+  title: string
+  groups: ServiceGroup[]
+  className?: string
+}) {
+  if (groups.length === 0) return null
+
+  return (
+    <div className={className}>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+        <span className="text-sm text-muted-foreground">{groups.length} groepe</span>
+      </div>
+
+      <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+        <div className="flex min-w-full gap-4">
+          {groups.map((group, index) => (
+            <motion.article
+              key={group.id}
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.03 }}
+              className="flex w-[18rem] shrink-0 flex-col rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h4 className="text-lg font-semibold text-foreground">{group.name}</h4>
+                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                    {createExcerpt(group.description, 120)}
+                  </p>
+                </div>
+                <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
+              </div>
+
+              <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <Users className="h-4 w-4 text-amber-700" />
+                <span className="truncate">{group.contactPerson}</span>
+              </div>
+
+              <div className="mt-5">
+                <Button asChild variant="ghost" className="w-full justify-between px-0 text-amber-900 hover:text-amber-950">
+                  <Link href={`/diensgroepe/${group.slug}`}>
+                    Meer oor {group.name}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ServiceGroupRailSkeleton() {
+  return (
+    <section className="bg-white py-10 sm:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <div className="h-9 w-48 animate-pulse rounded bg-stone-200" />
+          <div className="mt-3 h-6 w-80 animate-pulse rounded bg-stone-100" />
+        </div>
+        <div className="space-y-8">
+          {[0, 1].map((row) => (
+            <div key={row}>
+              <div className="mb-4 h-7 w-40 animate-pulse rounded bg-stone-200" />
+              <div className="flex gap-4 overflow-hidden">
+                {[0, 1, 2].map((item) => (
+                  <div key={item} className="h-44 w-[18rem] shrink-0 animate-pulse rounded-2xl border border-stone-200 bg-stone-50" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ServiceGroupGridSkeleton() {
+  return (
+    <section className="bg-stone-50 py-12">
+      <div className="mx-auto max-w-7xl space-y-14 px-4 sm:px-6 lg:px-8">
+        {[0, 1].map((section) => (
+          <div key={section}>
+            <div className="mb-6 h-8 w-44 animate-pulse rounded bg-stone-200" />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {[0, 1, 2, 3].map((card) => (
+                <div key={card} className="h-72 animate-pulse rounded-2xl border border-stone-200 bg-white" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function ServiceGroupsCompact() {
   const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
   const [loading, setLoading] = React.useState(true)
@@ -241,12 +323,12 @@ export function ServiceGroupsCompact() {
         const params = new URLSearchParams({
           isActive: 'true',
           limit: '4',
-          sortBy: 'name',
+          sortBy: 'displayOrder',
           sortOrder: 'asc',
         })
 
         const response = await fetch(`/api/diensgroepe?${params}`)
-        
+
         if (response.ok) {
           const data = await response.json()
           setServiceGroups(data.serviceGroups || [])
@@ -271,8 +353,8 @@ export function ServiceGroupsCompact() {
           <div className="space-y-3">
             {[...Array(3)].map((_, index) => (
               <div key={index} className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                <div className="mb-2 h-4 rounded bg-gray-200" />
+                <div className="h-3 w-3/4 rounded bg-gray-200" />
               </div>
             ))}
           </div>
@@ -289,41 +371,33 @@ export function ServiceGroupsCompact() {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Diensgroepe</CardTitle>
-        <CardDescription>
-          Raak betrokke by ons bedienings
-        </CardDescription>
+        <CardDescription>Raak betrokke by ons bedienings</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {serviceGroups.map((group) => (
-            <div key={group.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-              <div className="flex items-start justify-between">
+            <div key={group.id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 text-sm mb-1">
-                    {group.name}
-                  </h4>
-                  <p className="text-xs text-gray-600 line-clamp-2 mb-2">
-                    {group.description}
+                  <h4 className="mb-1 text-sm font-medium text-gray-900">{group.name}</h4>
+                  <p className="mb-2 line-clamp-2 text-xs text-gray-600">
+                    {createExcerpt(group.description, 80)}
                   </p>
                   <div className="flex items-center text-xs text-gray-500">
-                    <Users className="h-3 w-3 mr-1" />
+                    <Users className="mr-1 h-3 w-3" />
                     {group.contactPerson}
                   </div>
                 </div>
                 <Button size="sm" variant="outline" asChild>
-                  <Link href={`/kontak?diensgroep=${group.id}`}>
-                    Kontak
-                  </Link>
+                  <Link href={`/diensgroepe/${group.slug}`}>Bekyk</Link>
                 </Button>
               </div>
             </div>
           ))}
-          
+
           <div className="pt-2">
             <Button asChild variant="ghost" size="sm" className="w-full">
-              <Link href="/diensgroepe">
-                Bekyk Alles →
-              </Link>
+              <Link href="/diensgroepe">Bekyk alles →</Link>
             </Button>
           </div>
         </div>
