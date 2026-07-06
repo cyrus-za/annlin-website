@@ -5,9 +5,6 @@ import { disconnectDatabase, prisma } from '../lib/db'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
 
-const DEFAULT_CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'admin@localhost.local'
-
 type WpRendered = { rendered?: string }
 
 type WpPage = {
@@ -265,6 +262,16 @@ function getWordPressBaseUrl() {
   return baseUrl.replace(/\/+$/, '')
 }
 
+function getDefaultContactEmail() {
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+
+  if (!contactEmail) {
+    throw new Error('NEXT_PUBLIC_CONTACT_EMAIL is required to import service-group contacts.')
+  }
+
+  return contactEmail
+}
+
 function htmlToText(html = '') {
   const text = decodeEntities(
     html
@@ -342,6 +349,7 @@ function locationForEvent(event: TribeEvent) {
 async function main() {
   console.log('Fetching WordPress content...')
   const wordpressBaseUrl = getWordPressBaseUrl()
+  const defaultContactEmail = getDefaultContactEmail()
 
   const pages = await fetchJson<WpPage[]>(
     `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,content,excerpt,modified,date`
@@ -417,7 +425,7 @@ async function main() {
       const serviceGroupTitle = titleForServiceGroup(page)
       const displayOrder = serviceGroupDisplayOrder.get(page.slug) ?? 100 + serviceGroups
       const category = categoryForServiceGroup(page)
-      const contactDetails = contactDetailsForServiceGroup(page.slug, category, DEFAULT_CONTACT_EMAIL)
+      const contactDetails = contactDetailsForServiceGroup(page.slug, category, defaultContactEmail)
 
       await prisma.serviceGroup.upsert({
         where: { slug: slugify(page.slug) },

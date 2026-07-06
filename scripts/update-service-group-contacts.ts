@@ -3,10 +3,18 @@
 import { disconnectDatabase, prisma } from '../lib/db'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 
-const DEFAULT_CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'admin@localhost.local'
+function getDefaultContactEmail() {
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+
+  if (!contactEmail) {
+    throw new Error('NEXT_PUBLIC_CONTACT_EMAIL is required to update service-group contacts.')
+  }
+
+  return contactEmail
+}
 
 async function main() {
+  const defaultContactEmail = getDefaultContactEmail()
   const serviceGroups = await prisma.serviceGroup.findMany({
     select: {
       id: true,
@@ -24,7 +32,7 @@ async function main() {
     const contactDetails = contactDetailsForServiceGroup(
       serviceGroup.slug,
       serviceGroup.category,
-      DEFAULT_CONTACT_EMAIL
+      defaultContactEmail
     )
 
     await prisma.serviceGroup.update({
