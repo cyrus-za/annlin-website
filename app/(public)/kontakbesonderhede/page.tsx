@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Mail, Phone, MapPin, Clock, Calendar, Users, Send } from 'lucide-react'
 import { Metadata } from 'next'
+import { APP_CONFIG } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Kontak Besonderhede | Annlin Gemeente',
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default function ContactDetailsPage() {
+  const contactEmailHref = `mailto:${APP_CONFIG.email}`
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -49,10 +52,10 @@ export default function ContactDetailsPage() {
                     <div>
                       <h4 className="font-medium text-foreground mb-2">E-pos</h4>
                       <a 
-                        href="mailto:kerkkantoor@annlin.co.za"
+                        href={contactEmailHref}
                         className="text-amber-600 hover:text-amber-800 break-all"
                       >
-                        kerkkantoor@annlin.co.za
+                        {APP_CONFIG.email}
                       </a>
                     </div>
                     
@@ -237,10 +240,10 @@ export default function ContactDetailsPage() {
                       <h4 className="font-medium text-foreground">Administrateur</h4>
                       <p className="text-muted-foreground">[Naam]</p>
                       <a 
-                        href="mailto:kerkkantoor@annlin.co.za"
+                        href={contactEmailHref}
                         className="text-sm text-amber-600 hover:text-amber-800"
                       >
-                        kerkkantoor@annlin.co.za
+                        {APP_CONFIG.email}
                       </a>
                     </div>
                   </div>

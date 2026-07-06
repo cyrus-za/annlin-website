@@ -26,6 +26,7 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token_here"
 
 # Application Configuration
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_CONTACT_EMAIL="admin@localhost.local"
 NODE_ENV="development"
 
 # Optional: Admin User Setup (for initial seeding)
@@ -55,6 +56,7 @@ BLOB_READ_WRITE_TOKEN="dev_blob_token_placeholder"
 
 # Application Configuration
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_CONTACT_EMAIL="admin@localhost.local"
 NODE_ENV="development"
 
 # Optional: Admin User Setup

@@ -14,16 +14,16 @@ site or database.
 
 Source checks:
 
-- `https://www.annlin.co.za/wp-json/wp/v2/pages?per_page=100`
-- `https://www.annlin.co.za/wp-json/wp/v2/posts?per_page=100`
-- `https://www.annlin.co.za/wp-json/tribe/events/v1/events?per_page=100`
+- `${WORDPRESS_BASE_URL}/wp-json/wp/v2/pages?per_page=100`
+- `${WORDPRESS_BASE_URL}/wp-json/wp/v2/posts?per_page=100`
+- `${WORDPRESS_BASE_URL}/wp-json/tribe/events/v1/events?per_page=100`
 
 Results:
 
 - Published WordPress pages found: 48
 - Published WordPress posts returned by API: 0
 - Upcoming calendar events returned by Events Calendar API: 38
-- `https://annlin.co.za/sitemap.xml` returns a WordPress 404 page, so the REST API is the more reliable inventory source.
+- The WordPress sitemap endpoint returns a WordPress 404 page, so the REST API is the more reliable inventory source.
 
 ## Covered On New Site
 
@@ -128,4 +128,4 @@ offline.
 3. Import reading material and news archive content into first-class new-site
    content, not just bridge links to WordPress.
 4. Re-run a link audit after import.
-5. Only then point `annlin.co.za` DNS at the new deployment.
+5. Only then point the production DNS at the new deployment.

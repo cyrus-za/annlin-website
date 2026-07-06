@@ -1,9 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Mail, Phone, MapPin, Calendar, Facebook, Youtube } from 'lucide-react'
+import { APP_CONFIG } from '@/lib/constants'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const contactEmailHref = `mailto:${APP_CONFIG.email}`
 
   return (
     <footer className="bg-amber-900 text-amber-100">
@@ -77,10 +79,10 @@ export function Footer() {
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-amber-400" />
                 <a 
-                  href="mailto:kerkkantoor@annlin.co.za"
+                  href={contactEmailHref}
                   className="text-sm text-amber-200 hover:text-white transition-colors"
                 >
-                  kerkkantoor@annlin.co.za
+                  {APP_CONFIG.email}
                 </a>
               </div>
             </div>

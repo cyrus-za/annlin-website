@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Church Brown Color Scheme - Based on Annlin.co.za */
+  /* Church brown color scheme */
   --background: 0 0% 100%;
   --foreground: 25 25% 15%; /* Dark brown text - good contrast on white */
   --card: 0 0% 100%;

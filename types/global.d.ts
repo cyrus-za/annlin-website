@@ -20,6 +20,7 @@ declare global {
       
       // Application
       NEXT_PUBLIC_APP_URL: string
+      NEXT_PUBLIC_CONTACT_EMAIL?: string
       NODE_ENV: 'development' | 'production' | 'test'
       
       // Optional Admin Setup

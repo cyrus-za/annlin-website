@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Calendar, Newspaper, BookOpen, Mail, ArrowRight } from 'lucide-react'
 import { Metadata } from 'next'
+import { APP_CONFIG } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Annlin Gemeente | Welkom',
@@ -239,7 +240,7 @@ export default function Home() {
                     <p className="text-muted-foreground">
                       Tel: 012 567 1492<br />
                       Sel: 079 162 3453<br />
-                      E-pos: kerkkantoor@annlin.co.za
+                      E-pos: {APP_CONFIG.email}
                     </p>
                   </div>
                   <Button asChild className="w-full">

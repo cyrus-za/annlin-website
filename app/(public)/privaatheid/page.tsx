@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { APP_CONFIG } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Privaatheid | Annlin Gemeente',
@@ -23,7 +24,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               Vir enige versoek oor persoonlike inligting, kontak die kerkkantoor by
-              kerkkantoor@annlin.co.za.
+              {` ${APP_CONFIG.email}.`}
             </p>
           </div>
         </div>
