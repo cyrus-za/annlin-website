@@ -68,6 +68,43 @@ Results on `2026-07-06`:
 - Redirect failures for legacy slugs: `0`
 - Remaining hardcoded old-domain references in app data audited by script: `0`
 
+## Inline WordPress assets audit
+
+The WordPress pages include inline assets in normal HTML and in Divi shortcodes such as
+`[et_pb_image src="..."]`. These were easy to lose when converting WordPress pages into
+plain text content.
+
+Audit result before the shortcode parser fix:
+
+- WordPress pages with inline images or linked files: `31`
+- Missing rendered asset references in migrated content: `32`
+- Pages affected:
+  - `nuus-2023`: `DXF.png`, `Picture-Collage-Save-the-Date-Card.png`
+  - `nuus-2022`: `Die-Fontein-3-scaled.jpg`
+  - `nuus-2021`: `Nuusbrief-e1558790613843.jpeg`
+  - `katkisasie-fotoblad`: `Boodskap-aan-jeug.jpg`, `Fotoblad-katkisasiekamp-2019.jpg`
+  - `jaarprogram`: `2026-Jaarprogram-6.pdf`, `2026-Jaarprogram-7.pdf`
+  - `oor-annlin-gemeente`: `cross-671379_960_720-e1538205832755.jpg`, `Diensterreine.jpg`, `Ds-Pieter-Kurpershoek-en-Marietjie.jpeg`, `Logo-GK-Annlin.png`, `Bybel.png`
+  - `homepagenew`: WordPress homepage service-group icons plus current homepage bulletin images.
+
+Source fix added on `2026-07-06`:
+
+- The WordPress importer now preserves real `<img>` tags, linked files, and Divi image
+  shortcodes as markdown images/links.
+- The Leesstof detail page renders preserved markdown links/images instead of plain text.
+- The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
+  dynamically.
+
+Pending verification:
+
+- Re-run `scripts/import-wordpress-content.ts` against the production database.
+- Re-run `scripts/audit-wordpress-inline-assets.ts`.
+- Expected improvement: the missing news and archive page assets above should be restored
+  in rendered DB content after the re-import.
+- The remaining singleton pages (`jaarprogram`, `oor-annlin-gemeente`, and the redesigned
+  homepage) should be reviewed manually because they are intentionally implemented as
+  custom pages, not imported WordPress body content.
+
 ## Remaining blocker before WordPress can be fully switched off
 
 - WordPress media archive is not yet fully copied into Vercel Blob.
@@ -77,6 +114,9 @@ Results on `2026-07-06`:
   - Known WordPress media size: about `902,885,400` bytes
   - Media entries with unknown source size metadata: `219`
 - I attempted the automated blob migration, but the local `BLOB_READ_WRITE_TOKEN` is still a placeholder, so the full copy could not run.
+- The latest inline-asset audit also found `186` page-level asset references that are not
+  yet archived in the new system. They can render from WordPress for now, but they are not
+  safe if WordPress is switched off before the media copy runs.
 
 ## Practical implication
 

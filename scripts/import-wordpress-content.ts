@@ -160,7 +160,7 @@ function escapeRegExp(value: string) {
 }
 
 function legacySiteHostPattern() {
-  const baseUrl = process.env.WORDPRESS_BASE_URL
+  const baseUrl = process.env['WORDPRESS_BASE_URL']
   if (!baseUrl) return null
 
   try {
@@ -220,6 +220,47 @@ function replaceLegacySiteReferences(value: string) {
     })
 }
 
+function attributeValue(tag: string, attribute: string) {
+  const pattern = new RegExp(`\\b${attribute}=["']([^"']+)["']`, 'i')
+  return tag.match(pattern)?.[1] || ''
+}
+
+function markdownImageFromAsset(src: string, alt = '') {
+  if (!src) return ''
+  return `\n\n![${decodeEntities(alt)}](${decodeEntities(src)})\n\n`
+}
+
+function markdownLinkFromAsset(href: string, label = '') {
+  if (!href) return ''
+  const cleanedHref = decodeEntities(href)
+  const cleanedLabel = htmlToText(label || cleanedHref)
+  return `[${cleanedLabel || cleanedHref}](${cleanedHref})`
+}
+
+function preserveAssetMarkup(html: string) {
+  return decodeEntities(html)
+    .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (match, href, text) => {
+      return markdownLinkFromAsset(href, text)
+    })
+    .replace(/<img\b[^>]*>/gi, (tag) => {
+      const src = attributeValue(tag, 'src') || attributeValue(tag, 'data-src')
+      const alt = attributeValue(tag, 'alt') || attributeValue(tag, 'title') || ''
+      return markdownImageFromAsset(src, alt)
+    })
+    .replace(/\[et_pb_image\b[^\]]*]/gi, (shortcode) => {
+      const src = attributeValue(shortcode, 'src')
+      const title = attributeValue(shortcode, 'title_text')
+      const url = attributeValue(shortcode, 'url')
+      const parts = [markdownImageFromAsset(src, title)]
+
+      if (url && url !== src) {
+        parts.push(markdownLinkFromAsset(url, title ? `${title} oopmaak` : url))
+      }
+
+      return parts.filter(Boolean).join('\n')
+    })
+}
+
 function hasKerkdienstgemistStationLink(value: string) {
   return (
     KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(value) ||
@@ -253,7 +294,7 @@ function normalizeEventDescription(value: string) {
 }
 
 function getWordPressBaseUrl() {
-  const baseUrl = process.env.WORDPRESS_BASE_URL
+  const baseUrl = process.env['WORDPRESS_BASE_URL']
 
   if (!baseUrl) {
     throw new Error('WORDPRESS_BASE_URL is required to import legacy WordPress content.')
@@ -263,7 +304,7 @@ function getWordPressBaseUrl() {
 }
 
 function getDefaultContactEmail() {
-  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+  const contactEmail = process.env['NEXT_PUBLIC_CONTACT_EMAIL']
 
   if (!contactEmail) {
     throw new Error('NEXT_PUBLIC_CONTACT_EMAIL is required to import service-group contacts.')
@@ -272,9 +313,10 @@ function getDefaultContactEmail() {
   return contactEmail
 }
 
-function htmlToText(html = '') {
+function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
+  const preparedHtml = options.preserveAssets ? preserveAssetMarkup(html) : html
   const text = decodeEntities(
-    html
+    preparedHtml
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
       .replace(/\[\/?et_pb_[^\]]*]/gi, ' ')
@@ -287,7 +329,8 @@ function htmlToText(html = '') {
       .trim()
   )
 
-  return replaceLegacySiteReferences(text).replace(/[ \t]{2,}/g, ' ').trim()
+  const cleaned = options.preserveAssets ? text : replaceLegacySiteReferences(text)
+  return cleaned.replace(/[ \t]{2,}/g, ' ').trim()
 }
 
 function titleOf(page: WpPage) {
@@ -295,8 +338,8 @@ function titleOf(page: WpPage) {
 }
 
 function contentOf(page: WpPage) {
-  const content = htmlToText(page.content.rendered || '')
-  const excerpt = htmlToText(page.excerpt?.rendered || '')
+  const content = htmlToText(page.content.rendered || '', { preserveAssets: true })
+  const excerpt = htmlToText(page.excerpt?.rendered || '', { preserveAssets: true })
   return content || excerpt || titleOf(page)
 }
 

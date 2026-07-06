@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink, FileText, Link as LinkIcon } from 'lucide-reac
 import { prisma } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { markdownToHtml } from '@/lib/tiptap-config'
 
 interface ReadingMaterialDetailPageProps {
   params: Promise<{
@@ -44,6 +45,8 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
     notFound()
   }
 
+  const descriptionHtml = material.description ? markdownToHtml(material.description) : null
+
   return (
     <div className="min-h-screen bg-stone-50">
       <section className="border-b bg-white py-14">
@@ -70,18 +73,11 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
       <section className="py-12">
         <div className="mx-auto grid max-w-4xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm">
-            {material.description ? (
-              <div className="space-y-5 text-base leading-8 text-foreground">
-                {material.description
-                  .split(/\n{2,}/)
-                  .map((paragraph) => paragraph.trim())
-                  .filter(Boolean)
-                  .map((paragraph, index) => (
-                    <p key={`${material.id}-paragraph-${index}`} className="whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
-              </div>
+            {descriptionHtml ? (
+              <div
+                className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+              />
             ) : (
               <p className="text-muted-foreground">
                 Geen verdere beskrywing is tans vir hierdie leesstof-item beskikbaar nie.
