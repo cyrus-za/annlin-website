@@ -3,15 +3,30 @@
 import { disconnectDatabase, prisma } from '../lib/db'
 
 const KERKDIENSTGEMIST_STATION_NEEDLE =
-  'kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin'
+  'kerkdienstgemist.nl/stations/1246'
+const YOUTUBE_SERMON_CHANNEL_NEEDLE = 'youtube.com/channel/UC4NmYnuAd0293vFhf1i-tpg'
 
 const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
-  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/i
+  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/i
+const YOUTUBE_SERMON_CHANNEL_TEST_PATTERN =
+  /\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/i
 
 function normalizeDescription(value: string) {
   return value
     .replace(
-      /(?:\s*Vir die klankuitsending,?\s*klik op die volgende skakel:\s*)?\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/gi,
+      /\s*Vir die video uitsending,?\s*klik asb op die volgende skakel:\s*\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/gi,
+      ''
+    )
+    .replace(
+      /\s*As u egter nie die betrokke erediens raaksien nie,\s*klik dan links bo op [“"]uploads[”"]\.\s*Dit behoort die webwerf op te dateer\./gi,
+      ''
+    )
+    .replace(
+      /\s*Vir die klankuitsending,?\s*klik op die volgende skakel:\s*\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/gi,
+      ''
+    )
+    .replace(
+      /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/gi,
       ''
     )
     .replace(/[ \t]+\n/g, '\n')
@@ -34,6 +49,18 @@ async function main() {
         {
           sermonUrl: {
             contains: KERKDIENSTGEMIST_STATION_NEEDLE,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: YOUTUBE_SERMON_CHANNEL_NEEDLE,
+            mode: 'insensitive',
+          },
+        },
+        {
+          sermonUrl: {
+            contains: YOUTUBE_SERMON_CHANNEL_NEEDLE,
             mode: 'insensitive',
           },
         },
@@ -61,10 +88,20 @@ async function main() {
 
   const remainingRawLinks = await prisma.event.count({
     where: {
-      description: {
-        contains: KERKDIENSTGEMIST_STATION_NEEDLE,
-        mode: 'insensitive',
-      },
+      OR: [
+        {
+          description: {
+            contains: KERKDIENSTGEMIST_STATION_NEEDLE,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: YOUTUBE_SERMON_CHANNEL_NEEDLE,
+            mode: 'insensitive',
+          },
+        },
+      ],
     },
   })
 
@@ -83,8 +120,13 @@ async function main() {
         events: events.map((event) => ({
           id: event.id,
           title: event.title,
-          hadRawDescriptionLink: KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(event.description),
-          hadRawSermonUrl: event.sermonUrl?.includes(KERKDIENSTGEMIST_STATION_NEEDLE) ?? false,
+          hadRawDescriptionLink:
+            KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(event.description) ||
+            YOUTUBE_SERMON_CHANNEL_TEST_PATTERN.test(event.description),
+          hadRawSermonUrl:
+            (event.sermonUrl?.includes(KERKDIENSTGEMIST_STATION_NEEDLE) ||
+              event.sermonUrl?.includes(YOUTUBE_SERMON_CHANNEL_NEEDLE)) ??
+            false,
         })),
       },
       null,

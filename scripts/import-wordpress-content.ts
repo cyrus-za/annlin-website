@@ -143,10 +143,10 @@ const singletonPageSlugs = new Set([
 const KERKDIENSTGEMIST_STATION_URL =
   'https://kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin'
 
-const KERKDIENSTGEMIST_STATION_PATTERN =
-  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/gi
 const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
-  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/i
+  /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/i
+const YOUTUBE_SERMON_CHANNEL_PATTERN =
+  /\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/i
 
 function replacementRouteForLegacySlug(slug: string) {
   if (serviceGroupSlugs.has(slug)) return '/diensgroepe'
@@ -224,13 +224,28 @@ function replaceLegacySiteReferences(value: string) {
 }
 
 function hasKerkdienstgemistStationLink(value: string) {
-  return KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(value)
+  return (
+    KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(value) ||
+    YOUTUBE_SERMON_CHANNEL_PATTERN.test(value)
+  )
 }
 
 function normalizeEventDescription(value: string) {
   return value
     .replace(
-      /(?:\s*Vir die klankuitsending,?\s*klik op die volgende skakel:\s*)?\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246-Gereformeerde-Kerk-Pretoria-Annlin\/?/gi,
+      /\s*Vir die video uitsending,?\s*klik asb op die volgende skakel:\s*\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/gi,
+      ''
+    )
+    .replace(
+      /\s*As u egter nie die betrokke erediens raaksien nie,\s*klik dan links bo op [“"]uploads[”"]\.\s*Dit behoort die webwerf op te dateer\./gi,
+      ''
+    )
+    .replace(
+      /\s*Vir die klankuitsending,?\s*klik op die volgende skakel:\s*\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/gi,
+      ''
+    )
+    .replace(
+      /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/gi,
       ''
     )
     .replace(/[ \t]+\n/g, '\n')
