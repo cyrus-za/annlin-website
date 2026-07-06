@@ -12,12 +12,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-function preview(value: string | null, maxLength = 800) {
-  if (!value) return ''
-  if (value.length <= maxLength) return value
-  return `${value.slice(0, maxLength).trim()}...`
-}
-
 export default async function ReadingPage() {
   const materials = await prisma.readingMaterial.findMany({
     include: { category: true },
@@ -51,7 +45,7 @@ export default async function ReadingPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="whitespace-pre-line text-muted-foreground">
-                      {preview(item.description)}
+                      {item.description}
                     </p>
                   </CardContent>
                 </Card>

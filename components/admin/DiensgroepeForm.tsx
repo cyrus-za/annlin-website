@@ -15,7 +15,7 @@ import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 const serviceGroupSchema = z.object({
   name: z.string().min(1, "Naam is verplig").max(100, "Naam mag nie langer as 100 karakters wees nie"),
   slug: z.string().optional(),
-  description: z.string().min(10, "Beskrywing moet ten minste 10 karakters wees").max(1000, "Beskrywing mag nie langer as 1000 karakters wees nie"),
+  description: z.string().min(10, "Beskrywing moet ten minste 10 karakters wees").max(20000, "Beskrywing mag nie langer as 20000 karakters wees nie"),
   category: z.enum(['DIAKONIE', 'OTHER']),
   contactPerson: z.string().min(1, "Kontak persoon is verplig").max(100, "Kontak persoon mag nie langer as 100 karakters wees nie"),
   contactEmail: z.string().email("Ongeldige e-pos adres"),

@@ -72,36 +72,22 @@ const nextConfig: NextConfig = {
   // Redirects for SEO (will be populated during WordPress migration)
   async redirects() {
     const serviceGroupSlugs = [
-      'fontein-redaksie',
-      'sekuriteit',
+      'hospitaalbesoeke',
+      'seniors-2',
+      'jeugbediening',
+      'sosiale-dienste',
+      'tradisionele-dienste',
+      'versorging-en-barmhartigheid-2',
       'vervoer-2',
       'verwelkoming-en-gasvryheid',
-      'versorging-en-barmhartigheid-2',
-      'tradisionele-dienste',
-      'sosiale-dienste',
-      'seniors-2',
-      'terebinte',
-      'jeugbediening',
-      'mosambiek-whatsappgroep',
-      'vroue-bedieningsgroep',
-      'manne-bedieningsgroep-4',
-      'tweedehandse-goedere-verkopings',
-      'koor',
-      'verwelkoming',
-      'katkisasie-leerkragte',
-      'rousmart',
-      'susters',
-      'kleuterbediening',
       'gebedsgroepe',
-      'verslawing2',
-      'laerskooljeug',
-      'katkisasie-fotoblad',
-      'hospitaalbesoeke',
-      'buitelandse-evangelisasie',
-      'bybelverspreiding',
       'evangelisasie-blad',
-      'evangelisasie-omliggende-gebiede',
-      'evangelisasie-eie-omgewing',
+      'tweedehandse-goedere-verkopings',
+      'terebinte',
+      'susters',
+      'sekuriteit',
+      'fontein-redaksie',
+      'vroue-bedieningsgroep',
     ]
 
     const readingSlugs = [
@@ -121,6 +107,23 @@ const nextConfig: NextConfig = {
       'susters-saamtrek-2024',
       'pinksterfeesvieringe-4-5-junie-2022',
       'uitnodiging-diensteblad',
+    ]
+
+    const archiveSlugs = [
+      'mosambiek-whatsappgroep',
+      'manne-bedieningsgroep-4',
+      'koor',
+      'verwelkoming',
+      'katkisasie-leerkragte',
+      'rousmart',
+      'kleuterbediening',
+      'verslawing2',
+      'laerskooljeug',
+      'katkisasie-fotoblad',
+      'buitelandse-evangelisasie',
+      'bybelverspreiding',
+      'evangelisasie-omliggende-gebiede',
+      'evangelisasie-eie-omgewing',
     ]
 
     return [
@@ -143,6 +146,11 @@ const nextConfig: NextConfig = {
       ...newsSlugs.map((slug) => ({
         source: `/${slug}`,
         destination: '/nuus',
+        permanent: true,
+      })),
+      ...archiveSlugs.map((slug) => ({
+        source: `/${slug}`,
+        destination: '/leesstof',
         permanent: true,
       })),
       {

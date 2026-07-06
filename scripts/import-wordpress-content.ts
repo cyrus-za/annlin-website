@@ -114,9 +114,35 @@ const newsSlugs = new Set([
   'uitnodiging-diensteblad',
 ])
 
+const archiveSlugs = new Set([
+  'mosambiek-whatsappgroep',
+  'manne-bedieningsgroep-4',
+  'koor',
+  'verwelkoming',
+  'katkisasie-leerkragte',
+  'rousmart',
+  'kleuterbediening',
+  'verslawing2',
+  'laerskooljeug',
+  'katkisasie-fotoblad',
+  'buitelandse-evangelisasie',
+  'bybelverspreiding',
+  'evangelisasie-omliggende-gebiede',
+  'evangelisasie-eie-omgewing',
+])
+
+const singletonPageSlugs = new Set([
+  'homepagenew',
+  'oor-annlin-gemeente',
+  'jaarprogram',
+  'kontakbesonderhede',
+  'onlangse-video-uitsendings-van-preke',
+])
+
 function replacementRouteForLegacySlug(slug: string) {
   if (serviceGroupSlugs.has(slug)) return '/diensgroepe'
   if (readingSlugs.has(slug)) return '/leesstof'
+  if (archiveSlugs.has(slug)) return '/leesstof'
   if (newsSlugs.has(slug)) return '/nuus'
   if (slug === 'onlangse-video-uitsendings-van-preke') return '/uitsendings'
   if (slug === 'homepagenew' || slug === '') return '/'
@@ -284,6 +310,15 @@ async function main() {
     },
   })
 
+  const archiveCategory = await prisma.readingMaterialCategory.upsert({
+    where: { name: 'Argief uit WordPress' },
+    update: {},
+    create: {
+      name: 'Argief uit WordPress',
+      description: 'Ouer WordPress-bladsye wat bewaar word sodat inhoud nie verlore raak nie',
+    },
+  })
+
   const eventCategory = await prisma.eventCategory.upsert({
     where: { name: 'Algemeen' },
     update: {},
@@ -323,7 +358,7 @@ async function main() {
         where: { slug: slugify(page.slug) },
         update: {
           name: serviceGroupTitle,
-          description: truncate(content, 2400),
+          description: content,
           category: categoryForServiceGroup(page),
           contactPerson: DEFAULT_CONTACT_PERSON,
           contactEmail: DEFAULT_CONTACT_EMAIL,
@@ -334,7 +369,7 @@ async function main() {
         create: {
           name: serviceGroupTitle,
           slug: slugify(page.slug),
-          description: truncate(content, 2400),
+          description: content,
           category: categoryForServiceGroup(page),
           contactPerson: DEFAULT_CONTACT_PERSON,
           contactEmail: DEFAULT_CONTACT_EMAIL,
@@ -352,7 +387,7 @@ async function main() {
         where: { id: `wp-page-${page.id}` },
         update: {
           title,
-          description: truncate(content, 3000),
+          description: content,
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -360,7 +395,7 @@ async function main() {
         create: {
           id: `wp-page-${page.id}`,
           title,
-          description: truncate(content, 3000),
+          description: content,
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -395,6 +430,29 @@ async function main() {
         },
       })
       articles++
+      continue
+    }
+
+    if (!singletonPageSlugs.has(page.slug)) {
+      await prisma.readingMaterial.upsert({
+        where: { id: `wp-archive-page-${page.id}` },
+        update: {
+          title,
+          description: content,
+          externalUrl: null,
+          categoryId: archiveCategory.id,
+          fileType: ReadingMaterialFileType.LINK,
+        },
+        create: {
+          id: `wp-archive-page-${page.id}`,
+          title,
+          description: content,
+          externalUrl: null,
+          categoryId: archiveCategory.id,
+          fileType: ReadingMaterialFileType.LINK,
+        },
+      })
+      readingMaterials++
     }
   }
 

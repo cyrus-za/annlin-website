@@ -22,11 +22,6 @@ function formatDate(date: Date | null) {
   }).format(date)
 }
 
-function preview(value: string, maxLength = 520) {
-  if (value.length <= maxLength) return value
-  return `${value.slice(0, maxLength).trim()}...`
-}
-
 export default async function NewsPage() {
   const articles = await prisma.article.findMany({
     where: { status: 'PUBLISHED' },
@@ -67,7 +62,7 @@ export default async function NewsPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="whitespace-pre-line text-muted-foreground">
-                      {preview(article.excerpt || article.content)}
+                      {article.content}
                     </p>
                   </CardContent>
                 </Card>

@@ -176,7 +176,7 @@ function ServiceGroupSection({
                   {group.name}
                 </CardTitle>
                 <CardDescription
-                  className={`whitespace-pre-line text-gray-600 ${showAll ? 'line-clamp-6' : 'line-clamp-3'}`}
+                  className={`whitespace-pre-line text-gray-600 ${showAll ? '' : 'line-clamp-3'}`}
                 >
                   {group.description}
                 </CardDescription>
