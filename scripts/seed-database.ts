@@ -625,7 +625,7 @@ async function seedSermonVideos(skipExisting: boolean, verbose: boolean) {
       preachedAt: null,
       preacher: null,
       description: 'Luister na eredienste op Kerkdienstgemist.',
-      videoUrl: 'https://kerkdienstgemist.nl/stations/218-Gereformeerde-Kerk-Annlin',
+      videoUrl: 'https://kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin',
       source: 'KERKDIENSTGEMIST' as const,
       isFeatured: false,
       status: 'PUBLISHED' as const,

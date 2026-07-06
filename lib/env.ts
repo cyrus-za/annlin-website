@@ -28,6 +28,9 @@ export const env = createEnv({
     // Optional Admin Setup
     ADMIN_EMAIL: z.string().optional(),
     ADMIN_PASSWORD: z.string().optional(),
+
+    // External feeds
+    KERKDIENSTGEMIST_API_TOKEN: z.string().optional(),
   },
   
   /*
@@ -55,6 +58,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    KERKDIENSTGEMIST_API_TOKEN: process.env["KERKDIENSTGEMIST_API_TOKEN"],
     
     // Client variables
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
