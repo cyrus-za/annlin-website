@@ -223,15 +223,15 @@ export default function CalendarAdminPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Jaarprogram Bestuur</h1>
           <p className="mt-2 text-gray-600">
             Bestuur kerkgebeure en jaarlikse program
           </p>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
             <Button
               variant={view === 'calendar' ? 'default' : 'outline'}
               size="sm"
@@ -256,10 +256,10 @@ export default function CalendarAdminPage() {
       </div>
 
       {view === 'calendar' ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
           {/* Calendar */}
-          <div className="lg:col-span-2">
-            <Card>
+          <div>
+            <Card className="h-full">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>
@@ -275,25 +275,27 @@ export default function CalendarAdminPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  month={currentDate}
-                  onMonthChange={setCurrentDate}
-                  modifiers={{
-                    event: eventDates,
-                  }}
-                  modifiersStyles={{
-                    event: { 
-                      backgroundColor: '#3B82F6', 
-                      color: 'white',
-                      fontWeight: 'bold',
-                    },
-                  }}
-                  className="rounded-md border"
-                />
+              <CardContent className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    month={currentDate}
+                    onMonthChange={setCurrentDate}
+                    modifiers={{
+                      event: eventDates,
+                    }}
+                    modifiersStyles={{
+                      event: {
+                        backgroundColor: '#3B82F6',
+                        color: 'white',
+                        fontWeight: 'bold',
+                      },
+                    }}
+                    className="w-full rounded-md border"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -520,4 +522,3 @@ export default function CalendarAdminPage() {
     </div>
   )
 }
-
