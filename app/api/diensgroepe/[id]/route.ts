@@ -23,11 +23,11 @@ const updateServiceGroupSchema = z.object({
 // GET /api/diensgroepe/[id] - Get single service group
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
-    const { id } = params
+    const { id } = await params
     
     const result = await safeDatabaseOperation(async () => {
       const serviceGroup = await prisma.serviceGroup.findUnique({
@@ -85,11 +85,11 @@ export async function GET(
 // PUT /api/diensgroepe/[id] - Update service group
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     if (user.role !== 'ADMIN') {
       return NextResponse.json(
@@ -183,11 +183,11 @@ export async function PUT(
 // DELETE /api/diensgroepe/[id] - Delete service group
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     // Only admins can delete service groups
     if (user.role !== 'ADMIN') {

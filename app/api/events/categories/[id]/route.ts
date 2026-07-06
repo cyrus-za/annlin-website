@@ -13,10 +13,10 @@ const updateCategorySchema = z.object({
 // GET /api/events/categories/[id] - Get single event category
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     
     const result = await safeDatabaseOperation(async () => {
       const category = await prisma.eventCategory.findUnique({
@@ -68,11 +68,11 @@ export async function GET(
 // PUT /api/events/categories/[id] - Update event category
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     // Only admins can update categories
     if (user.role !== 'ADMIN') {
@@ -168,11 +168,11 @@ export async function PUT(
 // DELETE /api/events/categories/[id] - Delete event category
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     // Only admins can delete categories
     if (user.role !== 'ADMIN') {
@@ -240,4 +240,3 @@ export async function DELETE(
     )
   }
 }
-

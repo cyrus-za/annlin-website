@@ -21,10 +21,10 @@ const updateEventSchema = z.object({
 // GET /api/events/[id] - Get single event
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     
     const result = await safeDatabaseOperation(async () => {
       const event = await prisma.event.findUnique({
@@ -69,11 +69,11 @@ export async function GET(
 // PUT /api/events/[id] - Update event
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     // Only admins and editors can update events
     if (!['ADMIN', 'EDITOR'].includes(user.role)) {
@@ -198,11 +198,11 @@ export async function PUT(
 // DELETE /api/events/[id] - Delete event
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await requireAuth()
-    const { id } = params
+    const { id } = await params
     
     // Only admins can delete events
     if (user.role !== 'ADMIN') {

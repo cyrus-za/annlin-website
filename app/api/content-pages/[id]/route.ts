@@ -16,10 +16,11 @@ const updateContentPageSchema = z.object({
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const result = await safeDatabaseOperation(async () => {
-    const page = await prisma.contentPage.findUnique({ where: { id: params.id } })
+    const page = await prisma.contentPage.findUnique({ where: { id } })
     if (!page) throw new Error('Bladsy nie gevind nie')
     return page
   }, 'Fetch content page')
@@ -33,9 +34,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { user } = await requireAuth()
+  const { id } = await params
 
   if (user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
@@ -46,13 +48,13 @@ export async function PUT(
     const data = updateContentPageSchema.parse(body)
 
     const result = await safeDatabaseOperation(async () => {
-      const currentPage = await prisma.contentPage.findUnique({ where: { id: params.id } })
+      const currentPage = await prisma.contentPage.findUnique({ where: { id } })
       if (!currentPage) throw new Error('Bladsy nie gevind nie')
 
       const { slug, sections, ...pageFields } = data
 
       const page = await prisma.contentPage.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           ...pageFields,
           ...(slug ? { slug: slugify(slug) } : {}),

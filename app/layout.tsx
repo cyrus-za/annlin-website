@@ -5,6 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 export const metadata: Metadata = {
   title: "Annlin Gemeente",
   description: "Amptelike webwerf van die Annlin Gemeente",
+  icons: {
+    icon: "/gksa-logo.png",
+    shortcut: "/gksa-logo.png",
+    apple: "/gksa-logo.png",
+  },
 };
 
 export default function RootLayout({

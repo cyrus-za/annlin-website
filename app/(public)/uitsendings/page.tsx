@@ -62,6 +62,10 @@ type KerkdienstgemistApiResponse = {
   included?: unknown
 }
 
+function stripLeadingDate(value: string) {
+  return value.replace(/^\s*\d{1,2}\s+[A-Za-zÀ-ÿ]+\s+\d{4}\s*[-–:]\s*/u, '').trim()
+}
+
 function decodeXmlEntities(value: string) {
   return value
     .replaceAll('&amp;', '&')
@@ -304,7 +308,7 @@ export default async function UitsendingsPage() {
                   </div>
                   <CardHeader>
                     <CardTitle className="line-clamp-2 text-base leading-tight">
-                      {upload.title}
+                      {stripLeadingDate(upload.title)}
                     </CardTitle>
                     {upload.publishedAt ? (
                       <CardDescription>

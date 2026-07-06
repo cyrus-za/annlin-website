@@ -1,4 +1,5 @@
 import { requireAuth } from '@/lib/auth-config'
+import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -9,27 +10,33 @@ import {
   BookOpen,
   Mail,
   Video,
-  TrendingUp,
-  Clock
 } from 'lucide-react'
 
 export default async function AdminDashboard() {
   const { user } = await requireAuth()
+  const thirtyDaysFromNow = new Date()
+  thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
 
-  // Mock statistics - in real app, fetch from database
-  const stats = {
-    totalUsers: 12,
-    totalArticles: 45,
-    totalEvents: 23,
-    pendingSubmissions: 7
-  }
-
-  const recentActivity = [
-    { type: 'article', title: 'Nuwe artikel gepubliseer: "Jeugkamp 2024"', time: '2 uur gelede' },
-    { type: 'event', title: 'Gebeurtenis bygevoeg: "Biduur"', time: '4 uur gelede' },
-    { type: 'user', title: 'Nuwe gebruiker geregistreer', time: '6 uur gelede' },
-    { type: 'contact', title: 'Kontak vorm indiening ontvang', time: '1 dag gelede' },
-  ]
+  const [totalUsers, totalArticles, upcomingEvents, pendingSubmissions, totalServiceGroups, totalReadingMaterials] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.article.count(),
+      prisma.event.count({
+        where: {
+          startDate: {
+            gte: new Date(),
+            lte: thirtyDaysFromNow,
+          },
+        },
+      }),
+      prisma.contactSubmission.count({
+        where: { status: 'NEW' },
+      }),
+      prisma.serviceGroup.count({
+        where: { isActive: true },
+      }),
+      prisma.readingMaterial.count(),
+    ])
 
   return (
     <div className="space-y-6">
@@ -51,22 +58,22 @@ export default async function AdminDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            <div className="text-2xl font-bold">{totalUsers}</div>
             <p className="text-xs text-muted-foreground">
-              +2 van vorige maand
+              Aktiewe CMS gebruikers
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Artikels</CardTitle>
+            <CardTitle className="text-sm font-medium">Totale Nuusitems</CardTitle>
             <Newspaper className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalArticles}</div>
+            <div className="text-2xl font-bold">{totalArticles}</div>
             <p className="text-xs text-muted-foreground">
-              +5 van vorige maand
+              Gepubliseer en konsep
             </p>
           </CardContent>
         </Card>
@@ -77,7 +84,7 @@ export default async function AdminDashboard() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalEvents}</div>
+            <div className="text-2xl font-bold">{upcomingEvents}</div>
             <p className="text-xs text-muted-foreground">
               Volgende 30 dae
             </p>
@@ -90,7 +97,7 @@ export default async function AdminDashboard() {
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingSubmissions}</div>
+            <div className="text-2xl font-bold">{pendingSubmissions}</div>
             <p className="text-xs text-muted-foreground">
               Benodig aandag
             </p>
@@ -142,89 +149,50 @@ export default async function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Recent Activity and Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Onlangse Aktiwiteit</CardTitle>
-            <CardDescription>
-              Jou onlangse aksies en veranderinge
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="h-2 w-2 bg-amber-500 rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">
-                      {activity.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground flex items-center">
-                      <Clock className="mr-1 h-3 w-3" />
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4">
-              <Button variant="outline" size="sm" className="w-full" disabled>
-                Bekyk Alle Aktiwiteit
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Content Overview */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Inhoud Oorsig</CardTitle>
-            <CardDescription>
-              Vinnige oorsig van jou inhoud
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Newspaper className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm font-medium">Gepubliseerde Artikels</span>
-                </div>
-                <span className="text-sm text-muted-foreground">32</span>
+      <Card>
+        <CardHeader>
+          <CardTitle>Inhoud Oorsig</CardTitle>
+          <CardDescription>
+            Huidige inhoud in die stelsel
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Users className="h-4 w-4 text-amber-700" />
+                Diensgroepe
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm font-medium">Aktiewe Gebeure</span>
-                </div>
-                <span className="text-sm text-muted-foreground">18</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-amber-700" />
-                  <span className="text-sm font-medium">Diensgroepe</span>
-                </div>
-                <span className="text-sm text-muted-foreground">8</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <BookOpen className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm font-medium">Leesstof Items</span>
-                </div>
-                <span className="text-sm text-muted-foreground">15</span>
-              </div>
+              <p className="mt-2 text-2xl font-bold">{totalServiceGroups}</p>
+              <p className="text-xs text-muted-foreground">Aktief op publieke webwerf</p>
             </div>
-            <div className="mt-4">
-              <Button variant="outline" size="sm" className="w-full" disabled>
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Bekyk Statistieke
-              </Button>
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <BookOpen className="h-4 w-4 text-amber-700" />
+                Leesstof
+              </div>
+              <p className="mt-2 text-2xl font-bold">{totalReadingMaterials}</p>
+              <p className="text-xs text-muted-foreground">Gekureerde leesstof items</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Calendar className="h-4 w-4 text-amber-700" />
+                Jaarprogram
+              </div>
+              <p className="mt-2 text-2xl font-bold">{upcomingEvents}</p>
+              <p className="text-xs text-muted-foreground">Items binne 30 dae</p>
+            </div>
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Mail className="h-4 w-4 text-amber-700" />
+                Nuwe navrae
+              </div>
+              <p className="mt-2 text-2xl font-bold">{pendingSubmissions}</p>
+              <p className="text-xs text-muted-foreground">Onverwerkte kontakvorms</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

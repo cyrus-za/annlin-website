@@ -17,9 +17,10 @@ const updateSermonVideoSchema = z.object({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { user } = await requireAuth()
+  const { id } = await params
 
   if (user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
@@ -30,11 +31,11 @@ export async function PUT(
     const data = updateSermonVideoSchema.parse(body)
 
     const result = await safeDatabaseOperation(async () => {
-      const currentVideo = await prisma.sermonVideo.findUnique({ where: { id: params.id } })
+      const currentVideo = await prisma.sermonVideo.findUnique({ where: { id } })
       if (!currentVideo) throw new Error('Uitsending nie gevind nie')
 
       const video = await prisma.sermonVideo.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           ...data,
           ...(data.preachedAt !== undefined ? { preachedAt: data.preachedAt ? new Date(data.preachedAt) : null } : {}),
@@ -77,25 +78,26 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { user } = await requireAuth()
+  const { id } = await params
 
   if (user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
   }
 
   const result = await safeDatabaseOperation(async () => {
-    const currentVideo = await prisma.sermonVideo.findUnique({ where: { id: params.id } })
+    const currentVideo = await prisma.sermonVideo.findUnique({ where: { id } })
     if (!currentVideo) throw new Error('Uitsending nie gevind nie')
 
-    await prisma.sermonVideo.delete({ where: { id: params.id } })
+    await prisma.sermonVideo.delete({ where: { id } })
     await prisma.auditLog.create({
       data: {
         userId: user.id,
         action: 'DELETE',
         entityType: 'SermonVideo',
-        entityId: params.id,
+        entityId: id,
         changes: { deleted: currentVideo },
       },
     })
