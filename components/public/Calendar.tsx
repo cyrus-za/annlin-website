@@ -21,7 +21,15 @@ import {
   Users,
   ExternalLink
 } from 'lucide-react'
-import { format, startOfMonth, endOfMonth, addMonths, subMonths, isSameDay } from 'date-fns'
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  subMonths,
+  isSameDay,
+  isSameMonth,
+} from 'date-fns'
 import { af } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -50,7 +58,7 @@ interface PublicCalendarProps {
 
 export function PublicCalendar({ compact = false, showUpcoming = false, limit }: PublicCalendarProps) {
   const [currentDate, setCurrentDate] = React.useState(new Date())
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date())
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>()
   const [events, setEvents] = React.useState<Event[]>([])
   const [loading, setLoading] = React.useState(true)
   const [selectedEvent, setSelectedEvent] = React.useState<Event | null>(null)
@@ -87,11 +95,30 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
     fetchEvents(currentDate)
   }, [currentDate, fetchEvents])
 
+  React.useEffect(() => {
+    if (loading || selectedDate || events.length === 0) return
+
+    const now = new Date()
+    const eventDatesInMonth = events
+      .map((event) => new Date(event.startDate))
+      .filter((date) => isSameMonth(date, currentDate))
+      .sort((a, b) => a.getTime() - b.getTime())
+
+    const firstUpcomingDate =
+      eventDatesInMonth.find((date) => date >= now) || eventDatesInMonth[0]
+
+    if (firstUpcomingDate) {
+      setSelectedDate(firstUpcomingDate)
+    }
+  }, [currentDate, events, loading, selectedDate])
+
   const handlePreviousMonth = () => {
+    setSelectedDate(undefined)
     setCurrentDate(subMonths(currentDate, 1))
   }
 
   const handleNextMonth = () => {
+    setSelectedDate(undefined)
     setCurrentDate(addMonths(currentDate, 1))
   }
 
@@ -203,7 +230,10 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setCurrentDate(new Date())}
+                    onClick={() => {
+                      setSelectedDate(undefined)
+                      setCurrentDate(new Date())
+                    }}
                   >
                     Vandag
                   </Button>
@@ -226,7 +256,10 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   month={currentDate}
-                  onMonthChange={setCurrentDate}
+                  onMonthChange={(date) => {
+                    setSelectedDate(undefined)
+                    setCurrentDate(date)
+                  }}
                   modifiers={{
                     event: eventDates,
                   }}
