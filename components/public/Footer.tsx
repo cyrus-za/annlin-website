@@ -136,14 +136,12 @@ export function Footer() {
               >
                 Preke & Leesstof
               </Link>
-              <a 
-                href="https://kerkdienstgemist.nl/streams/1029138"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link 
+                href="/uitsendings"
                 className="block text-sm text-amber-200 hover:text-white transition-colors"
               >
                 Luister na Preke
-              </a>
+              </Link>
             </div>
           </div>
         </div>
