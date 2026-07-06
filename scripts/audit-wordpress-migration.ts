@@ -27,6 +27,15 @@ type TribeEvent = {
   end_date?: string
 }
 
+type WpMedia = {
+  id: number
+  source_url: string
+  mime_type: string
+  media_details?: {
+    filesize?: number
+  }
+}
+
 const diakonieServiceGroups = [
   'hospitaalbesoeke',
   'seniors-2',
@@ -177,6 +186,47 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>
 }
 
+async function fetchJsonWithHeaders<T>(
+  url: string
+): Promise<{ data: T; totalPages: number; total: number }> {
+  const response = await fetch(url, {
+    headers: {
+      accept: 'application/json',
+      'user-agent': 'Annlin migration audit',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Fetch failed ${response.status}: ${url}`)
+  }
+
+  return {
+    data: (await response.json()) as T,
+    total: Number(response.headers.get('x-wp-total') || 0),
+    totalPages: Number(response.headers.get('x-wp-totalpages') || 1),
+  }
+}
+
+async function fetchAllMedia(wordpressBaseUrl: string) {
+  const fields = 'id,source_url,mime_type,media_details'
+  const first = await fetchJsonWithHeaders<WpMedia[]>(
+    `${wordpressBaseUrl}/wp-json/wp/v2/media?per_page=100&page=1&_fields=${fields}`
+  )
+  const media = [...first.data]
+
+  for (let page = 2; page <= first.totalPages; page++) {
+    const next = await fetchJsonWithHeaders<WpMedia[]>(
+      `${wordpressBaseUrl}/wp-json/wp/v2/media?per_page=100&page=${page}&_fields=${fields}`
+    )
+    media.push(...next.data)
+  }
+
+  return {
+    media,
+    total: first.total || media.length,
+  }
+}
+
 async function routeStatus(baseUrl: string, path: string) {
   try {
     const response = await fetch(`${baseUrl}${path}`, {
@@ -230,18 +280,21 @@ async function main() {
   const eventResponse = await fetchJson<{ events?: TribeEvent[] }>(
     `${wordpressBaseUrl}/wp-json/tribe/events/v1/events?per_page=100`
   )
+  const mediaResponse = await fetchAllMedia(wordpressBaseUrl)
 
-  const [serviceGroups, articles, readingMaterials, events] = await Promise.all([
+  const [serviceGroups, articles, readingMaterials, events, uploadedAssets] = await Promise.all([
     prisma.serviceGroup.findMany({ where: { isActive: true }, orderBy: { displayOrder: 'asc' } }),
     prisma.article.findMany({ where: { status: 'PUBLISHED' } }),
     prisma.readingMaterial.findMany(),
     prisma.event.findMany(),
+    prisma.uploadedAsset.findMany({ where: { id: { startsWith: 'wp-media-' } } }),
   ])
 
   const serviceGroupBySlug = new Map(serviceGroups.map((group) => [group.slug, group]))
   const articleBySlug = new Map(articles.map((article) => [article.slug, article]))
   const readingById = new Map(readingMaterials.map((item) => [item.id, item]))
   const eventById = new Map(events.map((event) => [event.id, event]))
+  const uploadedAssetById = new Map(uploadedAssets.map((asset) => [asset.id, asset]))
 
   const serviceGroupAudit = pages
     .filter((page) => serviceGroupSlugs.has(page.slug))
@@ -322,6 +375,19 @@ async function main() {
     }
   })
 
+  const mediaAudit = mediaResponse.media.map((media) => {
+    const asset = uploadedAssetById.get(`wp-media-${media.id}`)
+    const fileUrl = asset?.url || ''
+    return {
+      id: media.id,
+      mimeType: media.mime_type,
+      sourceUrl: media.source_url,
+      sourceSize: media.media_details?.filesize || null,
+      present: Boolean(asset),
+      copiedOffWordPress: Boolean(asset && !/annlin\.co\.za\/wp-content/i.test(fileUrl)),
+    }
+  })
+
   const oldDomainPattern = /https?:\/\/(?:www\.)?annlin\.co\.za|www\.annlin\.co\.za|annlin\.co\.za\/wp-content/i
   const oldDomainRows = [
     ...serviceGroups
@@ -367,6 +433,8 @@ async function main() {
     (item) => !item.present || item.coverage < 0.92
   )
   const missingEvents = eventAudit.filter((item) => !item.present || !item.startDateMatches)
+  const missingMedia = mediaAudit.filter((item) => !item.present)
+  const mediaStillOnWordPress = mediaAudit.filter((item) => item.present && !item.copiedOffWordPress)
   const badRoutes = routeAudit.filter((route) => route.status === 0 || route.status >= 400)
   const badRedirects = redirectAudit.filter((route) => {
     if (![307, 308].includes(route.status)) return true
@@ -387,14 +455,34 @@ async function main() {
           migratedNewsArticles: articles.length,
           wordpressEvents: eventResponse.events?.length || 0,
           migratedEvents: events.length,
+          wordpressMedia: mediaResponse.total,
+          migratedMediaAssets: uploadedAssets.length,
+          mediaStillOnWordPress: mediaStillOnWordPress.length,
+          wordpressMediaKnownBytes: mediaResponse.media.reduce(
+            (total, item) => total + (item.media_details?.filesize || 0),
+            0
+          ),
+          wordpressMediaUnknownSizes: mediaResponse.media.filter((item) => !item.media_details?.filesize)
+            .length,
           lowCoverage: lowCoverage.length,
           missingEvents: missingEvents.length,
+          missingMedia: missingMedia.length,
           oldDomainRows: oldDomainRows.length,
           badRoutes: badRoutes.length,
           badRedirects: badRedirects.length,
+          wordpressOfflineReady:
+            lowCoverage.length === 0 &&
+            missingEvents.length === 0 &&
+            missingMedia.length === 0 &&
+            mediaStillOnWordPress.length === 0 &&
+            oldDomainRows.length === 0 &&
+            badRoutes.length === 0 &&
+            badRedirects.length === 0,
         },
         lowCoverage,
         missingEvents,
+        missingMediaSample: missingMedia.slice(0, 25),
+        mediaStillOnWordPressSample: mediaStillOnWordPress.slice(0, 25),
         oldDomainRows,
         badRoutes,
         badRedirects,
