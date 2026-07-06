@@ -187,12 +187,12 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,560px)_minmax(0,1fr)]">
         {/* Calendar */}
-        <div className="lg:col-span-2">
+        <div>
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>
                   {format(currentDate, 'MMMM yyyy', { locale: af })}
                 </CardTitle>
@@ -213,7 +213,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex justify-center sm:justify-start">
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
@@ -222,6 +222,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
               ) : (
                 <CalendarComponent
                   mode="single"
+                  locale={af}
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   month={currentDate}
