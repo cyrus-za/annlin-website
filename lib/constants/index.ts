@@ -4,8 +4,8 @@
 export const APP_CONFIG = {
   name: 'Annlin Gemeente Webwerf',
   description: 'Gereformeerde Kerk Pretoria-Annlin',
-  url: 'https://annlin.co.za',
-  email: 'info@annlin.co.za',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  email: 'kerkkantoor@annlin.co.za',
   phone: '+27 12 xxx xxxx',
 } as const
 

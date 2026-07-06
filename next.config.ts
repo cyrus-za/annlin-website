@@ -19,14 +19,8 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Add domains for external images (WordPress migration, etc.)
+    // Add domains for externally uploaded images.
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'annlin.co.za',
-        port: '',
-        pathname: '/wp-content/uploads/**',
-      },
       {
         protocol: 'https',
         hostname: '*.vercel-storage.com',

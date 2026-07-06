@@ -4,7 +4,6 @@ import { ArticleStatus, ReadingMaterialFileType, ServiceGroupCategory } from '@p
 import { disconnectDatabase, prisma } from '../lib/db'
 import { slugify } from '../lib/slug'
 
-const WORDPRESS_BASE_URL = 'https://www.annlin.co.za'
 const DEFAULT_CONTACT_EMAIL = 'kerkkantoor@annlin.co.za'
 const DEFAULT_CONTACT_PERSON = 'Kerkkantoor'
 
@@ -75,52 +74,25 @@ const serviceGroupDisplayOrder = new Map(
 )
 
 const serviceGroupThumbnailUrls = new Map<string, string>([
-  [
-    'hospitaalbesoeke',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/siekebesoeke-2-300x300.png',
-  ],
-  ['seniors-2', 'https://www.annlin.co.za/wp-content/uploads/2026/06/seniors-2-300x300.png'],
-  ['jeugbediening', 'https://www.annlin.co.za/wp-content/uploads/2026/06/jeug2-300x300.png'],
-  ['sosiale-dienste', 'https://www.annlin.co.za/wp-content/uploads/2026/06/sosiaal2-300x300.png'],
-  [
-    'tradisionele-dienste',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/traditionele2-300x300.png',
-  ],
+  ['hospitaalbesoeke', '/migrated/diensgroepe/siekebesoeke.png'],
+  ['seniors-2', '/migrated/diensgroepe/seniors.png'],
+  ['jeugbediening', '/migrated/diensgroepe/jeug.png'],
+  ['sosiale-dienste', '/migrated/diensgroepe/sosiale-dienste.png'],
+  ['tradisionele-dienste', '/migrated/diensgroepe/tradisionele-dienste.png'],
   [
     'versorging-en-barmhartigheid-2',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/Versorging-en-Barmhartigheid-2-300x300.png',
+    '/migrated/diensgroepe/versorging-en-barmhartigheid.png',
   ],
-  ['vervoer-2', 'https://www.annlin.co.za/wp-content/uploads/2026/06/vervoer2-300x300.png'],
-  [
-    'verwelkoming-en-gasvryheid',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/Welkom-2-300x300.png',
-  ],
-  [
-    'gebedsgroepe',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/Gebedsgroep-2-300x300.png',
-  ],
-  [
-    'evangelisasie-blad',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/Evangelisasie-2-300x293.png',
-  ],
-  [
-    'tweedehandse-goedere-verkopings',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/thv-2-300x300.png',
-  ],
-  [
-    'terebinte',
-    'https://www.annlin.co.za/wp-content/uploads/2024/12/Terebinte-boom2-300x169.jpg',
-  ],
-  ['susters', 'https://www.annlin.co.za/wp-content/uploads/2026/06/susters-2-300x300.png'],
-  ['sekuriteit', 'https://www.annlin.co.za/wp-content/uploads/2026/06/Sekuriteit-2-300x300.png'],
-  [
-    'fontein-redaksie',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/Fontein-Redaksie-2-300x300.png',
-  ],
-  [
-    'vroue-bedieningsgroep',
-    'https://www.annlin.co.za/wp-content/uploads/2026/06/vroue-2-300x300.png',
-  ],
+  ['vervoer-2', '/migrated/diensgroepe/vervoer.png'],
+  ['verwelkoming-en-gasvryheid', '/migrated/diensgroepe/verwelkoming-en-gasvryheid.png'],
+  ['gebedsgroepe', '/migrated/diensgroepe/gebedsgroep.png'],
+  ['evangelisasie-blad', '/migrated/diensgroepe/evangelisasie.png'],
+  ['tweedehandse-goedere-verkopings', '/migrated/diensgroepe/tweedehandse-goedere.png'],
+  ['terebinte', '/migrated/diensgroepe/terebinte.jpg'],
+  ['susters', '/migrated/diensgroepe/susters.png'],
+  ['sekuriteit', '/migrated/diensgroepe/sekuriteit.png'],
+  ['fontein-redaksie', '/migrated/diensgroepe/fontein-redaksie.png'],
+  ['vroue-bedieningsgroep', '/migrated/diensgroepe/vroue-bedieningsgroep.png'],
 ])
 
 const readingSlugs = new Set([
@@ -141,6 +113,15 @@ const newsSlugs = new Set([
   'pinksterfeesvieringe-4-5-junie-2022',
   'uitnodiging-diensteblad',
 ])
+
+function replacementRouteForLegacySlug(slug: string) {
+  if (serviceGroupSlugs.has(slug)) return '/diensgroepe'
+  if (readingSlugs.has(slug)) return '/leesstof'
+  if (newsSlugs.has(slug)) return '/nuus'
+  if (slug === 'onlangse-video-uitsendings-van-preke') return '/uitsendings'
+  if (slug === 'homepagenew' || slug === '') return '/'
+  return null
+}
 
 function decodeEntities(value: string) {
   let decoded = value
@@ -166,11 +147,35 @@ function decodeEntities(value: string) {
   return decoded
 }
 
+function replaceLegacySiteReferences(value: string) {
+  return value
+    .replace(/\bhttps?:\/\/(?:www\.)?annlin\.co\.za\/wp-content\/uploads\/[^\s"')\]]+/gi, '')
+    .replace(
+      /\bhttps?:\/\/(?:www\.)?annlin\.co\.za\/([a-z0-9-]+)\/?/gi,
+      (match, slug: string) => replacementRouteForLegacySlug(slug) ?? match
+    )
+    .replace(/\bwww\.annlin\.co\.za\/([a-z0-9-]+)\/?/gi, (match, slug: string) => {
+      const route = replacementRouteForLegacySlug(slug)
+      return route ?? match
+    })
+}
+
+function getWordPressBaseUrl() {
+  const baseUrl = process.env.WORDPRESS_BASE_URL
+
+  if (!baseUrl) {
+    throw new Error('WORDPRESS_BASE_URL is required to import legacy WordPress content.')
+  }
+
+  return baseUrl.replace(/\/+$/, '')
+}
+
 function htmlToText(html = '') {
-  return decodeEntities(
+  const text = decodeEntities(
     html
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/\[\/?et_pb_[^\]]*]/gi, ' ')
       .replace(/<br\s*\/?>/gi, '\n')
       .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n')
       .replace(/<[^>]+>/g, ' ')
@@ -179,6 +184,8 @@ function htmlToText(html = '') {
       .replace(/[ \t]{2,}/g, ' ')
       .trim()
   )
+
+  return replaceLegacySiteReferences(text).replace(/[ \t]{2,}/g, ' ').trim()
 }
 
 function titleOf(page: WpPage) {
@@ -239,12 +246,13 @@ function locationForEvent(event: TribeEvent) {
 
 async function main() {
   console.log('Fetching WordPress content...')
+  const wordpressBaseUrl = getWordPressBaseUrl()
 
   const pages = await fetchJson<WpPage[]>(
-    `${WORDPRESS_BASE_URL}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,content,excerpt,modified,date`
+    `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,content,excerpt,modified,date`
   )
   const eventResponse = await fetchJson<{ events?: TribeEvent[] }>(
-    `${WORDPRESS_BASE_URL}/wp-json/tribe/events/v1/events?per_page=100`
+    `${wordpressBaseUrl}/wp-json/tribe/events/v1/events?per_page=100`
   )
 
   const admin = await prisma.user.findFirst({
