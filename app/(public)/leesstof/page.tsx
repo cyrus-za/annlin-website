@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookOpen, ExternalLink, FileText, LibraryBig } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { createExcerpt } from '@/lib/public-content'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -192,17 +193,24 @@ export default async function ReadingPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {item.description && (
-                      <p className="line-clamp-6 whitespace-pre-line text-muted-foreground">
-                        {item.description}
+                      <p className="line-clamp-5 text-muted-foreground">
+                        {createExcerpt(item.description, 260)}
                       </p>
                     )}
-                    {(item.externalUrl || item.fileUrl) && (
-                      <Button asChild variant="outline">
-                        <a href={item.externalUrl || item.fileUrl || '#'} target="_blank" rel="noopener noreferrer">
-                          Maak oop
-                        </a>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <Button asChild>
+                        <Link href={`/leesstof/${item.id}`}>
+                          Lees meer
+                        </Link>
                       </Button>
-                    )}
+                      {(item.externalUrl || item.fileUrl) && (
+                        <Button asChild variant="outline">
+                          <a href={item.externalUrl || item.fileUrl || '#'} target="_blank" rel="noopener noreferrer">
+                            Maak bron oop
+                          </a>
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               ))}

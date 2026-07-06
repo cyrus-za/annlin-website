@@ -8,7 +8,6 @@ import { APP_CONFIG } from '@/lib/constants'
 export const metadata: Metadata = {
   title: 'Kontak Besonderhede | Annlin Gemeente',
   description: 'Kontak besonderhede vir Annlin Gemeente. Vind ons adres, telefoon nommers, kantoor ure en erediens tye.',
-  keywords: ['kontak', 'adres', 'telefoon', 'eredienste', 'kantoor ure', 'Annlin Gemeente'],
 }
 
 export default function ContactDetailsPage() {

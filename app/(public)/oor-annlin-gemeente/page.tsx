@@ -8,7 +8,6 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Oor Annlin Gemeente | Gereformeerde Kerk Pretoria-Annlin',
   description: 'Leer meer oor die geskiedenis, visie en missie van Gereformeerde Kerk Pretoria-Annlin. Gestig in 1965 en toegewy aan die verkondiging van God se Woord.',
-  keywords: ['geskiedenis', 'visie', 'missie', 'Gereformeerde Kerk', 'Pretoria-Annlin', 'gemeente', 'geloof'],
 }
 
 export default function AboutPage() {

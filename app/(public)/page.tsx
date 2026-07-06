@@ -7,10 +7,11 @@ import { Calendar, Newspaper, BookOpen, Mail, ArrowRight } from 'lucide-react'
 import { Metadata } from 'next'
 import { APP_CONFIG } from '@/lib/constants'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Annlin Gemeente | Welkom',
   description: 'Welkom by die amptelike webwerf van Annlin Gemeente. Vind uit meer oor ons eredienste, diensgroepe, gebeure en hoe om betrokke te raak.',
-  keywords: ['Annlin Gemeente', 'kerk', 'eredienste', 'diensgroepe', 'geloof', 'gemeenskap'],
 }
 
 export default function Home() {

@@ -1,10 +1,11 @@
 import { PublicCalendar } from '@/components/public/Calendar'
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Jaarprogram | Annlin Gemeente',
   description: 'Bekyk ons kerk kalender met vergaderings, gebeurtenisse en belangrike datums. Bly op hoogte met wat gebeur by Annlin Gemeente.',
-  keywords: ['jaarprogram', 'kalender', 'vergaderings', 'gebeure', 'kerk', 'Annlin Gemeente'],
 }
 
 export default function JaarprogramPage() {

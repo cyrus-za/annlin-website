@@ -7,8 +7,6 @@ export const metadata: Metadata = {
   description: "Amptelike webwerf van die Annlin Gemeente",
   icons: {
     icon: "/gksa-logo.png",
-    shortcut: "/gksa-logo.png",
-    apple: "/gksa-logo.png",
   },
 };
 

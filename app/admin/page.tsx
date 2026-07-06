@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
   const thirtyDaysFromNow = new Date()
   thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
 
-  const [totalUsers, totalArticles, upcomingEvents, pendingSubmissions, totalServiceGroups, totalReadingMaterials] =
+  const [totalUsers, totalArticles, upcomingEvents, pendingSubmissions, totalServiceGroups, totalReadingMaterials, publicReadingMaterials] =
     await Promise.all([
       prisma.user.count(),
       prisma.article.count(),
@@ -36,6 +36,15 @@ export default async function AdminDashboard() {
         where: { isActive: true },
       }),
       prisma.readingMaterial.count(),
+      prisma.readingMaterial.count({
+        where: {
+          id: {
+            not: {
+              startsWith: 'wp-',
+            },
+          },
+        },
+      }),
     ])
 
   return (
@@ -171,8 +180,10 @@ export default async function AdminDashboard() {
                 <BookOpen className="h-4 w-4 text-amber-700" />
                 Leesstof
               </div>
-              <p className="mt-2 text-2xl font-bold">{totalReadingMaterials}</p>
-              <p className="text-xs text-muted-foreground">Gekureerde leesstof items</p>
+              <p className="mt-2 text-2xl font-bold">{publicReadingMaterials}</p>
+              <p className="text-xs text-muted-foreground">
+                {totalReadingMaterials - publicReadingMaterials} gemigreerde argiefitems bly intern bewaar
+              </p>
             </div>
             <div className="rounded-lg border p-4">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">

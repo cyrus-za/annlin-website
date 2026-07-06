@@ -1,10 +1,11 @@
 import { ServiceGroups } from '@/components/public/ServiceGroups'
 import { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Diensgroepe | Annlin Gemeente',
   description: 'Raak betrokke by ons verskillende diensgroepe en bedienings. Help maak \'n verskil in ons gemeente.',
-  keywords: ['diensgroepe', 'bedienings', 'gemeente', 'betrokkenheid', 'vrywilligers'],
 }
 
 export default function DiensgroepePage() {

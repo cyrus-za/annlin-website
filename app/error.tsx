@@ -1,10 +1,11 @@
 'use client'
 
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { AlertTriangle, Home, MessageCircle, RefreshCw } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
-import { Home, RefreshCw, AlertTriangle, MessageCircle } from 'lucide-react'
-import { useEffect } from 'react'
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -60,11 +61,11 @@ export default function Error({ error, reset }: ErrorProps) {
             </CardHeader>
             <CardContent>
               <div className="rounded-lg bg-red-50 p-4">
-                <p className="text-sm font-mono text-red-800 break-all">
+                <p className="break-all text-sm font-mono text-red-800">
                   <strong>Fout:</strong> {error.message}
                 </p>
                 {error.digest && (
-                  <p className="text-sm font-mono text-red-700 mt-2">
+                  <p className="mt-2 text-sm font-mono text-red-700">
                     <strong>Digest:</strong> {error.digest}
                   </p>
                 )}
