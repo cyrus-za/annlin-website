@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Calendar, Facebook, Youtube } from 'lucide-react'
+import { Mail, Phone, MapPin, Calendar, Youtube } from 'lucide-react'
 import { APP_CONFIG } from '@/lib/constants'
 
 export function Footer() {
@@ -32,13 +32,6 @@ export function Footer() {
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.
             </p>
             <div className="flex space-x-4">
-              <a 
-                href="#" 
-                className="text-amber-300 hover:text-white transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
               <a 
                 href="https://www.youtube.com/@gereformeerdekerkpretoria-813" 
                 target="_blank"

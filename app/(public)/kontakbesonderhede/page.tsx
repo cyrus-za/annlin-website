@@ -24,8 +24,8 @@ export default function ContactDetailsPage() {
               Kontak Besonderhede
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
-              Ons is hier vir jou. Kontak ons vir enige navrae, pastorale sorg, of as jy 
-              net wil gesels. Ons verwelkom jou met ope arms.
+              Kontak die kerkkantoor vir algemene navrae, besoekersinligting en praktiese
+              reëlings rakende die gemeente.
             </p>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function ContactDetailsPage() {
                     <div className="border-l-4 border-amber-600 pl-4">
                       <h4 className="font-medium text-foreground">Sondag Aand</h4>
                       <p className="text-muted-foreground">18:30 - 19:30</p>
-                      <p className="text-sm text-muted-foreground">Informele atmosfeer</p>
+                      <p className="text-sm text-muted-foreground">Aanddiens vir die gemeente</p>
                     </div>
                     
                   </div>
@@ -262,7 +262,7 @@ export default function ContactDetailsPage() {
                   Gereed om ons te besoek?
                 </h3>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Ons verwelkom jou met ope arms. Kom soos jy is - geen formele kleredrag nodig nie!
+                  Ons sien daarna uit om jou by 'n erediens of gemeentegeleentheid te verwelkom.
                 </p>
                 <div className="space-x-4">
                   <Button asChild size="lg">
