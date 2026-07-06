@@ -1,5 +1,47 @@
 const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
 const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+const googleMapsUrlPattern = /(?<!\]\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+/gi
+const googleMapsMarkdownLinkPattern =
+  /\[Maak roete in Google Maps oop\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
+
+function normalizeWhitespace(value: string) {
+  return value
+    .replace(/\r\n/g, '\n')
+    .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+function stripLeadingWordPressPageChrome(value: string) {
+  let cleaned = normalizeWhitespace(value)
+
+  for (let index = 0; index < 4; index++) {
+    const next = cleaned
+      .replace(/^\s*GEREFORMEERDE KERK\s*\n+\s*PRETORIA-ANNLIN\s*/i, '')
+      .replace(/^\s*Gereformeerde Kerk Pretoria-Annlin\s*/i, '')
+      .replace(/^\s*(Nuus|Diensteblad)\s*/i, '')
+      .replace(/^\s*\uE016\s*/i, '')
+      .trimStart()
+
+    if (next === cleaned) {
+      break
+    }
+
+    cleaned = next
+  }
+
+  return cleaned
+}
+
+export function normalizeArticleContent(value: string) {
+  return stripLeadingWordPressPageChrome(value)
+    .replace(googleMapsMarkdownLinkPattern, '$1')
+    .replace(googleMapsUrlPattern, (url) => `[Maak roete in Google Maps oop](${url})`)
+    .replace(/\uE016/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim()
+}
 
 export function stripMarkdown(value: string) {
   return value
@@ -23,6 +65,10 @@ export function createExcerpt(value: string, maxLength = 180) {
   }
 
   return `${normalized.slice(0, maxLength).trimEnd()}...`
+}
+
+export function createArticleExcerpt(value: string, maxLength = 220) {
+  return createExcerpt(normalizeArticleContent(value), maxLength)
 }
 
 export function stripLeadingDateFromTitle(title: string) {

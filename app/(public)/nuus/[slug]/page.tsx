@@ -5,6 +5,7 @@ import { Calendar, ChevronLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/db'
+import { createArticleExcerpt, normalizeArticleContent } from '@/lib/public-content'
 import { markdownToHtml } from '@/lib/tiptap-config'
 
 type PageProps = {
@@ -35,7 +36,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${article.title} | Nuus | Annlin Gemeente`,
-    description: article.excerpt || `Nuusartikel: ${article.title}`,
+    description: article.excerpt
+      ? createArticleExcerpt(article.excerpt, 160)
+      : `Nuusartikel: ${article.title}`,
   }
 }
 
@@ -51,7 +54,8 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  const articleHtml = markdownToHtml(article.content)
+  const articleExcerpt = article.excerpt ? createArticleExcerpt(article.excerpt, 180) : null
+  const articleHtml = markdownToHtml(normalizeArticleContent(article.content))
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -74,8 +78,10 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
                 <span>{formatDate(article.publishedAt)}</span>
               </div>
             ) : null}
-            {article.excerpt ? (
-              <p className="max-w-3xl text-xl leading-8 text-muted-foreground">{article.excerpt}</p>
+            {articleExcerpt ? (
+              <p className="max-w-3xl break-words text-xl leading-8 text-muted-foreground">
+                {articleExcerpt}
+              </p>
             ) : null}
           </div>
         </div>
@@ -85,7 +91,7 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
             <div
-              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
+              className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: articleHtml }}
             />
           </article>
