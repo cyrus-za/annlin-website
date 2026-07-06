@@ -12,7 +12,6 @@ import {
   Calendar,
   Newspaper,
   BookOpen,
-  KeyRound,
   Menu,
   X
 } from 'lucide-react'
@@ -55,11 +54,6 @@ const navigationItems: NavigationItem[] = [
     name: 'Leesstof',
     href: '/admin/leesstof',
     icon: BookOpen,
-  },
-  {
-    name: 'Wagwoord',
-    href: '/admin/profiel/wagwoord',
-    icon: KeyRound,
   },
 ]
 
