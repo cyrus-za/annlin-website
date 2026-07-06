@@ -5,8 +5,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { useSession } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
-import { Menu, X, Search, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, Menu, X, Search } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface NavigationItem {
@@ -52,6 +53,8 @@ const navigationItems: NavigationItem[] = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const showAdminLink = Boolean(session)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
 
@@ -159,6 +162,14 @@ export function Navigation() {
             </div>
 
             {/* Contact Button */}
+            {showAdminLink && (
+              <Button asChild size="sm" variant="outline">
+                <Link href="/admin">
+                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  Bestuur
+                </Link>
+              </Button>
+            )}
             <Button asChild size="sm" className="bg-amber-700 hover:bg-amber-800">
               <Link href="/kontak">
                 Kontak Ons
@@ -276,6 +287,14 @@ export function Navigation() {
                       Kontak Ons
                     </Link>
                   </Button>
+                  {showAdminLink && (
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/admin">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Bestuur
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </motion.div>

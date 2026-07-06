@@ -10,7 +10,8 @@ import {
   User,
   LogOut,
   Settings,
-  ChevronDown
+  ChevronDown,
+  ExternalLink
 } from 'lucide-react'
 
 interface AdminHeaderProps {
@@ -57,6 +58,13 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+            <Link href="/" target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Webwerf
+            </Link>
+          </Button>
+
           {/* Notifications */}
           <div className="relative">
             <Button
@@ -147,6 +155,16 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
                 </div>
                 
                 <div className="py-2">
+                  <Link
+                    href="/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left sm:hidden"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>Webwerf</span>
+                  </Link>
                   <Link
                     href="/admin/profiel"
                     onClick={() => setIsUserMenuOpen(false)}
