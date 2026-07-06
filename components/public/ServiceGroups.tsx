@@ -110,12 +110,14 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
         <ServiceGroupSection
           title="Diakonie"
           groups={serviceGroups.filter((group) => group.category === 'DIAKONIE')}
+          showAll={showAll}
         />
 
         <ServiceGroupSection
           title="Ander diensgroepe"
           groups={serviceGroups.filter((group) => group.category !== 'DIAKONIE')}
           className="mt-12"
+          showAll={showAll}
         />
 
         {!showAll && serviceGroups.length >= limit && (
@@ -137,10 +139,12 @@ function ServiceGroupSection({
   title,
   groups,
   className,
+  showAll,
 }: {
   title: string
   groups: ServiceGroup[]
   className?: string
+  showAll: boolean
 }) {
   if (groups.length === 0) return null
 
@@ -171,7 +175,9 @@ function ServiceGroupSection({
                 <CardTitle className="text-xl text-amber-900 group-hover:text-amber-700 transition-colors">
                   {group.name}
                 </CardTitle>
-                <CardDescription className="text-gray-600 line-clamp-2">
+                <CardDescription
+                  className={`whitespace-pre-line text-gray-600 ${showAll ? 'line-clamp-6' : 'line-clamp-3'}`}
+                >
                   {group.description}
                 </CardDescription>
               </CardHeader>

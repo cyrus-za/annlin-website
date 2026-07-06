@@ -11,6 +11,31 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   try {
+    const isAdminRoute = pathname.startsWith('/admin')
+    const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
+    const isApiRoute = pathname.startsWith('/api/')
+
+    const isPublicReadApiRequest = request.method === 'GET' && (
+      pathname === '/api/events' ||
+      pathname.startsWith('/api/events/') ||
+      pathname === '/api/diensgroepe' ||
+      pathname.startsWith('/api/diensgroepe/')
+    )
+
+    const publicApiRoutes = [
+      '/api/auth',
+      '/api/contact',
+      '/api/invitations/accept'
+    ]
+
+    const isPublicApiRoute =
+      isPublicReadApiRequest ||
+      publicApiRoutes.some(route => pathname.startsWith(route))
+
+    if (!isAdminRoute && !isAuthRoute && (!isApiRoute || isPublicApiRoute)) {
+      return NextResponse.next()
+    }
+
     // Check if user is authenticated
     const session = await auth.api.getSession({
       headers: request.headers
@@ -21,7 +46,7 @@ export async function proxy(request: NextRequest) {
     const isEditor = session?.user?.role === 'EDITOR' || isAdmin
 
     // Handle admin routes
-    if (pathname.startsWith('/admin')) {
+    if (isAdminRoute) {
       if (!isAuthenticated) {
         // Redirect to sign-in with return URL
         const signInUrl = new URL('/auth/sign-in', request.url)
@@ -48,7 +73,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Handle auth routes (sign-in, sign-up, etc.)
-    if (authRoutes.some(route => pathname.startsWith(route))) {
+    if (isAuthRoute) {
       if (isAuthenticated) {
         // Redirect authenticated users away from auth pages
         const callbackUrl = request.nextUrl.searchParams.get('callbackUrl')
@@ -60,25 +85,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Handle API routes protection
-    if (pathname.startsWith('/api/')) {
-      const isPublicReadRequest = request.method === 'GET' && (
-        pathname === '/api/events' ||
-        pathname.startsWith('/api/events/') ||
-        pathname === '/api/diensgroepe' ||
-        pathname.startsWith('/api/diensgroepe/')
-      )
-
-      // Public API routes that don't require authentication
-      const publicApiRoutes = [
-        '/api/auth',
-        '/api/contact',
-        '/api/invitations/accept'
-      ]
-
-      const isPublicApiRoute =
-        isPublicReadRequest ||
-        publicApiRoutes.some(route => pathname.startsWith(route))
-
+    if (isApiRoute) {
       if (!isPublicApiRoute) {
         if (!isAuthenticated) {
           return NextResponse.json(
