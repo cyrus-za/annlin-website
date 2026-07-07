@@ -258,28 +258,6 @@ model ContentPage {
   @@map("content_pages")
 }
 
-model SermonVideo {
-  id          String        @id @default(cuid())
-  title       String
-  preachedAt  DateTime?
-  preacher    String?
-  description String?
-  videoUrl    String
-  source      SermonVideoSource @default(YOUTUBE)
-  isFeatured  Boolean       @default(false)
-  status      ContentStatus @default(PUBLISHED)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@map("sermon_videos")
-}
-
-enum SermonVideoSource {
-  YOUTUBE
-  KERKDIENSTGEMIST
-  OTHER
-}
-
 model UploadedAsset {
   id        String   @id @default(cuid())
   url       String
