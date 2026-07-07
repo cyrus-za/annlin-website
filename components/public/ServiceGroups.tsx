@@ -30,7 +30,9 @@ interface ServiceGroupsProps {
   showAll?: boolean
 }
 
-export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps) {
+const PUBLIC_SERVICE_GROUP_LIMIT = 100
+
+export function ServiceGroups({ limit, showAll = false }: ServiceGroupsProps) {
   const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
@@ -38,11 +40,12 @@ export function ServiceGroups({ limit = 6, showAll = false }: ServiceGroupsProps
   React.useEffect(() => {
     const fetchServiceGroups = async () => {
       try {
+        const requestedLimit = showAll ? PUBLIC_SERVICE_GROUP_LIMIT : (limit ?? PUBLIC_SERVICE_GROUP_LIMIT)
         const params = new URLSearchParams({
           isActive: 'true',
+          limit: requestedLimit.toString(),
           sortBy: 'displayOrder',
           sortOrder: 'asc',
-          ...(limit && !showAll ? { limit: limit.toString() } : {}),
         })
 
         const response = await fetch(`/api/diensgroepe?${params}`)
