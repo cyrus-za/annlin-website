@@ -4,6 +4,7 @@ import * as React from 'react'
 import { AdminSidebar, MobileAdminSidebar } from './AdminSidebar'
 import { AdminHeader } from './AdminHeader'
 import { useRouter } from 'next/navigation'
+import { signOut } from '@/lib/auth-client'
 
 interface AdminLayoutClientProps {
   children: React.ReactNode
@@ -22,19 +23,13 @@ export function AdminLayoutClient({ children, user, notificationCount }: AdminLa
 
   const handleLogout = async () => {
     try {
-      // Call the logout API
-      const response = await fetch('/api/auth/logout', { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const result = await signOut()
 
-      if (response.ok) {
-        router.push('/auth/sign-in')
+      if (!result.error) {
+        router.replace('/auth/sign-in')
         router.refresh()
       } else {
-        console.error('Logout failed')
+        console.error('Logout failed:', result.error)
       }
     } catch (error) {
       console.error('Logout error:', error)

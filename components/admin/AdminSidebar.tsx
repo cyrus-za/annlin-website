@@ -109,6 +109,8 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
             size="icon"
             onClick={onToggle}
             className="h-8 w-8"
+            aria-label={isCollapsed ? 'Maak sybalk oop' : 'Vou sybalk toe'}
+            title={isCollapsed ? 'Maak sybalk oop' : 'Vou sybalk toe'}
           >
             {isCollapsed ? (
               <Menu className="h-4 w-4" />
@@ -127,7 +129,7 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
           
           return (
             <Link key={item.href} href={item.href}>
-              <div                 className={cn(
+              <div className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive 
                   ? "bg-amber-50 text-amber-800 border border-amber-200" 
@@ -175,7 +177,9 @@ export function MobileAdminSidebar({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <button
+        type="button"
+        aria-label="Maak navigasie toe"
         className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
         onClick={onClose}
       />

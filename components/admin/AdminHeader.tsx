@@ -74,6 +74,7 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }:
               variant="ghost"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center space-x-2 px-3 py-2"
+              aria-label="Maak gebruikerskieslys oop"
               aria-expanded={isUserMenuOpen}
               aria-haspopup="menu"
             >
