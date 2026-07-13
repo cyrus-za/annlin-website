@@ -2,6 +2,8 @@
 
 import { put } from '@vercel/blob'
 import { Prisma, ReadingMaterialFileType } from '@prisma/client'
+import { spawn } from 'node:child_process'
+import { Readable } from 'node:stream'
 import { disconnectDatabase, prisma } from '../lib/db'
 
 type WpRendered = { rendered?: string }
@@ -39,6 +41,13 @@ type ExistingAsset = {
   size: number
 }
 
+type StorageProvider = 'vercel' | 'r2'
+
+type ArchivedObject = {
+  url: string
+  pathname: string
+}
+
 const USER_AGENT = 'Annlin WordPress media migration'
 const VERCEL_HOBBY_BLOB_LIMIT_BYTES = 1_000_000_000
 const MULTIPART_THRESHOLD_BYTES = 5 * 1024 * 1024
@@ -58,6 +67,17 @@ function parseConcurrency() {
   const argument = process.argv.find((value) => value.startsWith('--size-concurrency='))
   const parsed = Number(argument?.split('=')[1] || 8)
   return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 20) : 8
+}
+
+function parseStorageProvider(): StorageProvider {
+  const argument = process.argv.find((value) => value.startsWith('--storage='))
+  const provider = argument?.split('=')[1] || 'vercel'
+
+  if (provider !== 'vercel' && provider !== 'r2') {
+    throw new Error(`Unsupported storage provider: ${provider}`)
+  }
+
+  return provider
 }
 
 function decodeEntities(value: string) {
@@ -130,6 +150,26 @@ function isBlobUrl(value: string) {
   } catch {
     return false
   }
+}
+
+function normalizedPublicBaseUrl() {
+  return process.env.R2_PUBLIC_BASE_URL?.replace(/\/+$/, '') || null
+}
+
+function isR2Url(value: string) {
+  const publicBaseUrl = normalizedPublicBaseUrl()
+  return Boolean(publicBaseUrl && (value === publicBaseUrl || value.startsWith(`${publicBaseUrl}/`)))
+}
+
+function isArchivedUrl(value: string, provider: StorageProvider) {
+  return provider === 'vercel' ? isBlobUrl(value) : isR2Url(value)
+}
+
+function encodeObjectPath(pathname: string) {
+  return pathname
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/')
 }
 
 async function fetchJson<T>(url: string): Promise<{ data: T; totalPages: number; total: number }> {
@@ -307,6 +347,86 @@ async function copyToBlob(media: WpMedia, bytes: number) {
     multipart: bytes >= MULTIPART_THRESHOLD_BYTES,
     token: process.env.BLOB_READ_WRITE_TOKEN,
   })
+}
+
+function runWranglerUpload(
+  objectPath: string,
+  contentType: string,
+  body: ReadableStream<Uint8Array>
+) {
+  return new Promise<void>((resolve, reject) => {
+    const child = spawn(
+      'wrangler',
+      [
+        'r2',
+        'object',
+        'put',
+        objectPath,
+        '--remote',
+        '--pipe',
+        '--content-type',
+        contentType,
+        '--cache-control',
+        'public, max-age=31536000, immutable',
+      ],
+      {
+        env: {
+          ...process.env,
+          WRANGLER_LOG_PATH: process.env.WRANGLER_LOG_PATH || '/tmp/annlin-wrangler.log',
+        },
+        stdio: ['pipe', 'ignore', 'pipe'],
+      }
+    )
+    let stderr = ''
+
+    child.stderr.on('data', (chunk) => {
+      stderr += String(chunk)
+    })
+    child.on('error', reject)
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve()
+      } else {
+        reject(new Error(`Wrangler R2 upload failed (${code ?? 'unknown'}): ${stderr.trim()}`))
+      }
+    })
+
+    Readable.fromWeb(body).on('error', reject).pipe(child.stdin)
+  })
+}
+
+async function copyToR2(media: WpMedia): Promise<ArchivedObject> {
+  const bucket = process.env.R2_BUCKET_NAME
+  const publicBaseUrl = normalizedPublicBaseUrl()
+
+  if (!bucket || !publicBaseUrl) {
+    throw new Error(
+      'R2_BUCKET_NAME and R2_PUBLIC_BASE_URL are required when using --storage=r2.'
+    )
+  }
+
+  const response = await fetch(media.source_url, {
+    headers: { 'user-agent': USER_AGENT },
+  })
+
+  if (!response.ok || !response.body) {
+    throw new Error(`Media fetch failed ${response.status}: ${media.source_url}`)
+  }
+
+  const filename = pathnameFromUrl(media.source_url, `${media.id}-${media.slug}`)
+  const pathname = `wordpress-media/${media.id}-${filename}`
+  const contentType = response.headers.get('content-type') || media.mime_type || 'application/octet-stream'
+
+  await runWranglerUpload(`${bucket}/${pathname}`, contentType, response.body)
+
+  return {
+    pathname,
+    url: `${publicBaseUrl}/${encodeObjectPath(pathname)}`,
+  }
+}
+
+async function copyToStorage(media: WpMedia, bytes: number, provider: StorageProvider) {
+  return provider === 'vercel' ? copyToBlob(media, bytes) : copyToR2(media)
 }
 
 function mediaReferenceUrls(media: WpMedia, wordpressBaseUrl: string) {
@@ -487,9 +607,20 @@ async function main() {
   const copyFiles = process.argv.includes('--copy-files')
   const preflight = process.argv.includes('--preflight')
   const sizeConcurrency = parseConcurrency()
+  const storageProvider = parseStorageProvider()
 
-  if (copyFiles && !hasUsableBlobToken()) {
+  if (copyFiles && storageProvider === 'vercel' && !hasUsableBlobToken()) {
     throw new Error('A real BLOB_READ_WRITE_TOKEN is required when using --copy-files.')
+  }
+
+  if (
+    copyFiles &&
+    storageProvider === 'r2' &&
+    (!process.env.R2_BUCKET_NAME || !normalizedPublicBaseUrl())
+  ) {
+    throw new Error(
+      'R2_BUCKET_NAME and R2_PUBLIC_BASE_URL are required when using --storage=r2.'
+    )
   }
 
   const media = await fetchAllMedia(wordpressBaseUrl)
@@ -506,7 +637,11 @@ async function main() {
   }
 
   const totalBytes = media.reduce((total, item) => total + (sizeById.get(item.id)?.bytes || 0), 0)
-  if (copyFiles && totalBytes > VERCEL_HOBBY_BLOB_LIMIT_BYTES) {
+  if (
+    copyFiles &&
+    storageProvider === 'vercel' &&
+    totalBytes > VERCEL_HOBBY_BLOB_LIMIT_BYTES
+  ) {
     throw new Error(
       `The ${formatBytes(totalBytes)} WordPress archive exceeds the ${formatBytes(
         VERCEL_HOBBY_BLOB_LIMIT_BYTES
@@ -548,18 +683,23 @@ async function main() {
       let finalUrl = item.source_url
       let pathname = `wordpress-media/original/${item.id}-${originalFilename}`
 
-      if (copyFiles && existing && isBlobUrl(existing.url) && existing.size === bytes) {
+      if (
+        copyFiles &&
+        existing &&
+        isArchivedUrl(existing.url, storageProvider) &&
+        existing.size === bytes
+      ) {
         finalUrl = existing.url
         pathname = existing.pathname || pathname
         skippedExisting++
       } else if (copyFiles) {
-        const blob = await copyToBlob(item, bytes)
-        finalUrl = blob.url
-        pathname = blob.pathname
+        const archivedObject = await copyToStorage(item, bytes, storageProvider)
+        finalUrl = archivedObject.url
+        pathname = archivedObject.pathname
         copied++
       }
 
-      if (isBlobUrl(finalUrl)) {
+      if (isArchivedUrl(finalUrl, storageProvider)) {
         for (const sourceUrl of mediaReferenceUrls(item, wordpressBaseUrl)) {
           replacements.set(sourceUrl, finalUrl)
         }
@@ -648,6 +788,7 @@ async function main() {
         failed,
         dryRun,
         copyFiles,
+        storageProvider,
       },
       null,
       2
