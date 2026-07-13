@@ -4,13 +4,20 @@ import { Breadcrumb } from '@/components/public/Navigation'
 import Link from 'next/link'
 import { Calendar, Users, Heart, BookOpen, ArrowRight } from 'lucide-react'
 import { Metadata } from 'next'
+import { getPublicContentPage } from '@/lib/content-pages.server'
+import { readContentList, readContentText } from '@/lib/content-page-definitions'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Oor Annlin Gemeente | Gereformeerde Kerk Pretoria-Annlin',
   description: 'Leer meer oor die geskiedenis, visie en missie van Gereformeerde Kerk Pretoria-Annlin. Gestig in 1965 en toegewy aan die verkondiging van God se Woord.',
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { sections } = await getPublicContentPage('oor-annlin-gemeente')
+  const copy = (path: string) => readContentText(sections, path)
+
   return (
     <div>
       <Breadcrumb items={[{ name: 'Oor Annlin-Gemeente' }]} />
@@ -25,13 +32,13 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Oor Annlin Gemeente
+              {copy('hero.title')}
             </h1>
             <p className="text-xl text-amber-100 mb-4 max-w-3xl mx-auto">
-              Gereformeerde Kerk Pretoria-Annlin
+              {copy('hero.subtitle')}
             </p>
             <p className="text-lg text-amber-200 max-w-4xl mx-auto">
-              Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik
+              {copy('hero.body')}
             </p>
           </div>
         </div>
@@ -41,10 +48,9 @@ export default function AboutPage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-amber-900 mb-4">Ons Roeping</h2>
+            <h2 className="text-3xl font-bold text-amber-900 mb-4">{copy('calling.title')}</h2>
             <p className="text-xl text-muted-foreground max-w-4xl mx-auto">
-              Ons wil die mense in ons omgewing en verder, aan Jesus en aan mekaar verbind om 
-              God se missie op aarde in opdrag van Jesus voort te sit.
+              {copy('calling.body')}
             </p>
           </div>
 
@@ -54,12 +60,11 @@ export default function AboutPage() {
                 <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
                   <Heart className="h-8 w-8 text-amber-700" />
                 </div>
-                <CardTitle className="text-amber-900">Ons Visie</CardTitle>
+                <CardTitle className="text-amber-900">{copy('calling.visionTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  'n Eensgesinde gemeente wat mense ontwikkel en toerus tot verantwoordelike, 
-                  produktiewe Christene vir hul bedieninge in die kerk en die wêreld tot die eer van God.
+                  {copy('calling.visionBody')}
                 </p>
               </CardContent>
             </Card>
@@ -69,12 +74,11 @@ export default function AboutPage() {
                 <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
                   <BookOpen className="h-8 w-8 text-amber-700" />
                 </div>
-                <CardTitle className="text-amber-900">Ons Geloof</CardTitle>
+                <CardTitle className="text-amber-900">{copy('calling.faithTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  As kerk van Christus eer ons ons God en bedien ons mekaar met sy Woord en 
-                  reik ook uit na buite. Ons doen dit omdat ons gedring word deur die liefde van God.
+                  {copy('calling.faithBody')}
                 </p>
               </CardContent>
             </Card>
@@ -84,12 +88,11 @@ export default function AboutPage() {
                 <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
                   <Users className="h-8 w-8 text-amber-700" />
                 </div>
-                <CardTitle className="text-amber-900">Ons Gemeenskap</CardTitle>
+                <CardTitle className="text-amber-900">{copy('calling.communityTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Benewens die kerklike ampte, speel diensgroepe 'n belangrike rol om ons 
-                  roeping as bruidsgemeente van Christus uit te leef.
+                  {copy('calling.communityBody')}
                 </p>
               </CardContent>
             </Card>
@@ -102,31 +105,27 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-6">Ons Geskiedenis</h2>
+              <h2 className="text-3xl font-bold text-amber-900 mb-6">{copy('history.title')}</h2>
               
               <div className="space-y-6">
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">1965 - Stigting</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{copy('history.foundingTitle')}</h3>
                   <p className="text-muted-foreground">
-                    Die Gereformeerde Kerk Pretoria-Annlin is op 16 Oktober 1965 gestig as 'n 
-                    afstigting van die Gereformeerde Kerk Eloffsdal-Wonderboom-Suid.
+                    {copy('history.foundingBody')}
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">1974 - Kerkgebou</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{copy('history.buildingTitle')}</h3>
                   <p className="text-muted-foreground">
-                    Die kerkgebou is op 20 April 1974 amptelik in gebruik geneem. Die teksvers op die 
-                    gedenkplaat is 1 Korintiërs 3:9: "Want ons is medewerkers van God; die akker van God, 
-                    die gebou van God is julle."
+                    {copy('history.buildingBody')}
                   </p>
                 </div>
                 
                 <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Vandag</h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{copy('history.todayTitle')}</h3>
                   <p className="text-muted-foreground">
-                    Onder leiding van ds. Pieter Kurpershoek (vanaf Oktober 2023) bedien ons 'n 
-                    lewende gemeente van 631 belydende lidmate en 132 dooplidmate.
+                    {copy('history.todayBody')}
                   </p>
                 </div>
               </div>
@@ -141,8 +140,8 @@ export default function AboutPage() {
               >
                 <div className="h-full bg-gradient-to-t from-black/50 to-transparent rounded-lg flex items-end p-6">
                   <div className="text-white">
-                    <h4 className="font-bold text-lg">Kerkgebou 1974</h4>
-                    <p className="text-sm text-gray-200">Kort nadat dit in gebruik geneem is</p>
+                    <h4 className="font-bold text-lg">{copy('history.oldImageTitle')}</h4>
+                    <p className="text-sm text-gray-200">{copy('history.oldImageBody')}</p>
                   </div>
                 </div>
               </div>
@@ -155,8 +154,8 @@ export default function AboutPage() {
               >
                 <div className="h-full bg-gradient-to-t from-black/50 to-transparent rounded-lg flex items-end p-6">
                   <div className="text-white">
-                    <h4 className="font-bold text-lg">Kerkgebou Vandag</h4>
-                    <p className="text-sm text-gray-200">Die vergrote kerkgebou, 2019</p>
+                    <h4 className="font-bold text-lg">{copy('history.currentImageTitle')}</h4>
+                    <p className="text-sm text-gray-200">{copy('history.currentImageBody')}</p>
                   </div>
                 </div>
               </div>
@@ -171,31 +170,28 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Leadership */}
             <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-8">Leierskap</h2>
+              <h2 className="text-3xl font-bold text-amber-900 mb-8">{copy('leadership.title')}</h2>
               
               <div className="space-y-6">
                 <div className="bg-amber-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-amber-900 mb-2">Ds. Pieter Kurpershoek</h3>
-                  <p className="text-amber-700 font-medium mb-3">Predikant (vanaf Oktober 2023)</p>
+                  <h3 className="text-xl font-semibold text-amber-900 mb-2">{copy('leadership.ministerName')}</h3>
+                  <p className="text-amber-700 font-medium mb-3">{copy('leadership.ministerRole')}</p>
                   <p className="text-muted-foreground">
-                    Ds. Kurpershoek lei ons gemeente as enkelleraar en bring 'n hart vir 
-                    evangelisasie en gemeenskapsbou na sy bediening.
+                    {copy('leadership.ministerBody')}
                   </p>
                 </div>
 
                 <div className="bg-amber-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-amber-900 mb-2">Kerkraad</h3>
+                  <h3 className="text-xl font-semibold text-amber-900 mb-2">{copy('leadership.councilTitle')}</h3>
                   <p className="text-muted-foreground">
-                    Ons kerkraad bestaan uit toegewyde ouderlinge en diakens wat die gemeente 
-                    help lei en bedien volgens Bybelse beginsels.
+                    {copy('leadership.councilBody')}
                   </p>
                 </div>
 
                 <div className="bg-amber-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-amber-900 mb-2">Grace Reformed Church</h3>
+                  <h3 className="text-xl font-semibold text-amber-900 mb-2">{copy('leadership.graceTitle')}</h3>
                   <p className="text-muted-foreground">
-                    In 2019 het 'n Engelse gemeente, Grace Reformed Church, van ons afgeskei. 
-                    Ons deel steeds die kerkgebou en fasiliteite in broederskap.
+                    {copy('leadership.graceBody')}
                   </p>
                 </div>
               </div>
@@ -203,7 +199,7 @@ export default function AboutPage() {
 
             {/* Our Beliefs and Values */}
             <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-8">Ons Waardes</h2>
+              <h2 className="text-3xl font-bold text-amber-900 mb-8">{copy('values.title')}</h2>
               
               <div className="space-y-4">
                 <div className="flex items-start space-x-4">
@@ -211,8 +207,8 @@ export default function AboutPage() {
                     <span className="text-white text-sm font-bold">1</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Skrifgetrouheid</h4>
-                    <p className="text-muted-foreground">Ons glo in die onfeilbaarheid en gesag van die Bybel as God se Woord.</p>
+                    <h4 className="font-semibold text-foreground mb-1">{copy('values.scriptureTitle')}</h4>
+                    <p className="text-muted-foreground">{copy('values.scriptureBody')}</p>
                   </div>
                 </div>
 
@@ -221,8 +217,8 @@ export default function AboutPage() {
                     <span className="text-white text-sm font-bold">2</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Gemeenskap</h4>
-                    <p className="text-muted-foreground">Ons bou betekenisvolle verhoudings en ondersteun mekaar in geloof.</p>
+                    <h4 className="font-semibold text-foreground mb-1">{copy('values.communityTitle')}</h4>
+                    <p className="text-muted-foreground">{copy('values.communityBody')}</p>
                   </div>
                 </div>
 
@@ -231,8 +227,8 @@ export default function AboutPage() {
                     <span className="text-white text-sm font-bold">3</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Evangelisasie</h4>
-                    <p className="text-muted-foreground">Ons is toegewy aan die verspreiding van die Evangelie plaaslik en internasionaal.</p>
+                    <h4 className="font-semibold text-foreground mb-1">{copy('values.evangelismTitle')}</h4>
+                    <p className="text-muted-foreground">{copy('values.evangelismBody')}</p>
                   </div>
                 </div>
 
@@ -241,8 +237,8 @@ export default function AboutPage() {
                     <span className="text-white text-sm font-bold">4</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Diensbaarheid</h4>
-                    <p className="text-muted-foreground">Ons moedig lidmate aan om hul gawes te gebruik in diens van God en die gemeenskap.</p>
+                    <h4 className="font-semibold text-foreground mb-1">{copy('values.serviceTitle')}</h4>
+                    <p className="text-muted-foreground">{copy('values.serviceBody')}</p>
                   </div>
                 </div>
 
@@ -251,8 +247,8 @@ export default function AboutPage() {
                     <span className="text-white text-sm font-bold">5</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1">Genade</h4>
-                    <p className="text-muted-foreground">Ons verwelkom almal met ope arms, ongeag agtergrond of omstandighede.</p>
+                    <h4 className="font-semibold text-foreground mb-1">{copy('values.graceTitle')}</h4>
+                    <p className="text-muted-foreground">{copy('values.graceBody')}</p>
                   </div>
                 </div>
               </div>
@@ -273,21 +269,18 @@ export default function AboutPage() {
       {/* Detailed History */}
       <section className="py-16 bg-amber-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-amber-900 mb-12 text-center">Ons Ryk Geskiedenis</h2>
+          <h2 className="text-3xl font-bold text-amber-900 mb-12 text-center">{copy('detailedHistory.title')}</h2>
           
           <div className="space-y-12">
             {/* 1960s */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold text-amber-800 mb-4">1960s - Die Begin</h3>
-                <p className="text-muted-foreground mb-4">
-                  In 1958 was daar maar enkele Gereformeerde lidmate woonagtig noord van die Magaliesberg 
-                  en oos van die Apiesrivier. Die ontwikkeling van die gebied het so vinnig plaasgevind 
-                  dat die Pretoria-Annlin gemeente in 1965 as onafhanklike gemeente kon afstig.
-                </p>
-                <p className="text-muted-foreground">
-                  Ds. J.H. Boneschans is as die eerste predikant beroep en het van 1965 tot 1969 gedien.
-                </p>
+                <h3 className="text-2xl font-bold text-amber-800 mb-4">{copy('detailedHistory.beginningTitle')}</h3>
+                {readContentList(sections, 'detailedHistory.beginningParagraphs').map((paragraph, index, items) => (
+                  <p key={paragraph} className={`text-muted-foreground ${index < items.length - 1 ? 'mb-4' : ''}`}>
+                    {paragraph}
+                  </p>
+                ))}
               </div>
               <div className="bg-white rounded-lg p-6 shadow-sm">
                 <h4 className="font-semibold text-amber-900 mb-3">Belangrike Datums</h4>
@@ -324,33 +317,24 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="order-1 lg:order-2">
-                <h3 className="text-2xl font-bold text-amber-800 mb-4">1970s - Kerkbou</h3>
-                <p className="text-muted-foreground mb-4">
-                  Twee erwe is deur suster A.E. van der Linde geskenk, en 'n verdere 1 morg grond 
-                  deur suster C.M van Deventer. Dit is die grond waarop die kerkgebou vandag staan.
-                </p>
-                <p className="text-muted-foreground">
-                  In 1972 gee die kerkraad vir argitek Johan de Ridder opdrag om die kerkgebou te ontwerp. 
-                  Die kerkgebou is op 20 April 1974 amptelik in gebruik geneem.
-                </p>
+                <h3 className="text-2xl font-bold text-amber-800 mb-4">{copy('detailedHistory.buildingTitle')}</h3>
+                {readContentList(sections, 'detailedHistory.buildingParagraphs').map((paragraph, index, items) => (
+                  <p key={paragraph} className={`text-muted-foreground ${index < items.length - 1 ? 'mb-4' : ''}`}>
+                    {paragraph}
+                  </p>
+                ))}
               </div>
             </div>
 
             {/* Modern Era */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold text-amber-800 mb-4">Moderne Era - Groei en Uitbreiding</h3>
-                <p className="text-muted-foreground mb-4">
-                  Die gemeente het gegroei en in 1977 het Magalieskruin van ons afgeskei. 
-                  In 1978 is die kerkgebou vergroot vanweë 'n steeds toenemende lidmaattal.
-                </p>
-                <p className="text-muted-foreground mb-4">
-                  'n Kerksaal met plek vir 450 mense en 12 katkisasielokale is in 1981 in gebruik geneem.
-                </p>
-                <p className="text-muted-foreground">
-                  Die sendingopdrag is hoog op ons prioriteit en lidmate is aktief met evangelisasie 
-                  in eie omgewing, omliggende gebiede en in die buiteland.
-                </p>
+                <h3 className="text-2xl font-bold text-amber-800 mb-4">{copy('detailedHistory.modernTitle')}</h3>
+                {readContentList(sections, 'detailedHistory.modernParagraphs').map((paragraph, index, items) => (
+                  <p key={paragraph} className={`text-muted-foreground ${index < items.length - 1 ? 'mb-4' : ''}`}>
+                    {paragraph}
+                  </p>
+                ))}
               </div>
               <div 
                 className="h-64 bg-cover bg-center rounded-lg shadow-lg"
@@ -374,9 +358,9 @@ export default function AboutPage() {
       <section id="besoek-ons" className="py-16 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-amber-900">Kom Besoek Ons</h2>
+            <h2 className="text-3xl font-bold text-amber-900">{copy('visit.title')}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Ons is geleë in die hart van Wonderboom, Pretoria
+              {copy('visit.body')}
             </p>
           </div>
 
@@ -401,9 +385,7 @@ export default function AboutPage() {
                 <div>
                   <h4 className="font-semibold text-foreground mb-2">Bedieningsgebied</h4>
                   <p className="text-muted-foreground text-sm">
-                    Ons bedieningsgebied lê hoofsaaklik noord van die Magaliesbergreeks met die 
-                    Apiesrivier as westelike grens, en sluit voorstede soos Annlin, Sinoville, 
-                    Doornpoort en Wonderboom in.
+                    {copy('visit.ministryArea')}
                   </p>
                 </div>
 
@@ -432,27 +414,26 @@ export default function AboutPage() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">Hoofkerk</h4>
-                    <p className="text-muted-foreground">Eredienste en spesiale geleenthede</p>
+                    <p className="text-muted-foreground">{copy('visit.churchBody')}</p>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">Kerksaal</h4>
-                    <p className="text-muted-foreground">450 sitplekke vir byeenkomste</p>
+                    <p className="text-muted-foreground">{copy('visit.hallBody')}</p>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">Katkisasielokale</h4>
-                    <p className="text-muted-foreground">12 klaskamers vir onderrig</p>
+                    <p className="text-muted-foreground">{copy('visit.classroomsBody')}</p>
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground mb-2">Parkering</h4>
-                    <p className="text-muted-foreground">Voldoende parkering beskikbaar</p>
+                    <p className="text-muted-foreground">{copy('visit.parkingBody')}</p>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-gray-200">
                   <h4 className="font-semibold text-foreground mb-2">Toeganklikheid</h4>
                   <p className="text-muted-foreground text-sm">
-                    Ons fasiliteite is toeganklik vir rolstoelgebruikers en ons verwelkom 
-                    alle lidmate ongeag fisiese beperkings.
+                    {copy('visit.accessibilityBody')}
                   </p>
                 </div>
               </CardContent>
@@ -466,11 +447,10 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Sluit by Ons Gemeente Familie Aan
+              {copy('cta.title')}
             </h2>
             <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
-              Ons nooi jou uit om deel te word van ons lewende gemeente waar geloof, 
-              hoop en liefde saamkom.
+              {copy('cta.body')}
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50">

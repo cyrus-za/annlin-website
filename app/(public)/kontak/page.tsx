@@ -22,6 +22,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
+import { usePublicContentPage } from '@/hooks/use-public-content-page'
+import { readContentText } from '@/lib/content-page-definitions'
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -45,6 +47,8 @@ interface ServiceGroup {
 export default function ContactPage() {
   const searchParams = useSearchParams()
   const preselectedServiceGroup = searchParams.get('diensgroep')
+  const contentSections = usePublicContentPage('kontak')
+  const copy = (path: string) => readContentText(contentSections, path)
   
   const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -100,7 +104,7 @@ export default function ContactPage() {
       }
 
       setIsSuccess(true)
-      showSuccessToast('Boodskap gestuur!', 'Ons sal jou binnekort kontak.')
+      showSuccessToast(copy('success.title'), copy('success.body'))
       form.reset()
     } catch (error) {
       showErrorToast(error instanceof Error ? error.message : 'Kon nie boodskap stuur nie')
@@ -117,20 +121,13 @@ export default function ContactPage() {
             <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
               <Mail className="h-8 w-8 text-amber-600" />
             </div>
-            <CardTitle className="text-2xl">Boodskap Gestuur!</CardTitle>
+            <CardTitle className="text-2xl">{copy('success.title')}</CardTitle>
             <CardDescription>
-              Dankie vir jou boodskap. Ons sal jou binnekort kontak.
+              {copy('success.body')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
-                  Jou navraag is suksesvol gestuur. Die kerkkantoor sal so gou as moontlik
-                  met jou in verbinding tree.
-                </p>
-              </div>
-              
               <div className="text-center space-y-4">
                 <Button 
                   onClick={() => {
@@ -160,9 +157,9 @@ export default function ContactPage() {
       <section className="bg-white border-b border-gray-200 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground">Kontak Ons</h1>
+            <h1 className="text-4xl font-bold text-foreground">{copy('hero.title')}</h1>
             <p className="mt-4 text-xl text-muted-foreground">
-              Ons is hier om jou te help. Stuur vir ons 'n boodskap of gebruik ons kontak besonderhede.
+              {copy('hero.body')}
             </p>
           </div>
         </div>
@@ -174,9 +171,9 @@ export default function ContactPage() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Stuur vir Ons 'n Boodskap</CardTitle>
+                <CardTitle>{copy('form.title')}</CardTitle>
                 <CardDescription>
-                  Vul die vorm in en ons sal jou so gou as moontlik kontak.
+                  {copy('form.body')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -321,8 +318,7 @@ export default function ContactPage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Minimum 10 karakters, maksimum 2000 karakters. Moet asseblief nie
-                            vertroulike pastorale besonderhede deur hierdie vorm stuur nie.
+                            Minimum 10 karakters, maksimum 2000 karakters. {copy('form.privacy')}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

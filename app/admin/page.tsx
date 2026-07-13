@@ -9,7 +9,9 @@ import {
   Newspaper,
   BookOpen,
   Mail,
+  FileText,
 } from 'lucide-react'
+import { CONTENT_PAGE_DEFINITIONS } from '@/lib/content-page-definitions'
 
 export default async function AdminDashboard() {
   const { user } = await requireAuth()
@@ -151,6 +153,14 @@ export default async function AdminDashboard() {
                 Voeg Leesstof By
               </Link>
             </Button>
+            {user.role === 'ADMIN' && (
+              <Button variant="outline" asChild>
+                <Link href="/admin/bladsye">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Wysig Publieke Bladsye
+                </Link>
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -198,6 +208,16 @@ export default async function AdminDashboard() {
                 </div>
                 <p className="mt-2 text-2xl font-bold">{pendingSubmissions}</p>
                 <p className="text-xs text-muted-foreground">Onverwerkte kontakvorms</p>
+              </Link>
+            )}
+            {user.role === 'ADMIN' && (
+              <Link href="/admin/bladsye" className="rounded-lg border p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/30">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <FileText className="h-4 w-4 text-amber-700" />
+                  Publieke bladsye
+                </div>
+                <p className="mt-2 text-2xl font-bold">{CONTENT_PAGE_DEFINITIONS.length}</p>
+                <p className="text-xs text-muted-foreground">Vaste bladsye met redigeerbare teks</p>
               </Link>
             )}
           </div>

@@ -7,6 +7,7 @@
  */
 
 import { hashPassword } from 'better-auth/crypto'
+import { Prisma } from '@prisma/client'
 import { 
   prisma, 
   checkDatabaseConnection, 
@@ -15,6 +16,7 @@ import {
   checkMigrationStatus
 } from '../lib/db'
 import { env } from '../lib/env'
+import { CONTENT_PAGE_DEFINITIONS } from '../lib/content-page-definitions'
 
 interface SeedOptions {
   skipExisting?: boolean
@@ -433,38 +435,14 @@ async function seedServiceGroups(skipExisting: boolean, verbose: boolean) {
 async function seedContentPages(skipExisting: boolean, verbose: boolean) {
   console.log('\n📄 Seeding content pages...')
 
-  const pages = [
-    {
-      slug: 'tuis',
-      title: 'Gereformeerde Kerk Annlin',
-      description: 'Welkom by die Gereformeerde Kerk Annlin.',
-      sections: {
-        hero: {
-          eyebrow: 'Gereformeerde Kerk Annlin',
-          title: 'Tot eer van God, tot opbou van die gemeente',
-          body: 'Ons is ’n Gereformeerde gemeente in Annlin, Pretoria.',
-        },
-      },
-      status: 'PUBLISHED' as const,
-      publishedAt: new Date(),
-    },
-    {
-      slug: 'oor-annlin-gemeente',
-      title: 'Oor Annlin Gemeente',
-      description: 'Lees meer oor ons gemeente, leierskap en waardes.',
-      sections: {
-        leadership: [
-          {
-            title: 'Ds. Pieter Kurpershoek',
-            subtitle: 'Predikant',
-            body: 'Ons predikant lei die gemeente in Woordverkondiging, toerusting en pastorale sorg.',
-          },
-        ],
-      },
-      status: 'PUBLISHED' as const,
-      publishedAt: new Date(),
-    },
-  ]
+  const pages = CONTENT_PAGE_DEFINITIONS.map((definition) => ({
+    slug: definition.slug,
+    title: definition.title,
+    description: definition.description,
+    sections: definition.sections as Prisma.InputJsonValue,
+    status: 'PUBLISHED' as const,
+    publishedAt: new Date(),
+  }))
 
   for (const page of pages) {
     const result = await safeDatabaseOperation(async () => {

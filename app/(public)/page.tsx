@@ -6,15 +6,20 @@ import Link from 'next/link'
 import { Calendar, Newspaper, BookOpen, Mail, ArrowRight } from 'lucide-react'
 import { Metadata } from 'next'
 import { APP_CONFIG } from '@/lib/constants'
+import { getPublicContentPage } from '@/lib/content-pages.server'
+import { readContentList, readContentText } from '@/lib/content-page-definitions'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Annlin Gemeente | Welkom',
   description: 'Welkom by die amptelike webwerf van Annlin Gemeente. Vind uit meer oor ons eredienste, diensgroepe, gebeure en hoe om betrokke te raak.',
 }
 
-export default function Home() {
+export default async function Home() {
+  const { sections } = await getPublicContentPage('tuis')
+  const copy = (path: string) => readContentText(sections, path)
+
   return (
     <div>
       {/* Hero Section */}
@@ -27,14 +32,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welkom by Annlin Gemeente
+              {copy('hero.title')}
             </h1>
             <p className="text-xl md:text-2xl text-amber-100 mb-4 max-w-3xl mx-auto">
-              Gereformeerde Kerk Pretoria-Annlin
+              {copy('hero.subtitle')}
             </p>
             <p className="text-lg text-amber-200 mb-8 max-w-4xl mx-auto">
-              Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik. 
-              H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom, Pretoria.
+              {copy('hero.body')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0 w-full sm:w-auto">
@@ -54,18 +58,27 @@ export default function Home() {
       </section>
 
       {/* Upcoming Events Section */}
-      <UpcomingEvents limit={3} />
+      <UpcomingEvents
+        limit={3}
+        heading={copy('events.title')}
+        description={copy('events.body')}
+        emptyMessage={copy('events.empty')}
+      />
 
       {/* Service Groups Section */}
-      <ServiceGroups limit={16} />
+      <ServiceGroups
+        limit={16}
+        heading={copy('serviceGroups.title')}
+        description={copy('serviceGroups.body')}
+      />
 
       {/* Quick Links Section */}
       <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-foreground">Verken Ons Webwerf</h2>
+            <h2 className="text-3xl font-bold text-foreground">{copy('explore.title')}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Vind alles wat jy nodig het om betrokke te raak by ons gemeente
+              {copy('explore.body')}
             </p>
           </div>
 
@@ -159,26 +172,18 @@ export default function Home() {
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div>
               <h2 className="mb-5 text-3xl font-bold text-amber-900">
-                Oor Annlin Gemeente
+                {copy('about.title')}
               </h2>
               <p className="mb-6 text-lg text-muted-foreground">
-                Ons is 'n lewendige gemeente wat toegewy is aan die verkondiging van God se Woord 
-                en die bou van 'n gemeenskap waar almal welkom is. Ons glo in die krag van geloof, 
-                hoop en liefde om lewens te transformeer.
+                {copy('about.body')}
               </p>
               <div className="space-y-3">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-foreground/80">Eredienste elke Sondag om 08:30 en 18:30</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-foreground/80">Aktiewe jeug- en kinderprogramme</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="h-2 w-2 bg-amber-600 rounded-full mr-3"></div>
-                  <span className="text-foreground/80">Gemeenskapsbetrokkenheid en uitreikprogramme</span>
-                </div>
+                {readContentList(sections, 'about.bullets').map((bullet) => (
+                  <div key={bullet} className="flex items-center">
+                    <div className="mr-3 h-2 w-2 shrink-0 rounded-full bg-amber-600" />
+                    <span className="text-foreground/80">{bullet}</span>
+                  </div>
+                ))}
               </div>
               <div className="mt-8">
                 <Button asChild>
@@ -197,15 +202,14 @@ export default function Home() {
                 }}>
                   <div className="h-full flex items-end p-6">
                     <div className="text-white">
-                      <h3 className="text-xl font-bold mb-2">Ons Geskiedenis</h3>
-                      <p className="text-sm text-gray-200">Gestig in 1965</p>
+                      <h3 className="text-xl font-bold mb-2">{copy('history.title')}</h3>
+                      <p className="text-sm text-gray-200">{copy('history.subtitle')}</p>
                     </div>
                   </div>
                 </div>
                 <CardContent className="p-6">
                   <p className="text-muted-foreground mb-6">
-                    Lees meer oor die ontstaan van Gereformeerde Kerk Pretoria-Annlin en die
-                    ingebruikneming van ons kerkgebou.
+                    {copy('history.body')}
                   </p>
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/oor-annlin-gemeente#geskiedenis">
@@ -218,9 +222,9 @@ export default function Home() {
 
               <Card className="border-stone-200 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Besoek Ons</CardTitle>
+                  <CardTitle>{copy('visit.title')}</CardTitle>
                   <CardDescription>
-                    Eredienstye, ligging en kontakbesonderhede
+                    {copy('visit.body')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">

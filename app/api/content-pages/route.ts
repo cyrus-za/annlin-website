@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-config'
+import { getCurrentUser, requireAuth } from '@/lib/auth-config'
 import { slugify } from '@/lib/slug'
 import { createContentRevision } from '@/lib/services/revisions'
 
@@ -15,12 +15,18 @@ const contentPageSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
+  const user = await getCurrentUser()
   const { searchParams } = new URL(request.url)
   const status = searchParams.get('status')
+  const requestedStatus = status === 'DRAFT' || status === 'PUBLISHED' || status === 'ARCHIVED'
+    ? status
+    : undefined
 
   const result = await safeDatabaseOperation(async () => {
     return prisma.contentPage.findMany({
-      where: status === 'DRAFT' || status === 'PUBLISHED' || status === 'ARCHIVED' ? { status } : undefined,
+      where: user?.role === 'ADMIN'
+        ? (requestedStatus ? { status: requestedStatus } : undefined)
+        : { status: 'PUBLISHED' },
       orderBy: { title: 'asc' },
     })
   }, 'Fetch content pages')

@@ -507,7 +507,17 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 }
 
 // Upcoming events component for homepage
-export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
+export function UpcomingEvents({
+  limit = 5,
+  heading = 'Komende Gebeure',
+  description = 'Sluit by ons aan vir hierdie spesiale geleenthede',
+  emptyMessage = 'Geen komende gebeure geskeduleer nie.',
+}: {
+  limit?: number
+  heading?: string
+  description?: string
+  emptyMessage?: string
+}) {
   const [events, setEvents] = React.useState<Event[]>([])
   const [loading, setLoading] = React.useState(true)
   const [selectedEvent, setSelectedEvent] = React.useState<Event | null>(null)
@@ -544,7 +554,7 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Komende Gebeure</h2>
+            <h2 className="text-3xl font-bold text-foreground">{heading}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
@@ -563,8 +573,8 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Komende Gebeure</h2>
-            <p className="text-muted-foreground">Geen komende gebeure geskeduleer nie.</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">{heading}</h2>
+            <p className="text-muted-foreground">{emptyMessage}</p>
           </div>
         </div>
       </section>
@@ -576,9 +586,9 @@ export function UpcomingEvents({ limit = 5 }: { limit?: number }) {
       <section className="bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-amber-900">Komende Gebeure</h2>
+          <h2 className="text-3xl font-bold text-amber-900">{heading}</h2>
           <p className="mt-4 text-lg text-amber-800">
-            Sluit by ons aan vir hierdie spesiale geleenthede
+            {description}
           </p>
         </div>
 

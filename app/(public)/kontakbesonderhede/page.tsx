@@ -4,13 +4,19 @@ import Link from 'next/link'
 import { Mail, Phone, MapPin, Clock, Calendar, Users, Send } from 'lucide-react'
 import { Metadata } from 'next'
 import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
+import { getPublicContentPage } from '@/lib/content-pages.server'
+import { readContentText } from '@/lib/content-page-definitions'
+
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: 'Kontak Besonderhede | Annlin Gemeente',
   description: 'Kontak besonderhede vir Annlin Gemeente. Vind ons adres, telefoon nommers, kantoor ure en erediens tye.',
 }
 
-export default function ContactDetailsPage() {
+export default async function ContactDetailsPage() {
+  const { sections } = await getPublicContentPage('kontakbesonderhede')
+  const copy = (path: string) => readContentText(sections, path)
   const contactEmailHref = `mailto:${APP_CONFIG.email}`
   const churchMapHref = 'https://maps.google.com/?q=Gereformeerde+Kerk+Pretoria-Annlin'
 
@@ -21,11 +27,10 @@ export default function ContactDetailsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
-              Kontak Besonderhede
+              {copy('hero.title')}
             </h1>
             <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
-              Kontak die kerkkantoor vir algemene navrae, besoekersinligting en praktiese
-              reëlings rakende die gemeente.
+              {copy('hero.body')}
             </p>
           </div>
         </div>
@@ -196,7 +201,7 @@ export default function ContactDetailsPage() {
                   
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <p className="text-sm text-yellow-800">
-                      <strong>Let wel:</strong> Los asseblief 'n boodskap indien ons nie dadelik antwoord nie en ons sal so gou as moontlik terugkom na jou toe.
+                      <strong>Let wel:</strong> {copy('office.note')}
                     </p>
                   </div>
                 </CardContent>
@@ -215,14 +220,14 @@ export default function ContactDetailsPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-foreground">Predikant</h4>
-                      <p className="text-muted-foreground">Ds. Pieter Kurpershoek</p>
-                      <p className="text-sm text-muted-foreground">Kontak via kerkkantoor</p>
+                      <h4 className="font-medium text-foreground">{copy('staff.ministerTitle')}</h4>
+                      <p className="text-muted-foreground">{copy('staff.ministerName')}</p>
+                      <p className="text-sm text-muted-foreground">{copy('staff.ministerBody')}</p>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-foreground">Kerkkantoor</h4>
-                      <p className="text-muted-foreground">Algemene navrae en administrasie</p>
+                      <h4 className="font-medium text-foreground">{copy('staff.officeTitle')}</h4>
+                      <p className="text-muted-foreground">{copy('staff.officeBody')}</p>
                       <a 
                         href={CONTACT_DETAILS.phone.href}
                         className="block text-sm text-amber-600 hover:text-amber-800"
@@ -239,7 +244,7 @@ export default function ContactDetailsPage() {
 
                     <div>
                       <h4 className="font-medium text-foreground">E-pos</h4>
-                      <p className="text-muted-foreground">Vir navrae, nuwe besoekers en terugvoering</p>
+                      <p className="text-muted-foreground">{copy('staff.emailBody')}</p>
                       <a 
                         href={contactEmailHref}
                         className="text-sm text-amber-600 hover:text-amber-800"
@@ -258,10 +263,10 @@ export default function ContactDetailsPage() {
             <Card className="bg-amber-50 border-amber-200">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-foreground mb-4">
-                  Gereed om ons te besoek?
+                  {copy('cta.title')}
                 </h3>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Ons sien daarna uit om jou by 'n erediens of gemeentegeleentheid te verwelkom.
+                  {copy('cta.body')}
                 </p>
                 <div className="space-x-4">
                   <Button asChild size="lg">

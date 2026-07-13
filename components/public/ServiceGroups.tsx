@@ -28,11 +28,18 @@ interface ServiceGroup {
 interface ServiceGroupsProps {
   limit?: number
   showAll?: boolean
+  heading?: string
+  description?: string
 }
 
 const PUBLIC_SERVICE_GROUP_LIMIT = 100
 
-export function ServiceGroups({ limit, showAll = false }: ServiceGroupsProps) {
+export function ServiceGroups({
+  limit,
+  showAll = false,
+  heading = 'Diensgroepe',
+  description = 'Raak betrokke by die bedieningswerk van die gemeente.',
+}: ServiceGroupsProps) {
   const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
@@ -75,7 +82,7 @@ export function ServiceGroups({ limit, showAll = false }: ServiceGroupsProps) {
       <section className={showAll ? 'bg-stone-50 py-12' : 'bg-white py-12'}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground">Diensgroepe</h2>
+            <h2 className="text-3xl font-bold text-foreground">{heading}</h2>
             <p className="mt-4 text-lg text-muted-foreground">
               {error || 'Geen aktiewe diensgroepe beskikbaar nie.'}
             </p>
@@ -100,9 +107,9 @@ export function ServiceGroups({ limit, showAll = false }: ServiceGroupsProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-bold text-foreground">Diensgroepe</h2>
+            <h2 className="text-3xl font-bold text-foreground">{heading}</h2>
             <p className="mt-3 text-lg text-muted-foreground">
-              Raak betrokke by die bedieningswerk van die gemeente.
+              {description}
             </p>
           </div>
           <Button asChild variant="outline" className="hidden sm:inline-flex">

@@ -13,6 +13,7 @@ import {
   Newspaper,
   BookOpen,
   Inbox,
+  FileText,
   Menu,
   X
 } from 'lucide-react'
@@ -60,6 +61,12 @@ const navigationItems: NavigationItem[] = [
     name: 'Indienings',
     href: '/admin/indienings',
     icon: Inbox,
+    adminOnly: true,
+  },
+  {
+    name: 'Publieke Bladsye',
+    href: '/admin/bladsye',
+    icon: FileText,
     adminOnly: true,
   },
 ]

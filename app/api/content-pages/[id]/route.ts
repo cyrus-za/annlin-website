@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-config'
+import { getCurrentUser, requireAuth } from '@/lib/auth-config'
 import { slugify } from '@/lib/slug'
 import { createContentRevision } from '@/lib/services/revisions'
 
@@ -19,9 +19,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const user = await getCurrentUser()
   const result = await safeDatabaseOperation(async () => {
     const page = await prisma.contentPage.findUnique({ where: { id } })
     if (!page) throw new Error('Bladsy nie gevind nie')
+    if (page.status !== 'PUBLISHED' && user?.role !== 'ADMIN') {
+      throw new Error('Bladsy nie gevind nie')
+    }
     return page
   }, 'Fetch content page')
 
