@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
@@ -53,10 +53,22 @@ const navigationItems: NavigationItem[] = [
 
 export function Navigation() {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session } = useSession()
   const showAdminLink = Boolean(session)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
+  const [searchTerm, setSearchTerm] = React.useState('')
+
+  const submitSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const query = searchTerm.trim()
+    if (!query) return
+
+    setIsSearchOpen(false)
+    setIsMobileMenuOpen(false)
+    router.push(`/soek?q=${encodeURIComponent(query)}`)
+  }
 
   // Close mobile menu when route changes
   React.useEffect(() => {
@@ -94,7 +106,7 @@ export function Navigation() {
                 />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-amber-900">Annlin Gemeente</h1>
+                <span className="block text-xl font-bold text-amber-900">Annlin Gemeente</span>
                 <p className="text-xs text-amber-700">Gereformeerde Kerk Pretoria-Annlin</p>
               </div>
             </Link>
@@ -132,6 +144,8 @@ export function Navigation() {
                 size="sm"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="text-gray-600 hover:text-amber-700"
+                aria-label={isSearchOpen ? 'Maak soektog toe' : 'Soek op die webwerf'}
+                aria-expanded={isSearchOpen}
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -144,18 +158,24 @@ export function Navigation() {
                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
                     className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg p-4"
                   >
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Soek in webwerf..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                        autoFocus
-                      />
-                    </div>
-                    <div className="mt-3 text-xs text-gray-500">
-                      Soek deur artikels, gebeure en diensgroepe
-                    </div>
+                    <form onSubmit={submitSearch} className="flex gap-2">
+                      <div className="relative min-w-0 flex-1">
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <label htmlFor="desktop-search" className="sr-only">Soekterm</label>
+                        <input
+                          id="desktop-search"
+                          type="search"
+                          value={searchTerm}
+                          onChange={(event) => setSearchTerm(event.target.value)}
+                          placeholder="Soek in webwerf..."
+                          className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          autoFocus
+                        />
+                      </div>
+                      <Button type="submit" size="sm" disabled={!searchTerm.trim()}>
+                        Soek
+                      </Button>
+                    </form>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -184,6 +204,8 @@ export function Navigation() {
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-gray-600 hover:text-amber-700"
+              aria-label={isMobileMenuOpen ? 'Maak kieslys toe' : 'Maak kieslys oop'}
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -237,6 +259,7 @@ export function Navigation() {
                   size="sm"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-gray-600"
+                  aria-label="Maak kieslys toe"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -274,14 +297,23 @@ export function Navigation() {
               {/* Mobile Actions */}
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
                 <div className="space-y-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Soek..."
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
+                  <form onSubmit={submitSearch} className="flex gap-2">
+                    <div className="relative min-w-0 flex-1">
+                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                      <label htmlFor="mobile-search" className="sr-only">Soekterm</label>
+                      <input
+                        id="mobile-search"
+                        type="search"
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Soek..."
+                        className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                    <Button type="submit" size="sm" aria-label="Soek" disabled={!searchTerm.trim()}>
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </form>
                   <Button asChild className="w-full bg-amber-700 hover:bg-amber-800">
                     <Link href="/kontak">
                       Kontak Ons
