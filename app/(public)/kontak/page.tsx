@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
+import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -125,8 +126,8 @@ export default function ContactPage() {
             <div className="space-y-4">
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">
-                  Jou navraag is suksesvol gestuur. Ons span sal jou binne 24-48 uur kontak 
-                  om jou te help met jou versoek.
+                  Jou navraag is suksesvol gestuur. Die kerkkantoor sal so gou as moontlik
+                  met jou in verbinding tree.
                 </p>
               </div>
               
@@ -218,7 +219,7 @@ export default function ContactPage() {
                         <FormItem>
                           <FormLabel>Telefoon Nommer</FormLabel>
                           <FormControl>
-                            <Input type="tel" placeholder="012 345 6789" {...field} />
+                            <Input type="tel" placeholder="Jou telefoonnommer" {...field} />
                           </FormControl>
                           <FormDescription>
                             Opsioneel - vir vinniger kontak
@@ -362,10 +363,10 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-foreground">E-pos</h4>
                     <a 
-                      href="mailto:info@annlin-gemeente.co.za"
-                      className="text-amber-600 hover:text-amber-800"
+                      href={`mailto:${APP_CONFIG.email}`}
+                      className="text-amber-600 hover:text-amber-800 break-all"
                     >
-                      info@annlin-gemeente.co.za
+                      {APP_CONFIG.email}
                     </a>
                   </div>
                 </div>
@@ -375,10 +376,17 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-foreground">Telefoon</h4>
                     <a 
-                      href="tel:012-345-6789"
+                      href={CONTACT_DETAILS.phone.href}
                       className="text-amber-600 hover:text-amber-800"
                     >
-                      012 345 6789
+                      {CONTACT_DETAILS.phone.label}
+                    </a>
+                    <br />
+                    <a
+                      href={CONTACT_DETAILS.mobile.href}
+                      className="text-amber-600 hover:text-amber-800"
+                    >
+                      {CONTACT_DETAILS.mobile.label}
                     </a>
                   </div>
                 </div>
@@ -388,9 +396,11 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-foreground">Adres</h4>
                     <p className="text-muted-foreground">
-                      Annlin Gemeente<br />
-                      [Kerk Adres]<br />
-                      Pretoria, 0181
+                      {CONTACT_DETAILS.address.map((line) => (
+                        <React.Fragment key={line}>
+                          {line}<br />
+                        </React.Fragment>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -400,9 +410,9 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-foreground">Kantoor Ure</h4>
                     <p className="text-muted-foreground">
-                      Maandag - Vrydag: 08:00 - 16:00<br />
-                      Saterdag: 08:00 - 12:00<br />
-                      Sondag: Na eredienste
+                      Maandag - Vrydag: {CONTACT_DETAILS.officeHours.weekdays}<br />
+                      Saterdag: {CONTACT_DETAILS.officeHours.saturday}<br />
+                      Sondag: {CONTACT_DETAILS.officeHours.sunday}
                     </p>
                   </div>
                 </div>
@@ -432,35 +442,6 @@ export default function ContactPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Noodkontak</CardTitle>
-                <CardDescription>
-                  Vir dringende pastorale sorg
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-foreground">Predikant</h4>
-                    <p className="text-muted-foreground">
-                      <a href="tel:082-123-4567" className="text-amber-600 hover:text-amber-800">
-                        082 123 4567
-                      </a>
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-foreground">Kerkraad Voorsitter</h4>
-                    <p className="text-muted-foreground">
-                      <a href="tel:083-765-4321" className="text-amber-600 hover:text-amber-800">
-                        083 765 4321
-                      </a>
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

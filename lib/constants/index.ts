@@ -9,6 +9,28 @@ export const APP_CONFIG = {
   phone: '012 567 1492',
 } as const
 
+export const CONTACT_DETAILS = {
+  phone: {
+    label: '012 567 1492',
+    href: 'tel:+27125671492',
+  },
+  mobile: {
+    label: '079 162 3453',
+    href: 'tel:+27791623453',
+  },
+  address: [
+    'Gereformeerde Kerk Pretoria-Annlin',
+    'H/v Braam Pretoriusstraat en Kaneelbaslaan',
+    'Wonderboom, Pretoria',
+    '0182',
+  ],
+  officeHours: {
+    weekdays: '08:00 - 16:00',
+    saturday: 'Gesluit',
+    sunday: 'Na eredienste',
+  },
+} as const
+
 export const ROUTES = {
   HOME: '/',
   ABOUT: '/oor-annlin-gemeente',

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { Mail, Phone, MapPin, Clock, Calendar, Users, Send } from 'lucide-react'
 import { Metadata } from 'next'
-import { APP_CONFIG } from '@/lib/constants'
+import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Kontak Besonderhede | Annlin Gemeente',
@@ -64,19 +64,19 @@ export default function ContactDetailsPage() {
                       <div className="space-y-2">
                         <div>
                           <a 
-                            href="tel:012-567-1492"
+                            href={CONTACT_DETAILS.phone.href}
                             className="text-amber-600 hover:text-amber-800"
                           >
-                            012 567 1492
+                            {CONTACT_DETAILS.phone.label}
                           </a>
                           <p className="text-xs text-muted-foreground">Kerkkantoor</p>
                         </div>
                         <div>
                           <a 
-                            href="tel:079-162-3453"
+                            href={CONTACT_DETAILS.mobile.href}
                             className="text-amber-600 hover:text-amber-800"
                           >
-                            079 162 3453
+                            {CONTACT_DETAILS.mobile.label}
                           </a>
                           <p className="text-xs text-muted-foreground">Selfoon</p>
                         </div>
@@ -106,10 +106,9 @@ export default function ContactDetailsPage() {
                     <div>
                       <h4 className="font-medium text-foreground mb-2">Fisiese Adres</h4>
                       <p className="text-muted-foreground">
-                        Gereformeerde Kerk Pretoria-Annlin<br />
-                        H/v Braam Pretoriusstraat en Kaneelbaslaan<br />
-                        Wonderboom, Pretoria<br />
-                        0182
+                        {CONTACT_DETAILS.address.map((line) => (
+                          <span key={line} className="block">{line}</span>
+                        ))}
                       </p>
                     </div>
                     
@@ -183,15 +182,15 @@ export default function ContactDetailsPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Maandag - Vrydag</span>
-                      <span className="font-medium text-foreground">08:00 - 16:00</span>
+                      <span className="font-medium text-foreground">{CONTACT_DETAILS.officeHours.weekdays}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Saterdag</span>
-                      <span className="font-medium text-foreground">Gesluit</span>
+                      <span className="font-medium text-foreground">{CONTACT_DETAILS.officeHours.saturday}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Sondag</span>
-                      <span className="font-medium text-foreground">Na eredienste</span>
+                      <span className="font-medium text-foreground">{CONTACT_DETAILS.officeHours.sunday}</span>
                     </div>
                   </div>
                   
@@ -225,16 +224,16 @@ export default function ContactDetailsPage() {
                       <h4 className="font-medium text-foreground">Kerkkantoor</h4>
                       <p className="text-muted-foreground">Algemene navrae en administrasie</p>
                       <a 
-                        href="tel:012-567-1492"
+                        href={CONTACT_DETAILS.phone.href}
                         className="block text-sm text-amber-600 hover:text-amber-800"
                       >
-                        012 567 1492
+                        {CONTACT_DETAILS.phone.label}
                       </a>
                       <a 
-                        href="tel:079-162-3453"
+                        href={CONTACT_DETAILS.mobile.href}
                         className="block text-sm text-amber-600 hover:text-amber-800"
                       >
-                        079 162 3453
+                        {CONTACT_DETAILS.mobile.label}
                       </a>
                     </div>
 
