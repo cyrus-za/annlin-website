@@ -21,9 +21,11 @@ Last updated: 2026-07-06
     - `modified`: `2026-07-03T12:00:33`
 - WordPress service-group pages expose these named contacts publicly:
   - `Jeug`: Lisa Vosloo, oudl. Thomas Venter, Zoë Venter, Clarissa Rehder
+  - `Gebedsgroep`: Carina Pyper
   - `Terebinte`: ouderling Hannes Venter
   - `Susters`: Magda du Toit
   - `Sekuriteit`: oudl. Jan Rehder
+  - `Vroue Bedieningsgroep`: Anne-Marie (the page copy does not state a surname)
 
 ## Unresolved items to confirm in the meeting
 
@@ -44,11 +46,9 @@ Last updated: 2026-07-06
   - `Versorging en Barmhartigheid`
   - `Vervoer`
   - `Verwelkoming en Gasvryheid`
-  - `Gebedsgroep`
   - `Evangelisasie`
   - `Tweedehandse Goedere Verkoping`
   - `Fontein Redaksie`
-  - `Vroue Bedieningsgroep`
   - Until confirmed, unnamed Diakonie service groups are routed through `Diakonie`; other unnamed groups remain routed through the kerkkantoor.
 
 ## Migration audit summary

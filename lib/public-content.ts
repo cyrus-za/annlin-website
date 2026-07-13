@@ -16,6 +16,10 @@ function normalizeWhitespace(value: string) {
     .trim()
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function stripLeadingWordPressPageChrome(value: string) {
   let cleaned = normalizeWhitespace(value)
 
@@ -75,6 +79,20 @@ export function createExcerpt(value: string, maxLength = 180) {
 
 export function createArticleExcerpt(value: string, maxLength = 220) {
   return createExcerpt(normalizeArticleContent(value), maxLength)
+}
+
+export function normalizeServiceGroupContent(value: string, title: string) {
+  const normalized = stripLeadingWordPressPageChrome(value)
+  const repeatedTitlePattern = new RegExp(
+    `^\\s*${escapeRegExp(title)}s?(?:\\s+Blad)?(?=\\s|$)`,
+    'i'
+  )
+
+  return normalizeWhitespace(normalized.replace(repeatedTitlePattern, ''))
+}
+
+export function createServiceGroupExcerpt(value: string, title: string, maxLength = 180) {
+  return createExcerpt(normalizeServiceGroupContent(value, title), maxLength)
 }
 
 export function stripLeadingDateFromTitle(title: string) {

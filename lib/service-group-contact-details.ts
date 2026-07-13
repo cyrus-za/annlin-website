@@ -32,6 +32,18 @@ const explicitServiceGroupContactDetails = new Map<string, ServiceGroupContactDe
       contactPerson: 'Ouderling Jan Rehder',
     },
   ],
+  [
+    'gebedsgroepe',
+    {
+      contactPerson: 'Carina Pyper',
+    },
+  ],
+  [
+    'vroue-bedieningsgroep',
+    {
+      contactPerson: 'Anne-Marie',
+    },
+  ],
 ])
 
 export function contactDetailsForServiceGroup(

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Mail, Phone, Users } from 'lucide-react'
 
-import { createExcerpt } from '@/lib/public-content'
+import { createServiceGroupExcerpt } from '@/lib/public-content'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -169,7 +169,7 @@ function ServiceGroupGridSection({
                   </div>
                 </div>
                 <CardDescription className="text-base leading-7 text-muted-foreground">
-                  {createExcerpt(group.description, 190)}
+                  {createServiceGroupExcerpt(group.description, group.name, 190)}
                 </CardDescription>
               </CardHeader>
 
@@ -255,7 +255,7 @@ function ServiceGroupRail({
                   <div>
                     <h4 className="text-lg font-semibold text-foreground">{group.name}</h4>
                     <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
-                      {createExcerpt(group.description, 120)}
+                      {createServiceGroupExcerpt(group.description, group.name, 120)}
                     </p>
                   </div>
                   <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
@@ -426,7 +426,7 @@ export function ServiceGroupsCompact() {
                 <div className="flex-1">
                   <h4 className="mb-1 text-sm font-medium text-gray-900">{group.name}</h4>
                   <p className="mb-2 line-clamp-2 text-xs text-gray-600">
-                    {createExcerpt(group.description, 80)}
+                    {createServiceGroupExcerpt(group.description, group.name, 80)}
                   </p>
                   <div className="flex items-center text-xs text-gray-500">
                     <Users className="mr-1 h-3 w-3" />

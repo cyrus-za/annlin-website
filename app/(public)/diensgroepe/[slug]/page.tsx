@@ -7,6 +7,7 @@ import { ChevronLeft, Mail, Phone, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/db'
+import { createServiceGroupExcerpt, normalizeServiceGroupContent } from '@/lib/public-content'
 import { markdownToHtml } from '@/lib/tiptap-config'
 
 type PageProps = {
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${serviceGroup.name} | Diensgroepe | Annlin Gemeente`,
-    description: serviceGroup.description.slice(0, 160),
+    description: createServiceGroupExcerpt(serviceGroup.description, serviceGroup.name, 160),
   }
 }
 
@@ -42,7 +43,9 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  const bodyHtml = markdownToHtml(serviceGroup.description)
+  const bodyHtml = markdownToHtml(
+    normalizeServiceGroupContent(serviceGroup.description, serviceGroup.name)
+  )
   const bannerUrl = serviceGroup.bannerUrl || serviceGroup.thumbnailUrl
 
   return (
