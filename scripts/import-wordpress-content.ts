@@ -2,9 +2,18 @@
 
 import { ArticleStatus, ReadingMaterialFileType, ServiceGroupCategory } from '@prisma/client'
 import { disconnectDatabase, prisma } from '../lib/db'
-import { createArticleExcerpt, normalizeServiceGroupContent } from '../lib/public-content'
+import {
+  createArticleExcerpt,
+  normalizeArticleContent,
+  normalizeReadingMaterialContent,
+  normalizeServiceGroupContent,
+} from '../lib/public-content'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
+import {
+  buildWordPressPageRouteMap,
+  replaceWordPressPageLinks,
+} from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
@@ -113,30 +122,14 @@ const newsSlugs = new Set([
   'uitnodiging-diensteblad',
 ])
 
-const archiveSlugs = new Set([
-  'mosambiek-whatsappgroep',
-  'manne-bedieningsgroep-4',
-  'koor',
-  'verwelkoming',
-  'katkisasie-leerkragte',
-  'rousmart',
-  'kleuterbediening',
-  'verslawing2',
-  'laerskooljeug',
-  'katkisasie-fotoblad',
-  'buitelandse-evangelisasie',
-  'bybelverspreiding',
-  'evangelisasie-omliggende-gebiede',
-  'evangelisasie-eie-omgewing',
+const singletonPageRoutes = new Map([
+  ['homepagenew', '/'],
+  ['oor-annlin-gemeente', '/oor-annlin-gemeente'],
+  ['jaarprogram', '/jaarprogram'],
+  ['kontakbesonderhede', '/kontakbesonderhede'],
+  ['onlangse-video-uitsendings-van-preke', '/uitsendings'],
 ])
-
-const singletonPageSlugs = new Set([
-  'homepagenew',
-  'oor-annlin-gemeente',
-  'jaarprogram',
-  'kontakbesonderhede',
-  'onlangse-video-uitsendings-van-preke',
-])
+const singletonPageSlugs = new Set(singletonPageRoutes.keys())
 
 const KERKDIENSTGEMIST_STATION_URL =
   'https://kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin'
@@ -145,31 +138,6 @@ const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
   /\bhttps?:\/\/kerkdienstgemist\.nl\/stations\/1246[^\s]*/i
 const YOUTUBE_SERMON_CHANNEL_PATTERN =
   /\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/i
-
-function replacementRouteForLegacySlug(slug: string) {
-  if (serviceGroupSlugs.has(slug)) return '/diensgroepe'
-  if (readingSlugs.has(slug)) return '/leesstof'
-  if (archiveSlugs.has(slug)) return '/leesstof'
-  if (newsSlugs.has(slug)) return '/nuus'
-  if (slug === 'onlangse-video-uitsendings-van-preke') return '/uitsendings'
-  if (slug === 'homepagenew' || slug === '') return '/'
-  return null
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
-
-function legacySiteHostPattern() {
-  const baseUrl = process.env['WORDPRESS_BASE_URL']
-  if (!baseUrl) return null
-
-  try {
-    return escapeRegExp(new URL(baseUrl).host.replace(/^www\./, ''))
-  } catch {
-    return null
-  }
-}
 
 function decodeEntities(value: string) {
   let decoded = value
@@ -193,32 +161,6 @@ function decodeEntities(value: string) {
   }
 
   return decoded
-}
-
-function replaceLegacySiteReferences(value: string) {
-  const hostPattern = legacySiteHostPattern()
-  if (!hostPattern) return value
-
-  const uploadUrlPattern = new RegExp(
-    `\\bhttps?:\\/\\/(?:www\\.)?${hostPattern}\\/wp-content\\/uploads\\/[^\\s"')\\]]+`,
-    'gi'
-  )
-  const pageUrlPattern = new RegExp(
-    `\\bhttps?:\\/\\/(?:www\\.)?${hostPattern}\\/([a-z0-9-]+)\\/?`,
-    'gi'
-  )
-  const barePageUrlPattern = new RegExp(
-    `\\bwww\\.${hostPattern}\\/([a-z0-9-]+)\\/?`,
-    'gi'
-  )
-
-  return value
-    .replace(uploadUrlPattern, '')
-    .replace(pageUrlPattern, (match, slug: string) => replacementRouteForLegacySlug(slug) ?? match)
-    .replace(barePageUrlPattern, (match, slug: string) => {
-      const route = replacementRouteForLegacySlug(slug)
-      return route ?? match
-    })
 }
 
 function attributeValue(tag: string, attribute: string) {
@@ -330,18 +272,25 @@ function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
       .trim()
   )
 
-  const cleaned = options.preserveAssets ? text : replaceLegacySiteReferences(text)
-  return cleaned.replace(/[ \t]{2,}/g, ' ').trim()
+  return text.replace(/[ \t]{2,}/g, ' ').trim()
 }
 
 function titleOf(page: WpPage) {
   return htmlToText(page.title.rendered || page.slug)
 }
 
-function contentOf(page: WpPage) {
+function contentOf(
+  page: WpPage,
+  wordpressBaseUrl: string,
+  legacyPageRoutes: ReadonlyMap<string, string>
+) {
   const content = htmlToText(page.content.rendered || '', { preserveAssets: true })
   const excerpt = htmlToText(page.excerpt?.rendered || '', { preserveAssets: true })
-  return content || excerpt || titleOf(page)
+  return replaceWordPressPageLinks(
+    content || excerpt || titleOf(page),
+    wordpressBaseUrl,
+    legacyPageRoutes
+  )
 }
 
 function truncate(value: string, max: number) {
@@ -401,6 +350,12 @@ async function main() {
   const eventResponse = await fetchJson<{ events?: TribeEvent[] }>(
     `${wordpressBaseUrl}/wp-json/tribe/events/v1/events?per_page=100`
   )
+  const legacyPageRoutes = buildWordPressPageRouteMap(pages, {
+    serviceGroupSlugs,
+    newsSlugs,
+    readingSlugs,
+    singletonRoutes: singletonPageRoutes,
+  })
 
   const admin = await prisma.user.findFirst({
     where: { role: 'ADMIN' },
@@ -463,7 +418,7 @@ async function main() {
 
   for (const page of sortedPages) {
     const title = titleOf(page)
-    const content = contentOf(page)
+    const content = contentOf(page, wordpressBaseUrl, legacyPageRoutes)
 
     if (serviceGroupSlugs.has(page.slug)) {
       const serviceGroupTitle = titleForServiceGroup(page)
@@ -505,11 +460,12 @@ async function main() {
     }
 
     if (readingSlugs.has(page.slug)) {
+      const readingContent = normalizeReadingMaterialContent(content, title)
       await prisma.readingMaterial.upsert({
         where: { id: `wp-page-${page.id}` },
         update: {
           title,
-          description: content,
+          description: readingContent,
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -517,7 +473,7 @@ async function main() {
         create: {
           id: `wp-page-${page.id}`,
           title,
-          description: content,
+          description: readingContent,
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -529,12 +485,13 @@ async function main() {
 
     if (newsSlugs.has(page.slug)) {
       const publishedAt = new Date(page.modified || page.date || Date.now())
+      const articleContent = normalizeArticleContent(content)
       await prisma.article.upsert({
         where: { slug: slugify(page.slug) },
         update: {
           title,
-          content,
-          excerpt: createArticleExcerpt(content, 240),
+          content: articleContent,
+          excerpt: createArticleExcerpt(articleContent, 240),
           categoryId: articleCategory.id,
           status: ArticleStatus.PUBLISHED,
           publishedAt,
@@ -543,8 +500,8 @@ async function main() {
         create: {
           title,
           slug: slugify(page.slug),
-          content,
-          excerpt: createArticleExcerpt(content, 240),
+          content: articleContent,
+          excerpt: createArticleExcerpt(articleContent, 240),
           categoryId: articleCategory.id,
           status: ArticleStatus.PUBLISHED,
           publishedAt,
@@ -556,11 +513,12 @@ async function main() {
     }
 
     if (!singletonPageSlugs.has(page.slug)) {
+      const archiveContent = normalizeReadingMaterialContent(content, title)
       await prisma.readingMaterial.upsert({
         where: { id: `wp-archive-page-${page.id}` },
         update: {
           title,
-          description: content,
+          description: archiveContent,
           externalUrl: null,
           categoryId: archiveCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -568,7 +526,7 @@ async function main() {
         create: {
           id: `wp-archive-page-${page.id}`,
           title,
-          description: content,
+          description: archiveContent,
           externalUrl: null,
           categoryId: archiveCategory.id,
           fileType: ReadingMaterialFileType.LINK,
@@ -583,7 +541,11 @@ async function main() {
     if (Number.isNaN(startDate.getTime())) continue
 
     const endDate = event.end_date ? new Date(event.end_date) : undefined
-    const rawDescription = htmlToText(event.description || event.excerpt || '')
+    const rawDescription = replaceWordPressPageLinks(
+      htmlToText(event.description || event.excerpt || ''),
+      wordpressBaseUrl,
+      legacyPageRoutes
+    )
     const description = normalizeEventDescription(rawDescription)
     const sermonUrl = hasKerkdienstgemistStationLink(rawDescription)
       ? '/uitsendings'

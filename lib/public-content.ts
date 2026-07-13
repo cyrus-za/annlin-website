@@ -3,9 +3,9 @@ const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
 const incompleteMarkdownImagePattern = /!\[[^\]]*\]\([^\s)]*(?:\)|$)/g
 const incompleteMarkdownLinkPattern = /\[([^\]]+)\]\([^\s)]*(?:\)|$)/g
 const bareUrlPattern = /(?:https?:\/\/|www\.)[^\s<]+/gi
-const googleMapsUrlPattern = /(?<!\]\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+/gi
+const googleMapsUrlPattern = /(?<!\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)\]]+/gi
 const googleMapsMarkdownLinkPattern =
-  /\[Maak roete in Google Maps oop\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
+  /\[[^\]]*\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
 
 function normalizeWhitespace(value: string) {
   return value
@@ -41,13 +41,39 @@ function stripLeadingWordPressPageChrome(value: string) {
   return cleaned
 }
 
-export function normalizeArticleContent(value: string) {
-  return stripLeadingWordPressPageChrome(value)
-    .replace(googleMapsMarkdownLinkPattern, '$1')
+export function normalizeGoogleMapsLinks(value: string) {
+  return value
+    .replace(
+      googleMapsMarkdownLinkPattern,
+      (_match, url: string) => `[Maak roete in Google Maps oop](${url})`
+    )
     .replace(googleMapsUrlPattern, (url) => `[Maak roete in Google Maps oop](${url})`)
+}
+
+export function normalizeArticleContent(value: string) {
+  return normalizeGoogleMapsLinks(stripLeadingWordPressPageChrome(value))
     .replace(/\uE016/g, '')
     .replace(/[ \t]{2,}/g, ' ')
     .trim()
+}
+
+export function normalizeReadingMaterialContent(value: string, title: string) {
+  const repeatedTitlePattern = new RegExp(
+    `^\\s*${escapeRegExp(title)}(?:[ \\t]*(?:\\n+|$))`,
+    'i'
+  )
+  let normalized = normalizeWhitespace(value)
+
+  for (let index = 0; index < 8; index++) {
+    const next = normalizeWhitespace(
+      stripLeadingWordPressPageChrome(normalized).replace(repeatedTitlePattern, '')
+    )
+
+    if (next === normalized) break
+    normalized = next
+  }
+
+  return normalized
 }
 
 export function stripMarkdown(value: string) {
