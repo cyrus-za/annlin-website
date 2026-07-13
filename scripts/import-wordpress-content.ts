@@ -2,7 +2,7 @@
 
 import { ArticleStatus, ReadingMaterialFileType, ServiceGroupCategory } from '@prisma/client'
 import { disconnectDatabase, prisma } from '../lib/db'
-import { createArticleExcerpt } from '../lib/public-content'
+import { createArticleExcerpt, normalizeServiceGroupContent } from '../lib/public-content'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
 
@@ -467,6 +467,7 @@ async function main() {
 
     if (serviceGroupSlugs.has(page.slug)) {
       const serviceGroupTitle = titleForServiceGroup(page)
+      const serviceGroupContent = normalizeServiceGroupContent(content, serviceGroupTitle)
       const displayOrder = serviceGroupDisplayOrder.get(page.slug) ?? 100 + serviceGroups
       const category = categoryForServiceGroup(page)
       const contactDetails = contactDetailsForServiceGroup(page.slug, category, defaultContactEmail)
@@ -475,7 +476,7 @@ async function main() {
         where: { slug: slugify(page.slug) },
         update: {
           name: serviceGroupTitle,
-          description: content,
+          description: serviceGroupContent,
           category,
           contactPerson: contactDetails.contactPerson,
           contactEmail: contactDetails.contactEmail,
@@ -488,7 +489,7 @@ async function main() {
         create: {
           name: serviceGroupTitle,
           slug: slugify(page.slug),
-          description: content,
+          description: serviceGroupContent,
           category,
           contactPerson: contactDetails.contactPerson,
           contactEmail: contactDetails.contactEmail,

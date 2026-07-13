@@ -82,9 +82,23 @@ export function createArticleExcerpt(value: string, maxLength = 220) {
 }
 
 export function normalizeServiceGroupContent(value: string, title: string) {
-  const normalized = stripLeadingWordPressPageChrome(value)
+  let normalized = normalizeWhitespace(value)
+  const completeHeaderPattern = new RegExp(
+    `GEREFORMEERDE KERK\\s+PRETORIA-ANNLIN\\s+(?:Die\\s+)?${escapeRegExp(title)}s?(?:\\s+Blad)?`,
+    'gi'
+  )
+  const completeHeaders = [...normalized.slice(0, 2500).matchAll(completeHeaderPattern)]
+  const lastCompleteHeader = completeHeaders.at(-1)
+
+  if (lastCompleteHeader?.index !== undefined) {
+    return normalizeWhitespace(
+      normalized.slice(lastCompleteHeader.index + lastCompleteHeader[0].length)
+    )
+  }
+
+  normalized = stripLeadingWordPressPageChrome(normalized)
   const repeatedTitlePattern = new RegExp(
-    `^\\s*${escapeRegExp(title)}s?(?:\\s+Blad)?(?=\\s|$)`,
+    `^\\s*${escapeRegExp(title)}s?(?:[ \\t]+Blad)?[ \\t]*(?:\\n+|$)`,
     'i'
   )
 
