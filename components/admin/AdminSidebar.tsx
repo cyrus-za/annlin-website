@@ -12,6 +12,7 @@ import {
   Calendar,
   Newspaper,
   BookOpen,
+  Inbox,
   Menu,
   X
 } from 'lucide-react'
@@ -54,6 +55,12 @@ const navigationItems: NavigationItem[] = [
     name: 'Leesstof',
     href: '/admin/leesstof',
     icon: BookOpen,
+  },
+  {
+    name: 'Indienings',
+    href: '/admin/indienings',
+    icon: Inbox,
+    adminOnly: true,
   },
 ]
 

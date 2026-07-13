@@ -28,9 +28,9 @@ export default async function AdminDashboard() {
           },
         },
       }),
-      prisma.contactSubmission.count({
-        where: { status: 'NEW' },
-      }),
+      user.role === 'ADMIN'
+        ? prisma.contactSubmission.count({ where: { status: 'NEW' } })
+        : Promise.resolve(0),
       prisma.serviceGroup.count({
         where: { isActive: true },
       }),
@@ -99,18 +99,22 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Hangende Indienings</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingSubmissions}</div>
-            <p className="text-xs text-muted-foreground">
-              Benodig aandag
-            </p>
-          </CardContent>
-        </Card>
+        {user.role === 'ADMIN' && (
+          <Link href="/admin/indienings" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700 focus-visible:ring-offset-2">
+            <Card className="h-full transition-colors hover:border-amber-300 hover:bg-amber-50/30">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Hangende Indienings</CardTitle>
+                <Mail className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{pendingSubmissions}</div>
+                <p className="text-xs text-muted-foreground">
+                  Benodig aandag
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -160,15 +164,15 @@ export default async function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border p-4">
+            <Link href="/admin/diensgroepe" className="rounded-lg border p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/30">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <Users className="h-4 w-4 text-amber-700" />
                 Diensgroepe
               </div>
               <p className="mt-2 text-2xl font-bold">{totalServiceGroups}</p>
               <p className="text-xs text-muted-foreground">Aktief op publieke webwerf</p>
-            </div>
-            <div className="rounded-lg border p-4">
+            </Link>
+            <Link href="/admin/leesstof" className="rounded-lg border p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/30">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <BookOpen className="h-4 w-4 text-amber-700" />
                 Leesstof
@@ -177,23 +181,25 @@ export default async function AdminDashboard() {
               <p className="text-xs text-muted-foreground">
                 {totalReadingMaterials - publicReadingMaterials} gemigreerde argiefitems bly intern bewaar
               </p>
-            </div>
-            <div className="rounded-lg border p-4">
+            </Link>
+            <Link href="/admin/jaarprogram" className="rounded-lg border p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/30">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <Calendar className="h-4 w-4 text-amber-700" />
                 Jaarprogram
               </div>
               <p className="mt-2 text-2xl font-bold">{upcomingEvents}</p>
               <p className="text-xs text-muted-foreground">Items binne 30 dae</p>
-            </div>
-            <div className="rounded-lg border p-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Mail className="h-4 w-4 text-amber-700" />
-                Nuwe navrae
-              </div>
-              <p className="mt-2 text-2xl font-bold">{pendingSubmissions}</p>
-              <p className="text-xs text-muted-foreground">Onverwerkte kontakvorms</p>
-            </div>
+            </Link>
+            {user.role === 'ADMIN' && (
+              <Link href="/admin/indienings" className="rounded-lg border p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/30">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Mail className="h-4 w-4 text-amber-700" />
+                  Nuwe navrae
+                </div>
+                <p className="mt-2 text-2xl font-bold">{pendingSubmissions}</p>
+                <p className="text-xs text-muted-foreground">Onverwerkte kontakvorms</p>
+              </Link>
+            )}
           </div>
         </CardContent>
       </Card>

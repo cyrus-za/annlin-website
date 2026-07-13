@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 
 interface AdminLayoutClientProps {
   children: React.ReactNode
+  notificationCount: number
   user: {
     name: string
     email: string
@@ -14,7 +15,7 @@ interface AdminLayoutClientProps {
   }
 }
 
-export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
+export function AdminLayoutClient({ children, user, notificationCount }: AdminLayoutClientProps) {
   const router = useRouter()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false)
@@ -92,6 +93,7 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
           {/* Header */}
           <AdminHeader
             user={user}
+            notificationCount={notificationCount}
             onMenuToggle={handleMobileSidebarToggle}
             onLogout={handleLogout}
           />

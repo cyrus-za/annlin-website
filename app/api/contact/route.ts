@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { ContactSubmissionStatus } from '@prisma/client'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
+import { getCurrentUser } from '@/lib/auth-config'
+import { sendContactSubmissionNotification } from '@/lib/email'
 
 // Validation schema
 const contactSubmissionSchema = z.object({
-  name: z.string().min(1, "Naam is verplig").max(100, "Naam mag nie langer as 100 karakters wees nie"),
-  email: z.string().email("Ongeldige e-pos adres"),
-  phone: z.string().optional(),
-  subject: z.string().min(1, "Onderwerp is verplig").max(200, "Onderwerp mag nie langer as 200 karakters wees nie"),
-  message: z.string().min(10, "Boodskap moet ten minste 10 karakters wees").max(2000, "Boodskap mag nie langer as 2000 karakters wees nie"),
+  name: z.string().trim().min(1, "Naam is verplig").max(100, "Naam mag nie langer as 100 karakters wees nie"),
+  email: z.string().trim().email("Ongeldige e-pos adres"),
+  phone: z.string().trim().max(40, "Telefoonnommer is te lank").optional(),
+  subject: z.string().trim().min(1, "Onderwerp is verplig").max(200, "Onderwerp mag nie langer as 200 karakters wees nie"),
+  message: z.string().trim().min(10, "Boodskap moet ten minste 10 karakters wees").max(2000, "Boodskap mag nie langer as 2000 karakters wees nie"),
   type: z.enum(['GENERAL', 'SERVICE_GROUP', 'SPECIFIC']),
   serviceGroupId: z.string().optional(),
+}).superRefine((data, context) => {
+  if (data.type === 'SERVICE_GROUP' && !data.serviceGroupId) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['serviceGroupId'],
+      message: 'Kies asseblief ’n diensgroep',
+    })
+  }
 })
 
 // POST /api/contact - Submit contact form
@@ -40,11 +51,13 @@ export async function POST(request: NextRequest) {
         data: {
           name: validatedData.name,
           email: validatedData.email,
-          phone: validatedData.phone,
+          phone: validatedData.phone || null,
           subject: validatedData.subject,
           message: validatedData.message,
           type: validatedData.type,
-          serviceGroupId: validatedData.serviceGroupId,
+          serviceGroupId: validatedData.type === 'SERVICE_GROUP'
+            ? validatedData.serviceGroupId
+            : null,
           status: 'NEW',
         },
         include: {
@@ -58,9 +71,6 @@ export async function POST(request: NextRequest) {
         },
       })
       
-      // TODO: Send email notification to admin and service group contact
-      // This would integrate with the email service
-      
       return submission
     }, 'Create contact submission')
     
@@ -71,10 +81,25 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    const submission = result.data
+    const emailSent = await sendContactSubmissionNotification({
+      id: submission.id,
+      name: submission.name,
+      email: submission.email,
+      phone: submission.phone,
+      subject: submission.subject,
+      type: submission.type,
+      serviceGroupName: submission.serviceGroup?.name,
+    })
+
+    if (!emailSent) {
+      console.error(`Contact notification email failed for submission ${submission.id}`)
+    }
+
     return NextResponse.json(
       { 
-        message: 'Jou boodskap is suksesvol gestuur!',
-        id: result.data.id 
+        message: 'Jou boodskap is suksesvol ontvang!',
+        id: submission.id,
       },
       { status: 201 }
     )
@@ -84,7 +109,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validasie fout',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`)
         },
         { status: 400 }
       )
@@ -101,15 +126,41 @@ export async function POST(request: NextRequest) {
 // GET /api/contact - List contact submissions (admin only)
 export async function GET(request: NextRequest) {
   try {
-    // This would require authentication for admin access
-    // For now, return empty array
-    return NextResponse.json({ submissions: [] })
+    const user = await getCurrentUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Meld asseblief aan' }, { status: 401 })
+    }
+
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const take = Math.min(Math.max(Number(searchParams.get('limit')) || 50, 1), 100)
+    const statusFilter: ContactSubmissionStatus | undefined =
+      status === 'NEW' || status === 'READ' || status === 'REPLIED'
+        ? status
+        : undefined
+
+    const submissions = await prisma.contactSubmission.findMany({
+      where: statusFilter ? { status: statusFilter } : undefined,
+      include: {
+        serviceGroup: {
+          select: { name: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+    })
+
+    return NextResponse.json({ submissions })
   } catch (error) {
     console.error('Contact submissions GET error:', error)
     return NextResponse.json(
-      { error: 'Ongemagtigde toegang' },
-      { status: 401 }
+      { error: 'Kon nie kontakindienings laai nie' },
+      { status: 500 }
     )
   }
 }
-

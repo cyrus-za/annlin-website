@@ -244,7 +244,7 @@ export default function ContactPage() {
                             <SelectContent>
                               <SelectItem value="GENERAL">Algemene Navraag</SelectItem>
                               <SelectItem value="SERVICE_GROUP">Diensgroep Belangstelling</SelectItem>
-                              <SelectItem value="SPECIFIC">Spesifieke Versoek</SelectItem>
+                              <SelectItem value="SPECIFIC">Ander Navraag</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -321,7 +321,8 @@ export default function ContactPage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Minimum 10 karakters, maksimum 2000 karakters
+                            Minimum 10 karakters, maksimum 2000 karakters. Moet asseblief nie
+                            vertroulike pastorale besonderhede deur hierdie vorm stuur nie.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

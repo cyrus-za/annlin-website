@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { 
   Menu,
   Bell,
-  Search,
   User,
   LogOut,
   Settings,
@@ -22,11 +21,11 @@ interface AdminHeaderProps {
   }
   onMenuToggle?: () => void
   onLogout?: () => void
+  notificationCount: number
 }
 
-export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) {
+export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }: AdminHeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false)
-  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false)
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3">
@@ -39,21 +38,12 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
             size="icon"
             onClick={onMenuToggle}
             className="lg:hidden"
+            aria-label="Maak navigasie oop"
           >
             <Menu className="h-5 w-5" />
           </Button>
 
-          {/* Search */}
-          <div className="hidden sm:flex items-center space-x-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Soek..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent w-64"
-              />
-            </div>
-          </div>
+          <p className="hidden text-sm font-medium text-gray-700 sm:block">Webwerfbestuur</p>
         </div>
 
         {/* Right side */}
@@ -65,64 +55,18 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
             </Link>
           </Button>
 
-          {/* Notifications */}
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className="relative"
-            >
-              <Bell className="h-5 w-5" />
-              {/* Notification badge */}
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
+          {user.role === 'ADMIN' && (
+            <Button asChild variant="ghost" size="icon" className="relative" title="Kontakindienings">
+              <Link href="/admin/indienings" aria-label={`${notificationCount} nuwe kontakindienings`}>
+                <Bell className="h-5 w-5" />
+                {notificationCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </span>
+                )}
+              </Link>
             </Button>
-
-            {/* Notifications dropdown */}
-            {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-900">Kennisgewings</h3>
-                </div>
-                <div className="max-h-64 overflow-y-auto">
-                  <div className="p-4 hover:bg-gray-50 border-b border-gray-100">
-                    <div className="flex items-start space-x-3">
-                      <div className="h-2 w-2 bg-amber-500 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">Nuwe kontak vorm indiening</p>
-                        <p className="text-xs text-gray-500 mt-1">2 minute gelede</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 hover:bg-gray-50 border-b border-gray-100">
-                    <div className="flex items-start space-x-3">
-                      <div className="h-2 w-2 bg-green-500 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">Nuwe gebruiker geregistreer</p>
-                        <p className="text-xs text-gray-500 mt-1">1 uur gelede</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 hover:bg-gray-50">
-                    <div className="flex items-start space-x-3">
-                      <div className="h-2 w-2 bg-yellow-500 rounded-full mt-2"></div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">Artikel gepubliseer</p>
-                        <p className="text-xs text-gray-500 mt-1">3 uur gelede</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 border-t border-gray-200">
-                  <Button variant="ghost" size="sm" className="w-full text-sm">
-                    Bekyk Alles
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* User menu */}
           <div className="relative">
@@ -130,6 +74,8 @@ export function AdminHeader({ user, onMenuToggle, onLogout }: AdminHeaderProps) 
               variant="ghost"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               className="flex items-center space-x-2 px-3 py-2"
+              aria-expanded={isUserMenuOpen}
+              aria-haspopup="menu"
             >
             <div className="h-8 w-8 bg-amber-700 rounded-full flex items-center justify-center">
               <User className="h-4 w-4 text-white" />

@@ -5,6 +5,7 @@ export interface EmailTemplate {
   subject: string
   html: string
   text?: string
+  replyTo?: string
 }
 
 export interface InvitationEmailData {
@@ -15,10 +16,35 @@ export interface InvitationEmailData {
   role: 'ADMIN' | 'EDITOR'
 }
 
+export interface ContactSubmissionEmailData {
+  id: string
+  name: string
+  email: string
+  phone?: string | null
+  subject: string
+  type: 'GENERAL' | 'SERVICE_GROUP' | 'SPECIFIC'
+  serviceGroupName?: string | null
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
+
+function contactTypeLabel(type: ContactSubmissionEmailData['type']): string {
+  if (type === 'SERVICE_GROUP') return 'Diensgroep-navraag'
+  if (type === 'SPECIFIC') return 'Ander navraag'
+  return 'Algemene navraag'
+}
+
 /**
  * Send an email using Resend
  */
-export async function sendEmail({ to, subject, html, text }: EmailTemplate): Promise<boolean> {
+export async function sendEmail({ to, subject, html, text, replyTo }: EmailTemplate): Promise<boolean> {
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -32,6 +58,7 @@ export async function sendEmail({ to, subject, html, text }: EmailTemplate): Pro
         subject,
         html,
         text,
+        ...(replyTo ? { reply_to: replyTo } : {}),
       }),
     })
 
@@ -47,6 +74,84 @@ export async function sendEmail({ to, subject, html, text }: EmailTemplate): Pro
     console.error('Error sending email:', error)
     return false
   }
+}
+
+/**
+ * Notify the church office that a public contact form was submitted.
+ * The database remains the source of truth if email delivery is unavailable.
+ */
+export async function sendContactSubmissionNotification(
+  submission: ContactSubmissionEmailData,
+): Promise<boolean> {
+  const recipient = env.NEXT_PUBLIC_CONTACT_EMAIL
+
+  if (!recipient) {
+    console.error('Contact notification skipped: NEXT_PUBLIC_CONTACT_EMAIL is not configured')
+    return false
+  }
+
+  const adminUrl = new URL(
+    `/admin/indienings/${encodeURIComponent(submission.id)}`,
+    env.NEXT_PUBLIC_APP_URL,
+  ).toString()
+  const typeLabel = contactTypeLabel(submission.type)
+  const safeName = escapeHtml(submission.name)
+  const safeEmail = escapeHtml(submission.email)
+  const safePhone = submission.phone ? escapeHtml(submission.phone) : null
+  const safeSubject = escapeHtml(submission.subject)
+  const safeServiceGroup = submission.serviceGroupName
+    ? escapeHtml(submission.serviceGroupName)
+    : null
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="af">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nuwe webwerfnavraag</title>
+      </head>
+      <body style="margin:0;background:#f7f7f5;color:#2f2925;font-family:Arial,sans-serif;line-height:1.6;">
+        <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+          <div style="background:#ffffff;border:1px solid #e7e2dc;border-radius:8px;padding:28px;">
+            <p style="margin:0 0 8px;color:#8a5d3b;font-size:14px;font-weight:700;">${typeLabel}</p>
+            <h1 style="margin:0 0 24px;font-size:24px;">${safeSubject}</h1>
+            <table style="width:100%;border-collapse:collapse;font-size:15px;">
+              <tr><td style="padding:6px 12px 6px 0;font-weight:700;vertical-align:top;">Naam</td><td style="padding:6px 0;">${safeName}</td></tr>
+              <tr><td style="padding:6px 12px 6px 0;font-weight:700;vertical-align:top;">E-pos</td><td style="padding:6px 0;">${safeEmail}</td></tr>
+              ${safePhone ? `<tr><td style="padding:6px 12px 6px 0;font-weight:700;vertical-align:top;">Telefoon</td><td style="padding:6px 0;">${safePhone}</td></tr>` : ''}
+              ${safeServiceGroup ? `<tr><td style="padding:6px 12px 6px 0;font-weight:700;vertical-align:top;">Diensgroep</td><td style="padding:6px 0;">${safeServiceGroup}</td></tr>` : ''}
+            </table>
+            <p style="margin:24px 0 0;">
+              <a href="${adminUrl}" style="display:inline-block;background:#875a39;color:#ffffff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Lees en verwerk navraag</a>
+            </p>
+          </div>
+          <p style="margin:16px 0 0;color:#6b625c;font-size:13px;">Die volledige boodskap word veilig in die webwerf se bestuurderpaneel gehou.</p>
+        </div>
+      </body>
+    </html>
+  `
+
+  const text = [
+    'Nuwe webwerfnavraag',
+    '',
+    `Tipe: ${typeLabel}`,
+    `Onderwerp: ${submission.subject}`,
+    `Naam: ${submission.name}`,
+    `E-pos: ${submission.email}`,
+    submission.phone ? `Telefoon: ${submission.phone}` : null,
+    submission.serviceGroupName ? `Diensgroep: ${submission.serviceGroupName}` : null,
+    '',
+    `Lees en verwerk die navraag: ${adminUrl}`,
+  ].filter((line): line is string => line !== null).join('\n')
+
+  return sendEmail({
+    to: recipient,
+    replyTo: submission.email,
+    subject: `Nuwe webwerfnavraag: ${submission.subject}`,
+    html,
+    text,
+  })
 }
 
 /**
