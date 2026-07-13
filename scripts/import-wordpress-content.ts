@@ -2,6 +2,7 @@
 
 import { ArticleStatus, ReadingMaterialFileType, ServiceGroupCategory } from '@prisma/client'
 import { disconnectDatabase, prisma } from '../lib/db'
+import { createArticleExcerpt } from '../lib/public-content'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
 
@@ -532,7 +533,7 @@ async function main() {
         update: {
           title,
           content,
-          excerpt: truncate(content, 240),
+          excerpt: createArticleExcerpt(content, 240),
           categoryId: articleCategory.id,
           status: ArticleStatus.PUBLISHED,
           publishedAt,
@@ -542,7 +543,7 @@ async function main() {
           title,
           slug: slugify(page.slug),
           content,
-          excerpt: truncate(content, 240),
+          excerpt: createArticleExcerpt(content, 240),
           categoryId: articleCategory.id,
           status: ArticleStatus.PUBLISHED,
           publishedAt,

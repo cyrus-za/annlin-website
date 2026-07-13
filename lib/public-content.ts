@@ -1,5 +1,8 @@
 const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
 const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
+const incompleteMarkdownImagePattern = /!\[[^\]]*\]\([^\s)]*(?:\)|$)/g
+const incompleteMarkdownLinkPattern = /\[([^\]]+)\]\([^\s)]*(?:\)|$)/g
+const bareUrlPattern = /(?:https?:\/\/|www\.)[^\s<]+/gi
 const googleMapsUrlPattern = /(?<!\]\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+/gi
 const googleMapsMarkdownLinkPattern =
   /\[Maak roete in Google Maps oop\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
@@ -45,8 +48,11 @@ export function normalizeArticleContent(value: string) {
 
 export function stripMarkdown(value: string) {
   return value
-    .replace(markdownImagePattern, '$1')
+    .replace(markdownImagePattern, ' ')
     .replace(markdownLinkPattern, '$1')
+    .replace(incompleteMarkdownImagePattern, ' ')
+    .replace(incompleteMarkdownLinkPattern, '$1')
+    .replace(bareUrlPattern, ' ')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^>\s+/gm, '')
     .replace(/^[-*+]\s+/gm, '')
