@@ -18,6 +18,7 @@ import {
 } from '../lib/wordpress-assets'
 import {
   buildWordPressPageRouteMap,
+  replaceMigratedWordPressAssetLinks,
   replaceWordPressPageLinks,
 } from '../lib/wordpress-migration'
 
@@ -238,10 +239,12 @@ function contentOf(
     rawExcerpt,
     htmlToText(rawExcerpt, { preserveAssets: true })
   )
-  return replaceWordPressPageLinks(
-    content || excerpt || titleOf(page),
-    wordpressBaseUrl,
-    legacyPageRoutes
+  return replaceMigratedWordPressAssetLinks(
+    replaceWordPressPageLinks(
+      content || excerpt || titleOf(page),
+      wordpressBaseUrl,
+      legacyPageRoutes
+    )
   )
 }
 

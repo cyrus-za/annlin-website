@@ -81,7 +81,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
           <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
             {descriptionHtml ? (
               <div
-                className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:font-semibold prose-a:text-amber-800 prose-a:underline prose-a:decoration-amber-700/50 prose-a:underline-offset-4 hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground [&_img]:mx-auto [&_img]:h-auto [&_img]:max-h-[34rem] [&_img]:w-auto [&_img]:max-w-full [&_img]:object-contain"
+                className="prose prose-lg max-w-none break-words [&_a]:font-semibold [&_a]:text-amber-800 [&_a]:underline [&_a]:decoration-amber-700/50 [&_a]:underline-offset-4 [&_a:hover]:text-amber-950 [&_img]:mx-auto [&_img]:h-auto [&_img]:max-h-[34rem] [&_img]:w-auto [&_img]:max-w-full [&_img]:object-contain"
                 dangerouslySetInnerHTML={{ __html: descriptionHtml }}
               />
             ) : (

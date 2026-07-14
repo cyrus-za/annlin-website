@@ -10,6 +10,13 @@ type WordPressRouteOptions = {
   singletonRoutes: ReadonlyMap<string, string>
 }
 
+const migratedPublicAssets = new Map([
+  ['Kleuter_wys_in_Bybel-e1615642020350.jpg', '/migrated/leesstof/kinderwerkkaarte-kleuter.jpg'],
+  ['2kinders_lees_Bybel-e1615641920150.jpg', '/migrated/leesstof/kinderwerkkaarte-bybellees.jpg'],
+  ['Kinderwerkkaarte-2.jpg', '/migrated/leesstof/kinderwerkkaarte-aktiwiteit.jpg'],
+  ['pray-hands.png', '/migrated/leesstof/oordenkings-gebed.png'],
+])
+
 function normalizeHost(host: string) {
   return host.replace(/^www\./i, '').toLowerCase()
 }
@@ -72,5 +79,17 @@ export function replaceWordPressPageLinks(
 
     const slug = pathParts[0] || ''
     return routes.get(slug) ?? candidate
+  })
+}
+
+export function replaceMigratedWordPressAssetLinks(value: string) {
+  return value.replace(/https?:\/\/[^\s<>'")\]]+/gi, (candidate) => {
+    try {
+      const pathname = new URL(candidate).pathname
+      const filename = decodeURIComponent(pathname.split('/').filter(Boolean).pop() || '')
+      return migratedPublicAssets.get(filename) || candidate
+    } catch {
+      return candidate
+    }
   })
 }

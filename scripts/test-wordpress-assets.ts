@@ -8,6 +8,7 @@ import {
   preserveWordPressAssetMarkup,
   stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
+import { replaceMigratedWordPressAssetLinks } from '../lib/wordpress-migration'
 import {
   createArticleExcerpt,
   extractMarkdownAudioLinks,
@@ -163,5 +164,18 @@ assert.deepEqual(extractMarkdownAudioLinks(audioMarkdown), [
 ])
 assert.doesNotMatch(stripMarkdownAudioLinks(audioMarkdown), /\.mp3/)
 assert.match(stripMarkdownAudioLinks(audioMarkdown), /werkkaart\.pdf/)
+
+assert.equal(
+  replaceMigratedWordPressAssetLinks(
+    '![Gebed](https://legacy.example/uploads/2026/02/pray-hands.png)'
+  ),
+  '![Gebed](/migrated/leesstof/oordenkings-gebed.png)'
+)
+assert.equal(
+  replaceMigratedWordPressAssetLinks(
+    '[Werkkaart](https://legacy.example/uploads/KINDERWERKKAART.pdf)'
+  ),
+  '[Werkkaart](https://legacy.example/uploads/KINDERWERKKAART.pdf)'
+)
 
 console.log('WordPress asset preservation checks passed.')
