@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Enable Turbopack for development (already enabled via CLI flags)
   experimental: {
+    // Keep low-tier Neon connections sequential while ISR pages are prerendered.
+    cpus: 1,
+    staticGenerationMaxConcurrency: 1,
+    staticGenerationRetryCount: 3,
     // Enable optimized package imports
     optimizePackageImports: [
       'lucide-react',
