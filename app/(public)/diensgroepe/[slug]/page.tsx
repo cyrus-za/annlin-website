@@ -6,13 +6,13 @@ import { ChevronLeft, Mail, Phone, Users } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { MarkdownContent } from '@/components/content/MarkdownContent'
 import { prisma } from '@/lib/db'
 import {
   createServiceGroupExcerpt,
   extractTrailingMarkdownImageGallery,
   normalizeServiceGroupContent,
 } from '@/lib/public-content'
-import { markdownToHtml } from '@/lib/tiptap-config'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -53,7 +53,6 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
   )
   const { content: bodyContent, images: galleryImages } =
     extractTrailingMarkdownImageGallery(normalizedContent)
-  const bodyHtml = markdownToHtml(bodyContent)
   const bannerUrl = serviceGroup.bannerUrl || serviceGroup.thumbnailUrl
 
   return (
@@ -100,10 +99,7 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
       <section className="py-12">
         <div className="mx-auto grid max-w-5xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
           <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
-            <div
-              className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
-              dangerouslySetInnerHTML={{ __html: bodyHtml }}
-            />
+            <MarkdownContent markdown={bodyContent} />
             {galleryImages.length > 0 ? (
               <section className="mt-10 border-t border-stone-200 pt-8" aria-labelledby="foto-gallery-heading">
                 <h2 id="foto-gallery-heading" className="text-2xl font-semibold text-foreground">

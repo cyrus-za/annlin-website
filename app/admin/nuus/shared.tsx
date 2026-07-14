@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { MarkdownEditor } from '@/components/admin/MarkdownEditor'
 import { saveArticle } from '../_actions/content'
 
 export function ArticleForm({
@@ -42,7 +43,13 @@ export function ArticleForm({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="content">Inhoud</Label>
-              <Textarea id="content" name="content" defaultValue={article?.content} rows={14} required />
+              <MarkdownEditor
+                id="content"
+                name="content"
+                defaultValue={article?.content}
+                placeholder="Begin skryf die artikel..."
+                required
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="featuredImageUrl">Hooffoto URL</Label>

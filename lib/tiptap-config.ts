@@ -354,24 +354,3 @@ export const htmlToMarkdown = (html: string): string => {
     .replace(/\n\s*\n\s*\n/g, '\n\n') // Remove excessive line breaks
     .trim()
 }
-
-// Convert markdown to HTML (for display)
-export const markdownToHtml = (markdown: string): string => {
-  // Basic Markdown to HTML conversion
-  // In a production app, you might want to use a proper library like marked
-  return markdown
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-    .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-    .replace(/`(.*?)`/gim, '<code>$1</code>')
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="rounded-lg shadow-sm" />')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-    .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
-    .replace(/^- (.*$)/gim, '<li>$1</li>')
-    .replace(/^(\d+)\. (.*$)/gim, '<li>$1</li>')
-    .replace(/^---$/gim, '<hr>')
-    .replace(/\n/gim, '<br>')
-}

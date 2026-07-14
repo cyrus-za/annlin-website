@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { MarkdownEditor } from '@/components/admin/MarkdownEditor'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { showSuccessToast, showErrorToast, showSavingToast } from '@/lib/toast-helpers'
@@ -189,6 +190,47 @@ export function FormFieldTextarea({
               rows={rows}
               disabled={disabled}
               {...field}
+            />
+          </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+}
+
+export function FormFieldMarkdownEditor({
+  name,
+  label,
+  description,
+  placeholder,
+  rows = 18,
+  disabled = false,
+}: {
+  name: string
+  label: string
+  description?: string
+  placeholder?: string
+  rows?: number
+  disabled?: boolean
+}) {
+  return (
+    <FormField
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <MarkdownEditor
+              ref={field.ref}
+              name={field.name}
+              value={typeof field.value === 'string' ? field.value : ''}
+              onValueChange={field.onChange}
+              onBlur={field.onBlur}
+              placeholder={placeholder}
+              rows={rows}
+              disabled={disabled}
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}

@@ -4,7 +4,15 @@
 export { AdminSidebar, MobileAdminSidebar } from './AdminSidebar'
 export { AdminHeader } from './AdminHeader'
 export { AdminLayoutClient } from './AdminLayoutClient'
-export { AdminForm, FormFieldInput, FormFieldTextarea, FormFieldSelect, StatusBadge } from './AdminForm'
+export {
+  AdminForm,
+  FormFieldInput,
+  FormFieldMarkdownEditor,
+  FormFieldTextarea,
+  FormFieldSelect,
+  StatusBadge,
+} from './AdminForm'
+export { MarkdownEditor } from './MarkdownEditor'
 export { DataTable } from './DataTable'
 export { DiensgroepeForm } from './DiensgroepeForm'
 

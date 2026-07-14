@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { z } from 'zod'
-import { AdminForm, FormFieldInput, FormFieldTextarea } from './AdminForm'
+import { AdminForm, FormFieldInput, FormFieldMarkdownEditor } from './AdminForm'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -205,11 +205,11 @@ export function DiensgroepeForm({
                   placeholder="0"
                 />
 
-                <FormFieldTextarea
+                <FormFieldMarkdownEditor
                   name="description"
                   label="Beskrywing"
                   placeholder="Beskryf wat hierdie diensgroep doen en hoe hulle help..."
-                  rows={4}
+                  rows={18}
                 />
               </CardContent>
             </Card>

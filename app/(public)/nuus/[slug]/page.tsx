@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation'
 import { Calendar, ChevronLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { MarkdownContent } from '@/components/content/MarkdownContent'
 import { prisma } from '@/lib/db'
 import { createArticleExcerpt, normalizeArticleContent } from '@/lib/public-content'
-import { markdownToHtml } from '@/lib/tiptap-config'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -55,7 +55,7 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
   }
 
   const articleExcerpt = article.excerpt ? createArticleExcerpt(article.excerpt, 180) : null
-  const articleHtml = markdownToHtml(normalizeArticleContent(article.content))
+  const articleContent = normalizeArticleContent(article.content)
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -90,10 +90,7 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
       <section className="py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
-            <div
-              className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
-              dangerouslySetInnerHTML={{ __html: articleHtml }}
-            />
+            <MarkdownContent markdown={articleContent} />
           </article>
         </div>
       </section>

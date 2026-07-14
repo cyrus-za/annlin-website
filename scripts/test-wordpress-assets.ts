@@ -10,6 +10,7 @@ import {
   stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
 import { replaceMigratedWordPressAssetLinks } from '../lib/wordpress-migration'
+import { markdownToHtml } from '../lib/markdown'
 import {
   createArticleExcerpt,
   extractTrailingMarkdownImageGallery,
@@ -85,6 +86,25 @@ assert.equal(
   preservedPdfImage.trim(),
   `![DXF](${imageUrl})\n\n[DXF oopmaak](${fileUrl})`
 )
+
+const renderedMarkdown = markdownToHtml(`
+## Opskrif
+
+Gebruik **vet teks**, *skuins teks* en [hierdie skakel](https://example.com).
+
+1. Eerste item
+2. Tweede item
+
+![Voorbeeld](https://example.com/image.jpg)
+`)
+assert.match(renderedMarkdown, /<h2>Opskrif<\/h2>/)
+assert.match(renderedMarkdown, /<strong>vet teks<\/strong>/)
+assert.match(renderedMarkdown, /<em>skuins teks<\/em>/)
+assert.match(renderedMarkdown, /<ol><li>Eerste item<\/li><li>Tweede item<\/li><\/ol>/)
+assert.match(renderedMarkdown, /<a href="https:\/\/example\.com"/)
+assert.match(renderedMarkdown, /<img src="https:\/\/example\.com\/image\.jpg"/)
+assert.match(markdownToHtml('[Onveilig](javascript:alert(1))'), /href="#"/)
+assert.doesNotMatch(markdownToHtml('<script>alert(1)<\/script>'), /<script>/)
 assert.equal(createArticleExcerpt(preservedPdfImage), '')
 
 const malformedNestedImageLink =

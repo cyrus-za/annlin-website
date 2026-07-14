@@ -6,8 +6,8 @@ import { ArrowLeft, ExternalLink, FileText, Link as LinkIcon } from 'lucide-reac
 import { prisma } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { MarkdownContent } from '@/components/content/MarkdownContent'
 import { extractMarkdownAudioLinks, stripMarkdownAudioLinks } from '@/lib/public-content'
-import { markdownToHtml } from '@/lib/tiptap-config'
 
 interface ReadingMaterialDetailPageProps {
   params: Promise<{
@@ -50,7 +50,6 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
   const description = material.description
     ? stripMarkdownAudioLinks(material.description)
     : null
-  const descriptionHtml = description ? markdownToHtml(description) : null
   const hasInlineLinks = Boolean(description?.match(/\[[^\]]+\]\([^)]+\)/))
 
   return (
@@ -79,11 +78,8 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
       <section className="py-12">
         <div className="mx-auto grid max-w-4xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
-            {descriptionHtml ? (
-              <div
-                className="prose prose-lg max-w-none break-words [&_a]:font-semibold [&_a]:text-amber-800 [&_a]:underline [&_a]:decoration-amber-700/50 [&_a]:underline-offset-4 [&_a:hover]:text-amber-950 [&_img]:mx-auto [&_img]:h-auto [&_img]:max-h-[34rem] [&_img]:w-auto [&_img]:max-w-full [&_img]:object-contain"
-                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-              />
+            {description ? (
+              <MarkdownContent markdown={description} />
             ) : (
               <p className="text-muted-foreground">
                 Geen verdere beskrywing is tans vir hierdie leesstof-item beskikbaar nie.

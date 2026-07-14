@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { MarkdownEditor } from '@/components/admin/MarkdownEditor'
 import { saveReadingMaterial } from '../_actions/content'
 
 export function ReadingMaterialForm({
@@ -34,7 +34,12 @@ export function ReadingMaterialForm({
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Beskrywing / inhoud</Label>
-              <Textarea id="description" name="description" defaultValue={material?.description || ''} rows={14} />
+              <MarkdownEditor
+                id="description"
+                name="description"
+                defaultValue={material?.description || ''}
+                placeholder="Begin skryf die leesstof-inhoud..."
+              />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
