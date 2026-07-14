@@ -229,6 +229,17 @@ export function extractWordPressAssetReferences(html: string) {
     if (linkedFile) references.push(linkedFile)
   }
 
+  for (const match of decodedHtml.matchAll(/\[et_pb_[a-z0-9_]+\b[^\]]*]/gi)) {
+    const shortcode = match[0]
+    const linkedFile = createReference(
+      attributeValue(shortcode, 'url'),
+      attributeValue(shortcode, 'admin_label') || attributeValue(shortcode, 'title_text'),
+      match.index
+    )
+
+    if (linkedFile) references.push(linkedFile)
+  }
+
   const uniqueReferences = new Map<string, WordPressAssetReference>()
 
   for (const reference of references.sort((a, b) => a.sourceIndex - b.sourceIndex)) {
@@ -243,6 +254,21 @@ export function extractWordPressAssetReferences(html: string) {
   }
 
   return [...uniqueReferences.values()]
+}
+
+export function extractWordPressGalleryMediaIds(html: string) {
+  const mediaIds: number[] = []
+
+  for (const match of decodeWordPressEntities(html).matchAll(/\[et_pb_gallery\b[^\]]*]/gi)) {
+    const galleryIds = attributeValue(match[0], 'gallery_ids')
+
+    for (const value of galleryIds.split(',')) {
+      const mediaId = Number.parseInt(value.trim(), 10)
+      if (Number.isInteger(mediaId) && mediaId > 0) mediaIds.push(mediaId)
+    }
+  }
+
+  return [...new Set(mediaIds)]
 }
 
 function contentContainsReference(content: string, reference: WordPressAssetReference) {

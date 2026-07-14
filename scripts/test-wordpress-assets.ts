@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
+  extractWordPressGalleryMediaIds,
   extractWordPressAssetReferences,
   preserveWordPressAssetMarkup,
   stripDuplicateResponsiveDiviModules,
@@ -11,6 +12,7 @@ import {
 import { replaceMigratedWordPressAssetLinks } from '../lib/wordpress-migration'
 import {
   createArticleExcerpt,
+  extractTrailingMarkdownImageGallery,
   extractMarkdownAudioLinks,
   normalizeArticleContent,
   stripMarkdownAudioLinks,
@@ -43,6 +45,20 @@ const restoredContent = ensureWordPressAssetsPreserved(malformedBulkMarkup, flat
 
 assert.match(restoredContent, new RegExp(`!\\[DXF\\]\\(${imageUrl.replaceAll('.', '\\.')}\\)`))
 assert.equal(ensureWordPressAssetsPreserved(malformedBulkMarkup, restoredContent), restoredContent)
+
+const diviGalleryAndDownload = `
+  [et_pb_gallery gallery_ids=&#8221;12324,12323,12322&#8243;]
+  [et_pb_blurb url=&#8221;${fileUrl}&#8221; admin_label=&#8221;Registrasievorm&#8221;]
+`
+assert.deepEqual(extractWordPressGalleryMediaIds(diviGalleryAndDownload), [12324, 12323, 12322])
+assert.deepEqual(
+  extractWordPressAssetReferences(diviGalleryAndDownload).map(({ kind, url, label }) => ({
+    kind,
+    url,
+    label,
+  })),
+  [{ kind: 'linked-file', url: fileUrl, label: 'Registrasievorm' }]
+)
 
 const galleryImageUrl = 'https://www.annlin.co.za/wp-content/uploads/2026/03/3.jpeg'
 const galleryMarkup = `
@@ -164,6 +180,17 @@ assert.deepEqual(extractMarkdownAudioLinks(audioMarkdown), [
 ])
 assert.doesNotMatch(stripMarkdownAudioLinks(audioMarkdown), /\.mp3/)
 assert.match(stripMarkdownAudioLinks(audioMarkdown), /werkkaart\.pdf/)
+
+assert.deepEqual(
+  extractTrailingMarkdownImageGallery(`Inhoud\n\n![Een](https://example.com/1.jpg)\n\n![Twee](https://example.com/2.jpg)`),
+  {
+    content: 'Inhoud',
+    images: [
+      { alt: 'Een', url: 'https://example.com/1.jpg' },
+      { alt: 'Twee', url: 'https://example.com/2.jpg' },
+    ],
+  }
+)
 
 assert.equal(
   replaceMigratedWordPressAssetLinks(

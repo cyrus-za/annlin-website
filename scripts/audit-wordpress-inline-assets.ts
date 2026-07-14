@@ -4,7 +4,12 @@ import { existsSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { disconnectDatabase, prisma } from '../lib/db'
 import { slugify } from '../lib/slug'
-import { decodeWordPressEntities } from '../lib/wordpress-assets'
+import {
+  decodeWordPressEntities,
+  extractWordPressAssetReferences,
+  extractWordPressGalleryMediaIds,
+} from '../lib/wordpress-assets'
+import { migratedPublicAssetUrlForWordPressUrl } from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
@@ -113,7 +118,10 @@ function extensionFromFilename(filename: string) {
 }
 
 function normalizeUrl(url: string) {
-  return decodeWordPressEntities(url).replace(/^http:\/\//i, 'https://').trim()
+  return decodeWordPressEntities(url)
+    .replace(/^http:\/\//i, 'https://')
+    .replace(/(?<=\d)×(?=\d)/g, 'x')
+    .trim()
 }
 
 function assetFromUrl(url: string): ExtractedAsset | null {
@@ -146,30 +154,14 @@ function uniqueAssets(assets: ExtractedAsset[]) {
   return [...byUrl.values()]
 }
 
-function extractAssets(html = '') {
-  const assets: ExtractedAsset[] = []
-  const decodedHtml = decodeWordPressEntities(html)
+function extractAssets(html = '', mediaById: ReadonlyMap<number, WpMedia>) {
+  const assets = extractWordPressAssetReferences(html)
+    .map((reference) => assetFromUrl(reference.url))
+    .filter((asset): asset is ExtractedAsset => asset !== null)
 
-  for (const match of decodedHtml.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)) {
-    const asset = assetFromUrl(match[1] ?? '')
+  for (const mediaId of extractWordPressGalleryMediaIds(html)) {
+    const asset = assetFromUrl(mediaById.get(mediaId)?.source_url || '')
     if (asset) assets.push(asset)
-  }
-
-  for (const match of decodedHtml.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>/gi)) {
-    const asset = assetFromUrl(match[1] ?? '')
-    if (asset) assets.push(asset)
-  }
-
-  for (const match of decodedHtml.matchAll(/\[et_pb_image\b[^\]]*]/gi)) {
-    const shortcode = match[0]
-    const src = shortcode.match(/\bsrc=["']([^"']+)["']/i)?.[1]
-    const href = shortcode.match(/\burl=["']([^"']+)["']/i)?.[1]
-
-    for (const url of [src, href]) {
-      if (!url) continue
-      const asset = assetFromUrl(url)
-      if (asset) assets.push(asset)
-    }
   }
 
   return uniqueAssets(assets)
@@ -260,11 +252,16 @@ async function fetchAllMedia(wordpressBaseUrl: string) {
 }
 
 function assetIsReferencedInText(asset: ExtractedAsset, content: string) {
-  const normalizedContent = content.toLowerCase()
+  const normalizedContent = content.replace(/http:\/\//gi, 'https://').toLowerCase()
+  const migratedUrl = migratedPublicAssetUrlForWordPressUrl(asset.url)
+
+  if (migratedUrl && normalizedContent.includes(migratedUrl.toLowerCase())) {
+    return true
+  }
 
   if (asset.kind === 'image') {
     return [...content.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].some((match) => {
-      const imageUrl = match[1]?.toLowerCase() || ''
+      const imageUrl = normalizeUrl(match[1] || '').toLowerCase()
       return (
         imageUrl.includes(asset.url.toLowerCase()) ||
         (asset.filename.length > 0 && imageUrl.includes(asset.filename.toLowerCase()))
@@ -297,11 +294,12 @@ async function main() {
   const publicAssetFilenames = collectPublicAssetFilenames(join(process.cwd(), 'public', 'migrated'))
 
   const mediaByUrl = new Map(media.map((item) => [normalizeUrl(item.source_url), item]))
+  const mediaById = new Map(media.map((item) => [item.id, item]))
 
   const pageAudits = pages
     .map((page) => {
       const pageType = pageTypeForSlug(page.slug)
-      const assets = extractAssets(page.content.rendered || '')
+      const assets = extractAssets(page.content.rendered || '', mediaById)
 
       let migratedContent = ''
       if (pageType === 'serviceGroup') {
@@ -365,51 +363,47 @@ async function main() {
   const migratedPageAudits = pageAudits.filter((audit) => audit.pageType !== 'singleton')
   const singletonPageAudits = pageAudits.filter((audit) => audit.pageType === 'singleton')
 
-  console.log(
-    JSON.stringify(
-      {
-        summary: {
-          wordpressPages: pages.length,
-          wordpressMedia: media.length,
-          pagesWithAssets: pageAudits.length,
-          pagesWithMissingRenderedAssets: pageAudits.filter(
-            (audit) => audit.missingFromMigratedContent.length > 0
-          ).length,
-          missingRenderedAssetReferences: pageAudits.reduce(
-            (total, audit) => total + audit.missingFromMigratedContent.length,
-            0
-          ),
-          migratedPagesWithMissingRenderedAssets: migratedPageAudits.filter(
-            (audit) => audit.missingFromMigratedContent.length > 0
-          ).length,
-          missingMigratedAssetReferences: migratedPageAudits.reduce(
-            (total, audit) => total + audit.missingFromMigratedContent.length,
-            0
-          ),
-          redesignedSingletonPagesWithAssetDifferences: singletonPageAudits.filter(
-            (audit) => audit.missingFromMigratedContent.length > 0
-          ).length,
-          redesignedSingletonAssetDifferences: singletonPageAudits.reduce(
-            (total, audit) => total + audit.missingFromMigratedContent.length,
-            0
-          ),
-          pagesWithAssetsMissingFromArchive: pageAudits.filter(
-            (audit) => audit.missingFromAssetArchive.length > 0
-          ).length,
-          missingArchivedAssetReferences: pageAudits.reduce(
-            (total, audit) => total + audit.missingFromAssetArchive.length,
-            0
-          ),
-          missingAssetUrlsMatchedInWpMedia: [...assetsReferencedByPages].filter((url) =>
-            mediaByUrl.has(url)
-          ).length,
-        },
-        pages: pageAudits,
-      },
-      null,
-      2
-    )
-  )
+  const result = {
+    summary: {
+      wordpressPages: pages.length,
+      wordpressMedia: media.length,
+      pagesWithAssets: pageAudits.length,
+      pagesWithMissingRenderedAssets: pageAudits.filter(
+        (audit) => audit.missingFromMigratedContent.length > 0
+      ).length,
+      missingRenderedAssetReferences: pageAudits.reduce(
+        (total, audit) => total + audit.missingFromMigratedContent.length,
+        0
+      ),
+      migratedPagesWithMissingRenderedAssets: migratedPageAudits.filter(
+        (audit) => audit.missingFromMigratedContent.length > 0
+      ).length,
+      missingMigratedAssetReferences: migratedPageAudits.reduce(
+        (total, audit) => total + audit.missingFromMigratedContent.length,
+        0
+      ),
+      redesignedSingletonPagesWithAssetDifferences: singletonPageAudits.filter(
+        (audit) => audit.missingFromMigratedContent.length > 0
+      ).length,
+      redesignedSingletonAssetDifferences: singletonPageAudits.reduce(
+        (total, audit) => total + audit.missingFromMigratedContent.length,
+        0
+      ),
+      pagesWithAssetsMissingFromArchive: pageAudits.filter(
+        (audit) => audit.missingFromAssetArchive.length > 0
+      ).length,
+      missingArchivedAssetReferences: pageAudits.reduce(
+        (total, audit) => total + audit.missingFromAssetArchive.length,
+        0
+      ),
+      missingAssetUrlsMatchedInWpMedia: [...assetsReferencedByPages].filter((url) =>
+        mediaByUrl.has(url)
+      ).length,
+    },
+    pages: pageAudits,
+  }
+
+  console.log(JSON.stringify(process.argv.includes('--summary') ? result.summary : result, null, 2))
 }
 
 main()

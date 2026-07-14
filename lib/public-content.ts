@@ -291,6 +291,37 @@ export function createServiceGroupExcerpt(value: string, title: string, maxLengt
   return createExcerpt(normalizeServiceGroupContent(value, title), maxLength)
 }
 
+export type MarkdownImage = {
+  alt: string
+  url: string
+}
+
+export function extractTrailingMarkdownImageGallery(value: string) {
+  const lines = value.trimEnd().split('\n')
+  const images: MarkdownImage[] = []
+  let contentEnd = lines.length
+
+  for (let index = lines.length - 1; index >= 0; index--) {
+    const line = lines[index]?.trim() || ''
+
+    if (!line && images.length > 0) {
+      contentEnd = index
+      continue
+    }
+
+    const image = line.match(/^!\[([^\]]*)\]\((.+)\)$/)
+    if (!image) break
+
+    images.unshift({ alt: image[1] || '', url: image[2] || '' })
+    contentEnd = index
+  }
+
+  return {
+    content: lines.slice(0, contentEnd).join('\n').trim(),
+    images,
+  }
+}
+
 export function stripLeadingDateFromTitle(title: string) {
   return title
     .replace(

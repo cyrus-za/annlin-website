@@ -7,7 +7,11 @@ import { ChevronLeft, Mail, Phone, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/db'
-import { createServiceGroupExcerpt, normalizeServiceGroupContent } from '@/lib/public-content'
+import {
+  createServiceGroupExcerpt,
+  extractTrailingMarkdownImageGallery,
+  normalizeServiceGroupContent,
+} from '@/lib/public-content'
 import { markdownToHtml } from '@/lib/tiptap-config'
 
 type PageProps = {
@@ -43,9 +47,13 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  const bodyHtml = markdownToHtml(
-    normalizeServiceGroupContent(serviceGroup.description, serviceGroup.name)
+  const normalizedContent = normalizeServiceGroupContent(
+    serviceGroup.description,
+    serviceGroup.name
   )
+  const { content: bodyContent, images: galleryImages } =
+    extractTrailingMarkdownImageGallery(normalizedContent)
+  const bodyHtml = markdownToHtml(bodyContent)
   const bannerUrl = serviceGroup.bannerUrl || serviceGroup.thumbnailUrl
 
   return (
@@ -96,6 +104,30 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
               className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: bodyHtml }}
             />
+            {galleryImages.length > 0 ? (
+              <section className="mt-10 border-t border-stone-200 pt-8" aria-labelledby="foto-gallery-heading">
+                <h2 id="foto-gallery-heading" className="text-2xl font-semibold text-foreground">
+                  Foto&apos;s
+                </h2>
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+                  {galleryImages.map((image) => (
+                    <div
+                      key={image.url}
+                      className="aspect-[4/3] overflow-hidden rounded-md bg-stone-100"
+                    >
+                      {/* WordPress media remains remote until the R2 archive is provisioned. */}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image.url}
+                        alt={image.alt || `${serviceGroup.name} foto`}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </article>
 
           <aside className="space-y-6">

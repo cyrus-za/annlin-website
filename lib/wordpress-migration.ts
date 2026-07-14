@@ -17,6 +17,16 @@ const migratedPublicAssets = new Map([
   ['pray-hands.png', '/migrated/leesstof/oordenkings-gebed.png'],
 ])
 
+export function migratedPublicAssetUrlForWordPressUrl(value: string) {
+  try {
+    const pathname = new URL(value).pathname
+    const filename = decodeURIComponent(pathname.split('/').filter(Boolean).pop() || '')
+    return migratedPublicAssets.get(filename) || null
+  } catch {
+    return null
+  }
+}
+
 function normalizeHost(host: string) {
   return host.replace(/^www\./i, '').toLowerCase()
 }
@@ -84,12 +94,6 @@ export function replaceWordPressPageLinks(
 
 export function replaceMigratedWordPressAssetLinks(value: string) {
   return value.replace(/https?:\/\/[^\s<>'")\]]+/gi, (candidate) => {
-    try {
-      const pathname = new URL(candidate).pathname
-      const filename = decodeURIComponent(pathname.split('/').filter(Boolean).pop() || '')
-      return migratedPublicAssets.get(filename) || candidate
-    } catch {
-      return candidate
-    }
+    return migratedPublicAssetUrlForWordPressUrl(candidate) || candidate
   })
 }
