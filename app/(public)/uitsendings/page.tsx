@@ -16,6 +16,7 @@ const YOUTUBE_FEED_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=UC
 const KERKDIENSTGEMIST_STATION_URL = 'https://kerkdienstgemist.nl/stations/1246-Gereformeerde-Kerk-Pretoria-Annlin'
 const KERKDIENSTGEMIST_RECORDINGS_URL =
   'https://api.kerkdienstgemist.nl/api/v2/stations/1246/recordings?include=media&page=1&size=3'
+const UPSTREAM_TIMEOUT_MS = 5_000
 
 type YouTubeUpload = {
   id: string
@@ -120,6 +121,8 @@ function formatDuration(seconds: number | null) {
 }
 
 async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
+  const signal = AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
+
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
       const response = await fetch(YOUTUBE_FEED_URL, {
@@ -128,6 +131,7 @@ async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
           'User-Agent': 'Annlin-Gemeente-Website/1.0',
         },
         next: { revalidate: 60 * 30 },
+        signal,
       })
 
       if (response.ok) {
@@ -160,7 +164,7 @@ async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
   return YOUTUBE_FALLBACK_UPLOADS
 }
 
-async function getKerkdienstgemistToken() {
+async function getKerkdienstgemistToken(signal: AbortSignal) {
   const configuredToken = process.env['KERKDIENSTGEMIST_API_TOKEN']
 
   if (configuredToken) {
@@ -170,6 +174,7 @@ async function getKerkdienstgemistToken() {
   try {
     const stationResponse = await fetch(KERKDIENSTGEMIST_STATION_URL, {
       next: { revalidate: 60 * 30 },
+      signal,
     })
 
     if (!stationResponse.ok) {
@@ -187,6 +192,7 @@ async function getKerkdienstgemistToken() {
 
     const assetResponse = await fetch(frontendAssetUrl, {
       next: { revalidate: 60 * 30 },
+      signal,
     })
 
     if (!assetResponse.ok) {
@@ -201,7 +207,8 @@ async function getKerkdienstgemistToken() {
 }
 
 async function getLatestKerkdienstgemistRecordings(): Promise<KerkdienstgemistRecording[]> {
-  const token = await getKerkdienstgemistToken()
+  const signal = AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)
+  const token = await getKerkdienstgemistToken(signal)
 
   if (!token) {
     return []
@@ -214,6 +221,7 @@ async function getLatestKerkdienstgemistRecordings(): Promise<KerkdienstgemistRe
         'Content-Type': 'application/vnd.api+json',
       },
       next: { revalidate: 60 * 30 },
+      signal,
     })
 
     if (!response.ok) {

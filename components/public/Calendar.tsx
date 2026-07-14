@@ -557,6 +557,9 @@ export function UpcomingEvents({
   const [showEventDialog, setShowEventDialog] = React.useState(false)
 
   React.useEffect(() => {
+    const controller = new AbortController()
+    let isActive = true
+
     const fetchUpcomingEvents = async () => {
       try {
         const params = new URLSearchParams({
@@ -566,20 +569,33 @@ export function UpcomingEvents({
           sortOrder: 'asc',
         })
         
-        const response = await fetch(`/api/events?${params}`)
+        const response = await fetch(`/api/events?${params}`, {
+          signal: controller.signal,
+        })
         
-        if (response.ok) {
+        if (response.ok && isActive) {
           const data = await response.json()
-          setEvents(data.events || [])
+          if (isActive) {
+            setEvents(data.events || [])
+          }
         }
       } catch (error) {
-        console.error('Error fetching upcoming events:', error)
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.error('Error fetching upcoming events:', error)
+        }
       } finally {
-        setLoading(false)
+        if (isActive) {
+          setLoading(false)
+        }
       }
     }
 
     fetchUpcomingEvents()
+
+    return () => {
+      isActive = false
+      controller.abort()
+    }
   }, [limit])
 
   if (loading) {
