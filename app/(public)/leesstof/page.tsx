@@ -63,7 +63,7 @@ export default async function ReadingPage() {
   })
 
   const additionalMaterials = materials.filter(
-    (item) => item.title !== 'Leesstof' && !item.id.startsWith('wp-')
+    (item) => item.title !== 'Leesstof' && item.category.name !== 'Argief uit WordPress'
   )
 
   return (
