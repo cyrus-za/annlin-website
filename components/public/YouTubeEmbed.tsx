@@ -14,7 +14,7 @@ export function YouTubeEmbed({ videoId, title }: { videoId: string; title: strin
           className="h-full w-full"
           src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`}
           title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
       </div>
