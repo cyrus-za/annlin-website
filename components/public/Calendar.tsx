@@ -353,7 +353,13 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   {format(currentDate, 'MMMM yyyy', { locale: af })}
                 </CardTitle>
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousMonth}
+                    aria-label="Vorige maand"
+                    title="Vorige maand"
+                  >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <Button 
@@ -366,7 +372,13 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   >
                     Vandag
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleNextMonth}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextMonth}
+                    aria-label="Volgende maand"
+                    title="Volgende maand"
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -391,12 +403,33 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   }}
                   modifiers={{
                     event: eventDates,
+                    selectedEvent: selectedDate ? [selectedDate] : [],
                   }}
                   modifiersStyles={{
-                    event: { 
-                      backgroundColor: '#3B82F6', 
-                      color: 'white',
-                      fontWeight: 'bold',
+                    event: {
+                      backgroundColor: 'hsl(30 30% 88%)',
+                      color: 'hsl(25 35% 20%)',
+                      fontWeight: '600',
+                    },
+                    selectedEvent: {
+                      backgroundColor: 'hsl(25 45% 35%)',
+                      color: 'hsl(30 15% 95%)',
+                      fontWeight: '700',
+                    },
+                  }}
+                  labels={{
+                    labelPrevious: () => 'Vorige maand',
+                    labelNext: () => 'Volgende maand',
+                    labelNav: () => 'Kalendernavigasie',
+                    labelGrid: (date) => format(date, 'MMMM yyyy', { locale: af }),
+                    labelDayButton: (date, modifiers) => {
+                      const details = [format(date, 'EEEE d MMMM yyyy', { locale: af })]
+
+                      if (modifiers['today']) details.push('vandag')
+                      if (modifiers['selected']) details.push('gekies')
+                      if (modifiers['event']) details.push('het gebeure')
+
+                      return details.join(', ')
                     },
                   }}
                   className="w-full rounded-md border p-4 sm:p-6"
