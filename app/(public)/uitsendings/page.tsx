@@ -23,6 +23,27 @@ type YouTubeUpload = {
   url: string
 }
 
+const YOUTUBE_FALLBACK_UPLOADS: YouTubeUpload[] = [
+  {
+    id: 'i5NjQfBrrMs',
+    title: '12 Julie 2026 - Onthou jy die Here?',
+    publishedAt: new Date('2026-07-12T20:25:54Z'),
+    url: 'https://www.youtube.com/watch?v=i5NjQfBrrMs',
+  },
+  {
+    id: '7WCe0dUKn7k',
+    title: '5 Julie 2026 - Salig-sagmoedig ondanks die klipharde werklikheid',
+    publishedAt: new Date('2026-07-05T19:48:01Z'),
+    url: 'https://www.youtube.com/watch?v=7WCe0dUKn7k',
+  },
+  {
+    id: 'lwIbOwua1y8',
+    title: '28 Junie 2026 - Die (gemeente) pad, tussen Jerusalem en Jerigo',
+    publishedAt: new Date('2026-06-28T19:40:17Z'),
+    url: 'https://www.youtube.com/watch?v=lwIbOwua1y8',
+  },
+]
+
 type KerkdienstgemistRecording = {
   id: string
   title: string
@@ -98,34 +119,44 @@ function formatDuration(seconds: number | null) {
 }
 
 async function getLatestYouTubeUploads(): Promise<YouTubeUpload[]> {
-  try {
-    const response = await fetch(YOUTUBE_FEED_URL, {
-      next: { revalidate: 60 * 30 },
-    })
-
-    if (!response.ok) {
-      return []
-    }
-
-    const xml = await response.text()
-    return [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
-      .slice(0, 3)
-      .map((match) => {
-        const entry = match[1] ?? ''
-        const id = readXmlTag(entry, 'yt:videoId') ?? ''
-        const published = readXmlTag(entry, 'published')
-
-        return {
-          id,
-          title: readXmlTag(entry, 'title') ?? 'YouTube uitsending',
-          publishedAt: published ? new Date(published) : null,
-          url: `https://www.youtube.com/watch?v=${id}`,
-        }
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetch(YOUTUBE_FEED_URL, {
+        headers: {
+          Accept: 'application/atom+xml, application/xml, text/xml',
+          'User-Agent': 'Annlin-Gemeente-Website/1.0',
+        },
+        next: { revalidate: 60 * 30 },
       })
-      .filter((upload) => upload.id)
-  } catch {
-    return []
+
+      if (response.ok) {
+        const xml = await response.text()
+        const uploads = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
+          .slice(0, 3)
+          .map((match) => {
+            const entry = match[1] ?? ''
+            const id = readXmlTag(entry, 'yt:videoId') ?? ''
+            const published = readXmlTag(entry, 'published')
+
+            return {
+              id,
+              title: readXmlTag(entry, 'title') ?? 'YouTube uitsending',
+              publishedAt: published ? new Date(published) : null,
+              url: `https://www.youtube.com/watch?v=${id}`,
+            }
+          })
+          .filter((upload) => upload.id)
+
+        if (uploads.length > 0) {
+          return uploads
+        }
+      }
+    } catch {
+      // Retry once before using the last known channel data below.
+    }
   }
+
+  return YOUTUBE_FALLBACK_UPLOADS
 }
 
 async function getKerkdienstgemistToken() {
