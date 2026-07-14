@@ -6,6 +6,7 @@ const bareUrlPattern = /(?:https?:\/\/|www\.)[^\s<]+/gi
 const googleMapsUrlPattern = /(?<!\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)\]]+/gi
 const googleMapsMarkdownLinkPattern =
   /\[[^\]]*\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
+const markdownLinkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi
 
 function normalizeWhitespace(value: string) {
   return value
@@ -193,6 +194,41 @@ export function normalizeReadingMaterialContent(value: string, title: string) {
   }
 
   return normalized
+}
+
+export type MarkdownAudioLink = {
+  title: string
+  url: string
+}
+
+function isAudioUrl(url: string) {
+  try {
+    return /\.mp3$/i.test(new URL(url).pathname)
+  } catch {
+    return /\.mp3(?:[?#]|$)/i.test(url)
+  }
+}
+
+export function extractMarkdownAudioLinks(value: string): MarkdownAudioLink[] {
+  const links = new Map<string, MarkdownAudioLink>()
+
+  for (const match of value.matchAll(markdownLinkPattern)) {
+    const title = match[1]?.trim()
+    const url = match[2]?.trim()
+
+    if (!title || !url || !isAudioUrl(url) || links.has(url)) continue
+    links.set(url, { title, url })
+  }
+
+  return [...links.values()]
+}
+
+export function stripMarkdownAudioLinks(value: string) {
+  return normalizeWhitespace(
+    value.replace(markdownLinkPattern, (match, _title: string, url: string) => {
+      return isAudioUrl(url) ? '' : match
+    })
+  )
 }
 
 export function stripMarkdown(value: string) {

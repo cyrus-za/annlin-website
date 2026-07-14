@@ -6,6 +6,7 @@ import { ArrowLeft, ExternalLink, FileText, Link as LinkIcon } from 'lucide-reac
 import { prisma } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { extractMarkdownAudioLinks, stripMarkdownAudioLinks } from '@/lib/public-content'
 import { markdownToHtml } from '@/lib/tiptap-config'
 
 interface ReadingMaterialDetailPageProps {
@@ -45,7 +46,12 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
     notFound()
   }
 
-  const descriptionHtml = material.description ? markdownToHtml(material.description) : null
+  const audioLinks = material.description ? extractMarkdownAudioLinks(material.description) : []
+  const description = material.description
+    ? stripMarkdownAudioLinks(material.description)
+    : null
+  const descriptionHtml = description ? markdownToHtml(description) : null
+  const hasInlineLinks = Boolean(description?.match(/\[[^\]]+\]\([^)]+\)/))
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -72,10 +78,10 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
 
       <section className="py-12">
         <div className="mx-auto grid max-w-4xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm">
+          <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
             {descriptionHtml ? (
               <div
-                className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-amber-800 prose-a:no-underline hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground"
+                className="prose prose-lg max-w-none break-words prose-headings:text-foreground prose-p:text-muted-foreground prose-a:font-semibold prose-a:text-amber-800 prose-a:underline prose-a:decoration-amber-700/50 prose-a:underline-offset-4 hover:prose-a:text-amber-950 prose-strong:text-foreground prose-li:text-muted-foreground [&_img]:mx-auto [&_img]:h-auto [&_img]:max-h-[34rem] [&_img]:w-auto [&_img]:max-w-full [&_img]:object-contain"
                 dangerouslySetInnerHTML={{ __html: descriptionHtml }}
               />
             ) : (
@@ -83,10 +89,36 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
                 Geen verdere beskrywing is tans vir hierdie leesstof-item beskikbaar nie.
               </p>
             )}
+
+            {audioLinks.length > 0 ? (
+              <section className="mt-8 border-t border-stone-200 pt-8" aria-labelledby="audio-heading">
+                <h2 id="audio-heading" className="text-2xl font-semibold text-foreground">
+                  Luister na die oordenkings
+                </h2>
+                <div className="mt-5 space-y-5">
+                  {audioLinks.map((audio) => (
+                    <article key={audio.url} className="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                      <h3 className="font-semibold text-foreground">{audio.title}</h3>
+                      <audio
+                        controls
+                        preload="none"
+                        className="mt-3 w-full"
+                        aria-label={audio.title}
+                      >
+                        <source src={audio.url} type="audio/mpeg" />
+                        <a href={audio.url} target="_blank" rel="noopener noreferrer">
+                          Maak die klankopname oop
+                        </a>
+                      </audio>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </article>
 
-          <aside className="space-y-4 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-foreground">Beskikbare skakels</h2>
+          <aside className="self-start space-y-4 rounded-lg border border-stone-200 bg-white p-6 shadow-sm lg:sticky lg:top-24">
+            <h2 className="text-lg font-semibold text-foreground">Bronne en hulp</h2>
 
             {material.externalUrl ? (
               <Button asChild className="w-full justify-between">
@@ -106,14 +138,22 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
               </Button>
             ) : null}
 
-            {!material.externalUrl && !material.fileUrl ? (
-              <div className="rounded-2xl bg-stone-50 p-4 text-sm text-muted-foreground">
-                Geen aparte skakel of lêer is vir hierdie item opgelaai nie. Gebruik die beskrywing links
-                of kontak die kerkkantoor indien jy die bronmateriaal benodig.
+            {!material.externalUrl && !material.fileUrl && (hasInlineLinks || audioLinks.length > 0) ? (
+              <div className="rounded-md bg-stone-50 p-4 text-sm text-muted-foreground">
+                {audioLinks.length > 0
+                  ? 'Die klankopnames kan direk op hierdie blad afgespeel word.'
+                  : 'Die aflaai- en bronskakels is in die inhoud gemerk.'}
               </div>
             ) : null}
 
-            <div className="rounded-2xl bg-stone-50 p-4 text-sm text-muted-foreground">
+            {!material.externalUrl && !material.fileUrl && !hasInlineLinks && audioLinks.length === 0 ? (
+              <div className="rounded-md bg-stone-50 p-4 text-sm text-muted-foreground">
+                Geen aparte skakel of lêer is vir hierdie item beskikbaar nie. Kontak die kerkkantoor
+                indien jy die bronmateriaal benodig.
+              </div>
+            ) : null}
+
+            <div className="rounded-md bg-stone-50 p-4 text-sm text-muted-foreground">
               <div className="mb-2 flex items-center gap-2 font-medium text-foreground">
                 <LinkIcon className="h-4 w-4 text-amber-700" />
                 Meer hulp

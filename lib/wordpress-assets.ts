@@ -46,6 +46,13 @@ export function decodeWordPressEntities(value: string) {
   return decoded
 }
 
+export function stripDuplicateResponsiveDiviModules(html: string) {
+  return decodeWordPressEntities(html).replace(
+    /\[et_pb_([a-z0-9_]+)\b(?=[^\]]*\bdisabled_on=["']off\|off\|on["'])[^\]]*][\s\S]*?\[\/et_pb_\1]/gi,
+    ' '
+  )
+}
+
 function attributeValue(tag: string, attribute: string) {
   const pattern = new RegExp(`\\b${attribute}=["']([^"']+)["']`, 'i')
   return tag.match(pattern)?.[1] || ''

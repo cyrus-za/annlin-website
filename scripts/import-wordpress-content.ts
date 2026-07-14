@@ -14,6 +14,7 @@ import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
   preserveWordPressAssetMarkup,
+  stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
 import {
   buildWordPressPageRouteMap,
@@ -197,7 +198,10 @@ function getDefaultContactEmail() {
 }
 
 function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
-  const preparedHtml = options.preserveAssets ? preserveWordPressAssetMarkup(html) : html
+  const responsiveContent = stripDuplicateResponsiveDiviModules(html)
+  const preparedHtml = options.preserveAssets
+    ? preserveWordPressAssetMarkup(responsiveContent)
+    : responsiveContent
   const text = decodeWordPressEntities(
     preparedHtml
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
@@ -292,12 +296,22 @@ async function main() {
   const wordpressBaseUrl = getWordPressBaseUrl()
   const defaultContactEmail = getDefaultContactEmail()
 
-  const pages = await fetchJson<WpPage[]>(
-    `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,content,excerpt,modified,date`
-  )
-  const eventResponse = await fetchJson<{ events?: TribeEvent[] }>(
-    `${wordpressBaseUrl}/wp-json/tribe/events/v1/events?per_page=100`
-  )
+  const [pageMetadata, pageContents, eventResponse] = await Promise.all([
+    fetchJson<WpPage[]>(
+      `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,excerpt,modified,date`
+    ),
+    fetchJson<WpPage[]>(
+      `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,content`
+    ),
+    fetchJson<{ events?: TribeEvent[] }>(
+      `${wordpressBaseUrl}/wp-json/tribe/events/v1/events?per_page=100`
+    ),
+  ])
+  const contentByPageId = new Map(pageContents.map((page) => [page.id, page.content]))
+  const pages = pageMetadata.map((page) => ({
+    ...page,
+    content: contentByPageId.get(page.id) || { rendered: '' },
+  }))
   const legacyPageRoutes = buildWordPressPageRouteMap(pages, {
     serviceGroupSlugs,
     newsSlugs,

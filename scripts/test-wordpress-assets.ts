@@ -6,10 +6,13 @@ import {
   ensureWordPressAssetsPreserved,
   extractWordPressAssetReferences,
   preserveWordPressAssetMarkup,
+  stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
 import {
   createArticleExcerpt,
+  extractMarkdownAudioLinks,
   normalizeArticleContent,
+  stripMarkdownAudioLinks,
   stripMarkdown,
 } from '../lib/public-content'
 
@@ -131,5 +134,34 @@ assert.match(
   /\[2025 03 02 Oggend Preeksamevatting\]\(https:\/\/www\.annlin\.co\.za/
 )
 assert.match(preservedSummaries, /\[27 Julie 2025 Oggenderediens\]\(https:\/\//)
+
+const responsiveDiviMarkup = `
+  [et_pb_text disabled_on="on|on|off"]<p>Desktop inhoud</p>[/et_pb_text]
+  [et_pb_text disabled_on="off|off|on"]<p>Duplikaat mobiele inhoud</p>[/et_pb_text]
+`
+const desktopDiviMarkup = stripDuplicateResponsiveDiviModules(responsiveDiviMarkup)
+assert.match(desktopDiviMarkup, /Desktop inhoud/)
+assert.doesNotMatch(desktopDiviMarkup, /Duplikaat mobiele inhoud/)
+
+const audioMarkdown = `
+  Inleiding
+
+  [Eerste oordenking](https://legacy.example/uploads/oordenking-01.mp3)
+  [Tweede oordenking](https://legacy.example/uploads/oordenking-02.mp3)
+  [Eerste oordenking duplikaat](https://legacy.example/uploads/oordenking-01.mp3)
+  [Werkkaart](https://legacy.example/uploads/werkkaart.pdf)
+`
+assert.deepEqual(extractMarkdownAudioLinks(audioMarkdown), [
+  {
+    title: 'Eerste oordenking',
+    url: 'https://legacy.example/uploads/oordenking-01.mp3',
+  },
+  {
+    title: 'Tweede oordenking',
+    url: 'https://legacy.example/uploads/oordenking-02.mp3',
+  },
+])
+assert.doesNotMatch(stripMarkdownAudioLinks(audioMarkdown), /\.mp3/)
+assert.match(stripMarkdownAudioLinks(audioMarkdown), /werkkaart\.pdf/)
 
 console.log('WordPress asset preservation checks passed.')
