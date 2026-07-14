@@ -16,8 +16,8 @@ export default async function TermsPage() {
     <div className="min-h-screen bg-gray-50">
       <section className="bg-gradient-to-b from-amber-50 to-white py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-foreground">{readContentText(sections, 'body.title')}</h1>
-          <div className="mt-8 space-y-6 rounded-lg border bg-white p-8 text-muted-foreground">
+          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{readContentText(sections, 'body.title')}</h1>
+          <div className="mt-8 space-y-6 rounded-lg border bg-white p-6 text-muted-foreground sm:p-8">
             {readContentList(sections, 'body.paragraphs').map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
