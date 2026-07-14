@@ -58,7 +58,7 @@ export default async function ContactDetailsPage() {
                       <h4 className="font-medium text-foreground mb-2">E-pos</h4>
                       <a 
                         href={contactEmailHref}
-                        className="text-amber-600 hover:text-amber-800 break-all"
+                        className="break-all text-amber-800 hover:text-amber-950"
                       >
                         {APP_CONFIG.email}
                       </a>
@@ -70,7 +70,7 @@ export default async function ContactDetailsPage() {
                         <div>
                           <a 
                             href={CONTACT_DETAILS.phone.href}
-                            className="text-amber-600 hover:text-amber-800"
+                            className="text-amber-800 hover:text-amber-950"
                           >
                             {CONTACT_DETAILS.phone.label}
                           </a>
@@ -79,7 +79,7 @@ export default async function ContactDetailsPage() {
                         <div>
                           <a 
                             href={CONTACT_DETAILS.mobile.href}
-                            className="text-amber-600 hover:text-amber-800"
+                            className="text-amber-800 hover:text-amber-950"
                           >
                             {CONTACT_DETAILS.mobile.label}
                           </a>
@@ -230,13 +230,13 @@ export default async function ContactDetailsPage() {
                       <p className="text-muted-foreground">{copy('staff.officeBody')}</p>
                       <a 
                         href={CONTACT_DETAILS.phone.href}
-                        className="block text-sm text-amber-600 hover:text-amber-800"
+                        className="block text-sm text-amber-800 hover:text-amber-950"
                       >
                         {CONTACT_DETAILS.phone.label}
                       </a>
                       <a 
                         href={CONTACT_DETAILS.mobile.href}
-                        className="block text-sm text-amber-600 hover:text-amber-800"
+                        className="block text-sm text-amber-800 hover:text-amber-950"
                       >
                         {CONTACT_DETAILS.mobile.label}
                       </a>
@@ -247,7 +247,7 @@ export default async function ContactDetailsPage() {
                       <p className="text-muted-foreground">{copy('staff.emailBody')}</p>
                       <a 
                         href={contactEmailHref}
-                        className="text-sm text-amber-600 hover:text-amber-800"
+                        className="text-sm text-amber-800 hover:text-amber-950"
                       >
                         {APP_CONFIG.email}
                       </a>

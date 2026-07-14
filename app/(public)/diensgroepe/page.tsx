@@ -31,25 +31,25 @@ export default function DiensgroepePage() {
       <ServiceGroups showAll={true} />
 
       {/* Call to Action */}
-      <section className="py-16 bg-amber-600">
+      <section className="bg-primary py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
               Gereed om betrokke te raak?
             </h2>
-            <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
+            <p className="mx-auto mb-8 max-w-2xl text-xl text-primary-foreground/90">
               Kontak ons vandag om uit te vind hoe jy by een van ons diensgroepe kan aansluit.
             </p>
             <div className="space-x-4">
               <a
                 href="/kontakbesonderhede"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-600 bg-white hover:bg-amber-50 transition-colors duration-200"
+                className="inline-flex items-center rounded-md border border-transparent bg-white px-6 py-3 text-base font-medium text-primary transition-colors duration-200 hover:bg-secondary"
               >
                 Kontak Ons
               </a>
               <a
                 href="tel:012-567-1492"
-                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-amber-600 transition-colors duration-200"
+                className="inline-flex items-center rounded-md border-2 border-white px-6 py-3 text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-primary"
               >
                 Bel Ons: 012 567 1492
               </a>
@@ -68,7 +68,7 @@ export default function DiensgroepePage() {
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
                     <span className="text-white text-sm font-bold">1</span>
                   </div>
                   <div className="ml-4">
@@ -80,7 +80,7 @@ export default function DiensgroepePage() {
                 </div>
                 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
                     <span className="text-white text-sm font-bold">2</span>
                   </div>
                   <div className="ml-4">
@@ -92,7 +92,7 @@ export default function DiensgroepePage() {
                 </div>
                 
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 bg-amber-600 rounded-full flex items-center justify-center mt-1">
+                  <div className="mt-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary">
                     <span className="text-white text-sm font-bold">3</span>
                   </div>
                   <div className="ml-4">

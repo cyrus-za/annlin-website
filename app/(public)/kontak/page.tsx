@@ -361,7 +361,7 @@ export default function ContactPage() {
                     <h4 className="font-medium text-foreground">E-pos</h4>
                     <a 
                       href={`mailto:${APP_CONFIG.email}`}
-                      className="text-amber-600 hover:text-amber-800 break-all"
+                      className="break-all text-amber-800 hover:text-amber-950"
                     >
                       {APP_CONFIG.email}
                     </a>
@@ -374,14 +374,14 @@ export default function ContactPage() {
                     <h4 className="font-medium text-foreground">Telefoon</h4>
                     <a 
                       href={CONTACT_DETAILS.phone.href}
-                      className="text-amber-600 hover:text-amber-800"
+                      className="text-amber-800 hover:text-amber-950"
                     >
                       {CONTACT_DETAILS.phone.label}
                     </a>
                     <br />
                     <a
                       href={CONTACT_DETAILS.mobile.href}
-                      className="text-amber-600 hover:text-amber-800"
+                      className="text-amber-800 hover:text-amber-950"
                     >
                       {CONTACT_DETAILS.mobile.label}
                     </a>

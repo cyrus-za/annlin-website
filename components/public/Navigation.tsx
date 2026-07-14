@@ -190,7 +190,7 @@ export function Navigation() {
                 </Link>
               </Button>
             )}
-            <Button asChild size="sm" className="bg-amber-700 hover:bg-amber-800">
+            <Button asChild size="sm">
               <Link href="/kontak">
                 Kontak Ons
               </Link>
@@ -314,7 +314,7 @@ export function Navigation() {
                       <Search className="h-4 w-4" />
                     </Button>
                   </form>
-                  <Button asChild className="w-full bg-amber-700 hover:bg-amber-800">
+                  <Button asChild className="w-full">
                     <Link href="/kontak">
                       Kontak Ons
                     </Link>
