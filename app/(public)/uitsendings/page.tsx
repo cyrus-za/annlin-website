@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { YouTubeEmbed } from '@/components/public/YouTubeEmbed'
 import { Calendar, ExternalLink, User } from 'lucide-react'
 import { Metadata } from 'next'
 
@@ -328,15 +329,7 @@ export default async function UitsendingsPage() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {youtubeUploads.map((upload) => (
                 <Card key={upload.id} className="overflow-hidden">
-                  <div className="aspect-video bg-gray-100">
-                    <iframe
-                      className="h-full w-full"
-                      src={`https://www.youtube-nocookie.com/embed/${upload.id}`}
-                      title={upload.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  </div>
+                  <YouTubeEmbed videoId={upload.id} title={upload.title} />
                   <CardHeader>
                     <CardTitle className="line-clamp-2 text-base leading-tight">
                       {stripLeadingDate(upload.title)}
