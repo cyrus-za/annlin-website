@@ -18,6 +18,7 @@ const documentExtensions = new Set([
   'xls',
   'xlsx',
 ])
+const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
 
 export function decodeWordPressEntities(value: string) {
   let decoded = value
@@ -71,6 +72,10 @@ function assetKind(url: string) {
   return null
 }
 
+function isImageAssetUrl(url: string) {
+  return assetKind(decodeWordPressEntities(url).trim()) === 'image'
+}
+
 function cleanLabel(value: string) {
   return decodeWordPressEntities(value)
     .replace(/<[^>]+>/g, ' ')
@@ -78,6 +83,65 @@ function cleanLabel(value: string) {
     .replace(/[\[\]]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function imageMarkdown(src: string, alt = '') {
+  const cleanedSrc = decodeWordPressEntities(src).trim()
+  if (!cleanedSrc) return ''
+  return `![${cleanLabel(alt)}](${cleanedSrc})`
+}
+
+function linkMarkdown(href: string, label = '') {
+  const cleanedHref = decodeWordPressEntities(href).trim()
+  if (!cleanedHref) return ''
+  return `[${cleanLabel(label) || cleanedHref}](${cleanedHref})`
+}
+
+function preserveAnchor(href: string, content: string) {
+  const cleanedHref = decodeWordPressEntities(href).trim()
+  const images = [...content.matchAll(markdownImagePattern)]
+
+  if (images.length === 0) {
+    return linkMarkdown(cleanedHref, content)
+  }
+
+  if (isImageAssetUrl(cleanedHref)) {
+    const firstImage = images[0]
+    const fullMatch = firstImage?.[0]
+    const alt = firstImage?.[1] || cleanLabel(content)
+    return fullMatch ? content.replace(fullMatch, imageMarkdown(cleanedHref, alt)) : content
+  }
+
+  if (content.toLowerCase().includes(cleanedHref.toLowerCase())) {
+    return content
+  }
+
+  return `${content}\n\n${linkMarkdown(cleanedHref, cleanLabel(content))}`
+}
+
+export function preserveWordPressAssetMarkup(html: string) {
+  return decodeWordPressEntities(html)
+    .replace(/\[et_pb_image\b[^\]]*]/gi, (shortcode) => {
+      const src = attributeValue(shortcode, 'src')
+      const title = attributeValue(shortcode, 'title_text')
+      const url = attributeValue(shortcode, 'url')
+      const parts = [imageMarkdown(src, title)]
+
+      if (url && url !== src) {
+        parts.push(linkMarkdown(url, title ? `${title} oopmaak` : url))
+      }
+
+      return parts.filter(Boolean).join('\n\n')
+    })
+    .replace(/<img\b[^>]*>/gi, (tag) => {
+      const src = attributeValue(tag, 'src') || attributeValue(tag, 'data-src')
+      const alt = attributeValue(tag, 'alt') || attributeValue(tag, 'title')
+      return imageMarkdown(src, alt)
+    })
+    .replace(
+      /<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,
+      (_match, href: string, content: string) => preserveAnchor(href, content)
+    )
 }
 
 function createReference(
@@ -134,7 +198,13 @@ export function extractWordPressAssetReferences(html: string) {
 
   for (const reference of references.sort((a, b) => a.sourceIndex - b.sourceIndex)) {
     const key = `${reference.kind}:${reference.url}`
-    if (!uniqueReferences.has(key)) uniqueReferences.set(key, reference)
+    const existing = uniqueReferences.get(key)
+
+    if (!existing) {
+      uniqueReferences.set(key, reference)
+    } else if (!existing.label && reference.label) {
+      uniqueReferences.set(key, { ...existing, label: reference.label })
+    }
   }
 
   return [...uniqueReferences.values()]
@@ -142,6 +212,17 @@ export function extractWordPressAssetReferences(html: string) {
 
 function contentContainsReference(content: string, reference: WordPressAssetReference) {
   const normalizedContent = content.toLowerCase()
+
+  if (reference.kind === 'image') {
+    return [...content.matchAll(markdownImagePattern)].some((match) => {
+      const imageUrl = match[2]?.toLowerCase() || ''
+      return (
+        imageUrl.includes(reference.url.toLowerCase()) ||
+        (reference.filename.length > 0 && imageUrl.includes(reference.filename.toLowerCase()))
+      )
+    })
+  }
+
   return (
     normalizedContent.includes(reference.url.toLowerCase()) ||
     (reference.filename.length > 0 && normalizedContent.includes(reference.filename.toLowerCase()))

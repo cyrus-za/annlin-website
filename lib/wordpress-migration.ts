@@ -67,7 +67,7 @@ export function replaceWordPressPageLinks(
 
     // Uploads stay on WordPress until the complete media archive is copied to R2.
     if (pathParts[0] === 'wp-content' && pathParts[1] === 'uploads') {
-      return candidate
+      return candidate.replace(/^http:/i, 'https:')
     }
 
     const slug = pathParts[0] || ''

@@ -5,6 +5,7 @@ import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
   extractWordPressAssetReferences,
+  preserveWordPressAssetMarkup,
 } from '../lib/wordpress-assets'
 
 const imageUrl = 'http://www.annlin.co.za/wp-content/uploads/2023/11/DXF.png'
@@ -33,5 +34,19 @@ const restoredContent = ensureWordPressAssetsPreserved(malformedBulkMarkup, flat
 
 assert.match(restoredContent, new RegExp(`!\\[DXF\\]\\(${imageUrl.replaceAll('.', '\\.')}\\)`))
 assert.equal(ensureWordPressAssetsPreserved(malformedBulkMarkup, restoredContent), restoredContent)
+
+const galleryImageUrl = 'https://www.annlin.co.za/wp-content/uploads/2026/03/3.jpeg'
+const galleryMarkup = `
+  <a href="${galleryImageUrl}" title="3">
+    <img src="${galleryImageUrl}" alt="Jeugaktiwiteit" />
+  </a>
+`
+const preservedGallery = preserveWordPressAssetMarkup(galleryMarkup)
+
+assert.equal(preservedGallery.trim(), `![Jeugaktiwiteit](${galleryImageUrl})`)
+
+const flattenedImageLink = `[${galleryImageUrl}](${galleryImageUrl})`
+const reconciledImage = ensureWordPressAssetsPreserved(galleryMarkup, flattenedImageLink)
+assert.match(reconciledImage, /!\[Jeugaktiwiteit\]\(https:\/\//)
 
 console.log('WordPress asset preservation checks passed.')

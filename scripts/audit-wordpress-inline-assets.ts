@@ -261,6 +261,17 @@ async function fetchAllMedia(wordpressBaseUrl: string) {
 
 function assetIsReferencedInText(asset: ExtractedAsset, content: string) {
   const normalizedContent = content.toLowerCase()
+
+  if (asset.kind === 'image') {
+    return [...content.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].some((match) => {
+      const imageUrl = match[1]?.toLowerCase() || ''
+      return (
+        imageUrl.includes(asset.url.toLowerCase()) ||
+        (asset.filename.length > 0 && imageUrl.includes(asset.filename.toLowerCase()))
+      )
+    })
+  }
+
   return (
     normalizedContent.includes(asset.url.toLowerCase()) ||
     (asset.filename.length > 0 && normalizedContent.includes(asset.filename.toLowerCase()))

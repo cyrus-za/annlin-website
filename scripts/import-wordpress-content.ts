@@ -13,6 +13,7 @@ import { slugify } from '../lib/slug'
 import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
+  preserveWordPressAssetMarkup,
 } from '../lib/wordpress-assets'
 import {
   buildWordPressPageRouteMap,
@@ -143,47 +144,6 @@ const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
 const YOUTUBE_SERMON_CHANNEL_PATTERN =
   /\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/i
 
-function attributeValue(tag: string, attribute: string) {
-  const pattern = new RegExp(`\\b${attribute}=["']([^"']+)["']`, 'i')
-  return tag.match(pattern)?.[1] || ''
-}
-
-function markdownImageFromAsset(src: string, alt = '') {
-  if (!src) return ''
-  return `\n\n![${decodeWordPressEntities(alt)}](${decodeWordPressEntities(src)})\n\n`
-}
-
-function markdownLinkFromAsset(href: string, label = '') {
-  if (!href) return ''
-  const cleanedHref = decodeWordPressEntities(href)
-  const cleanedLabel = htmlToText(label || cleanedHref)
-  return `[${cleanedLabel || cleanedHref}](${cleanedHref})`
-}
-
-function preserveAssetMarkup(html: string) {
-  return decodeWordPressEntities(html)
-    .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (match, href, text) => {
-      return markdownLinkFromAsset(href, text)
-    })
-    .replace(/<img\b[^>]*>/gi, (tag) => {
-      const src = attributeValue(tag, 'src') || attributeValue(tag, 'data-src')
-      const alt = attributeValue(tag, 'alt') || attributeValue(tag, 'title') || ''
-      return markdownImageFromAsset(src, alt)
-    })
-    .replace(/\[et_pb_image\b[^\]]*]/gi, (shortcode) => {
-      const src = attributeValue(shortcode, 'src')
-      const title = attributeValue(shortcode, 'title_text')
-      const url = attributeValue(shortcode, 'url')
-      const parts = [markdownImageFromAsset(src, title)]
-
-      if (url && url !== src) {
-        parts.push(markdownLinkFromAsset(url, title ? `${title} oopmaak` : url))
-      }
-
-      return parts.filter(Boolean).join('\n')
-    })
-}
-
 function hasKerkdienstgemistStationLink(value: string) {
   return (
     KERKDIENSTGEMIST_STATION_TEST_PATTERN.test(value) ||
@@ -237,7 +197,7 @@ function getDefaultContactEmail() {
 }
 
 function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
-  const preparedHtml = options.preserveAssets ? preserveAssetMarkup(html) : html
+  const preparedHtml = options.preserveAssets ? preserveWordPressAssetMarkup(html) : html
   const text = decodeWordPressEntities(
     preparedHtml
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
