@@ -6,6 +6,7 @@ import { Calendar, Users, Heart, BookOpen, ArrowRight } from 'lucide-react'
 import { Metadata } from 'next'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
+import { CONTACT_DETAILS } from '@/lib/constants'
 
 export const revalidate = 300
 
@@ -392,7 +393,7 @@ export default async function AboutPage() {
                 <div className="pt-4">
                   <Button asChild className="w-full">
                     <a 
-                      href="https://maps.google.com/search/Braam+Pretoriusstraat+Kaneelbaslaan+Wonderboom+Pretoria" 
+                      href={CONTACT_DETAILS.mapHref}
                       target="_blank" 
                       rel="noopener noreferrer"
                     >

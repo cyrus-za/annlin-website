@@ -18,7 +18,6 @@ export default async function ContactDetailsPage() {
   const { sections } = await getPublicContentPage('kontakbesonderhede')
   const copy = (path: string) => readContentText(sections, path)
   const contactEmailHref = `mailto:${APP_CONFIG.email}`
-  const churchMapHref = 'https://maps.google.com/?q=Gereformeerde+Kerk+Pretoria-Annlin'
 
   return (
     <div className="min-h-screen bg-white">
@@ -120,7 +119,7 @@ export default async function ContactDetailsPage() {
                     <div>
                       <Button asChild variant="outline" className="w-full">
                         <a 
-                          href={churchMapHref}
+                          href={CONTACT_DETAILS.mapHref}
                           target="_blank" 
                           rel="noopener noreferrer"
                         >

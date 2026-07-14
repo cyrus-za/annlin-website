@@ -10,6 +10,7 @@ export const APP_CONFIG = {
 } as const
 
 export const CONTACT_DETAILS = {
+  mapHref: 'https://maps.google.com/?q=Gereformeerde+Kerk+Pretoria-Annlin',
   phone: {
     label: '012 567 1492',
     href: 'tel:+27125671492',
