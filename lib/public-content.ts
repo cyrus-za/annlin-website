@@ -169,8 +169,9 @@ export function normalizeGoogleMapsLinks(value: string) {
 }
 
 export function normalizeArticleContent(value: string) {
-  return normalizeGoogleMapsLinks(labelEmptyAssetLinks(stripLeadingArticleChrome(value)))
-    .replace(/\uE016/g, '')
+  return normalizeGoogleMapsLinks(
+    labelEmptyAssetLinks(stripLeadingArticleChrome(value.replace(/\uE016/g, '')))
+  )
     .replace(/[ \t]{2,}/g, ' ')
     .trim()
 }

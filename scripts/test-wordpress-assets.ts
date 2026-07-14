@@ -81,6 +81,11 @@ assert.equal(
 const emptyRegistrationLink =
   '[](https://www.annlin.co.za/wp-content/uploads/2024/01/SUSTERSAAMTREK-2024-REGISTRASIEVORM.1.pdf)'
 assert.match(normalizeArticleContent(emptyRegistrationLink), /^\[Registrasievorm\]\(/)
+assert.match(normalizeArticleContent(`\uE016${emptyRegistrationLink}`), /^\[Registrasievorm\]\(/)
+assert.match(
+  normalizeArticleContent(emptyRegistrationLink.replace('[]', '[\uE016]')),
+  /^\[Registrasievorm\]\(/
+)
 
 const newsPageChrome = `
   GEREFORMEERDE KERK
@@ -105,5 +110,26 @@ assert.equal(
   createArticleExcerpt(newsWithLeadingMedia),
   "Aanbieding oor selfverdediging Die gemeente het 'n praktiese aanbieding bygewoon."
 )
+
+const oldSummaryUrl =
+  'https://www.annlin.co.za/wp-content/uploads/2025/03/2025-03-02-Oggend-Preeksamevatting.pdf'
+const currentSummaryUrl =
+  'https://www.annlin.co.za/wp-content/uploads/2025/08/2025-07-27-Oggend-Preeksamevatting.pdf'
+const summaryMarkup = `
+  <a href="${currentSummaryUrl}">27 Julie 2025 Oggenderediens</a>
+  <a href="${oldSummaryUrl}"><span><br /></span></a>
+  <a href="${oldSummaryUrl}"><br /></a>
+`
+const preservedSummaries = ensureWordPressAssetsPreserved(
+  summaryMarkup,
+  preserveWordPressAssetMarkup(summaryMarkup)
+)
+
+assert.equal(preservedSummaries.match(new RegExp(oldSummaryUrl, 'g'))?.length, 1)
+assert.match(
+  preservedSummaries,
+  /\[2025 03 02 Oggend Preeksamevatting\]\(https:\/\/www\.annlin\.co\.za/
+)
+assert.match(preservedSummaries, /\[27 Julie 2025 Oggenderediens\]\(https:\/\//)
 
 console.log('WordPress asset preservation checks passed.')

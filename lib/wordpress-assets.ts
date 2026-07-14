@@ -85,6 +85,18 @@ function cleanLabel(value: string) {
     .trim()
 }
 
+function humanizeFilename(filename: string) {
+  const readableFilename = filename
+    .replace(/\.[^.]+$/, '')
+    .replace(/\.\d+$/, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (/registrasievorm/i.test(readableFilename)) return 'Registrasievorm'
+  return readableFilename
+}
+
 function assetLabelFromMarkdown(content: string, href: string) {
   const imageLabel = [...content.matchAll(markdownImagePattern)]
     .map((match) => cleanLabel(match[1] || ''))
@@ -92,8 +104,7 @@ function assetLabelFromMarkdown(content: string, href: string) {
 
   if (imageLabel) return imageLabel
 
-  const filename = filenameFromUrl(href)
-  return filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim()
+  return humanizeFilename(filenameFromUrl(href))
 }
 
 function imageMarkdown(src: string, alt = '') {
@@ -114,7 +125,8 @@ function preserveAnchor(href: string, content: string) {
   const images = [...normalizedContent.matchAll(markdownImagePattern)]
 
   if (images.length === 0) {
-    return linkMarkdown(cleanedHref, content)
+    const label = cleanLabel(normalizedContent)
+    return label ? linkMarkdown(cleanedHref, label) : ''
   }
 
   if (isImageAssetUrl(cleanedHref)) {
@@ -246,7 +258,7 @@ function contentContainsReference(content: string, reference: WordPressAssetRefe
 }
 
 function referenceToMarkdown(reference: WordPressAssetReference) {
-  const label = reference.label || reference.filename
+  const label = reference.label || humanizeFilename(reference.filename)
 
   if (reference.kind === 'image') {
     return `![${label}](${reference.url})`
