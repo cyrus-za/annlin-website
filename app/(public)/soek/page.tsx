@@ -148,7 +148,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     <CardContent className="flex flex-1 flex-col">
                       <p className="line-clamp-4 flex-1 text-muted-foreground">{result.description}</p>
                       <Button asChild variant="outline" className="mt-6 self-start">
-                        <Link href={result.href}>Maak oop</Link>
+                        <Link href={result.href} aria-label={`Maak ${result.title} oop`}>
+                          Maak oop
+                        </Link>
                       </Button>
                     </CardContent>
                   </Card>
