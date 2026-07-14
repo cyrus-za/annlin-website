@@ -1,7 +1,7 @@
-const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
-const markdownLinkPattern = /\[([^\]]+)\]\(([^)]+)\)/g
 const incompleteMarkdownImagePattern = /!\[[^\]]*\]\([^\s)]*(?:\)|$)/g
 const incompleteMarkdownLinkPattern = /\[([^\]]+)\]\([^\s)]*(?:\)|$)/g
+const malformedNestedImageLinkPattern =
+  /\[!([^\](\n]{0,120})\((?:https?:\/\/|www\.)[^\s)]+\)\]\((?:https?:\/\/|www\.)[^\s)]+\)/gi
 const bareUrlPattern = /(?:https?:\/\/|www\.)[^\s<]+/gi
 const googleMapsUrlPattern = /(?<!\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[^\s)\]]+/gi
 const googleMapsMarkdownLinkPattern =
@@ -18,6 +18,65 @@ function normalizeWhitespace(value: string) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function findMatchingDelimiter(value: string, start: number, open: string, close: string) {
+  let depth = 0
+
+  for (let index = start; index < value.length; index++) {
+    if (value[index] === '\\') {
+      index += 1
+      continue
+    }
+
+    if (value[index] === open) depth += 1
+    if (value[index] !== close) continue
+
+    depth -= 1
+    if (depth === 0) return index
+  }
+
+  return -1
+}
+
+function stripMarkdownLinksAndImages(value: string): string {
+  let output = ''
+
+  for (let index = 0; index < value.length; index++) {
+    const isImage = value[index] === '!' && value[index + 1] === '['
+    const isLink = value[index] === '['
+
+    if (!isImage && !isLink) {
+      output += value[index]
+      continue
+    }
+
+    const bracketStart = isImage ? index + 1 : index
+    const bracketEnd = findMatchingDelimiter(value, bracketStart, '[', ']')
+    const destinationStart = bracketEnd + 1
+
+    if (bracketEnd < 0 || value[destinationStart] !== '(') {
+      output += value[index]
+      continue
+    }
+
+    const destinationEnd = findMatchingDelimiter(value, destinationStart, '(', ')')
+    if (destinationEnd < 0) {
+      output += value[index]
+      continue
+    }
+
+    if (!isImage) {
+      const label = value.slice(bracketStart + 1, bracketEnd)
+      output += stripMarkdownLinksAndImages(label)
+    } else {
+      output += ' '
+    }
+
+    index = destinationEnd
+  }
+
+  return output
 }
 
 function stripLeadingWordPressPageChrome(value: string) {
@@ -41,6 +100,65 @@ function stripLeadingWordPressPageChrome(value: string) {
   return cleaned
 }
 
+function stripLeadingArticleChrome(value: string) {
+  let cleaned = stripLeadingWordPressPageChrome(value)
+
+  for (let index = 0; index < 4; index++) {
+    const next = cleaned
+      .replace(/^\s*Weeklikse Gemeente-nuusblad\s*/i, '')
+      .replace(/^\s*Die Fontein\s*/i, '')
+      .trimStart()
+
+    if (next === cleaned) break
+    cleaned = next
+  }
+
+  return cleaned
+}
+
+function labelForEmptyAssetLink(url: string) {
+  let filename = ''
+
+  try {
+    filename = decodeURIComponent(new URL(url).pathname.split('/').filter(Boolean).pop() || '')
+  } catch {
+    filename = url.split('/').filter(Boolean).pop()?.split(/[?#]/, 1)[0] || ''
+  }
+
+  const readableFilename = filename
+    .replace(/\.[^.]+$/, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (/registrasievorm/i.test(readableFilename)) return 'Registrasievorm'
+  return readableFilename ? `${readableFilename} oopmaak` : 'Maak lêer oop'
+}
+
+function labelEmptyAssetLinks(value: string) {
+  return value.replace(/\[\s*\]\((https?:\/\/[^\s)]+)\)/gi, (_match, url: string) => {
+    return `[${labelForEmptyAssetLink(url)}](${url})`
+  })
+}
+
+function stripLeadingArticlePreviewMedia(value: string) {
+  let cleaned = value.trimStart()
+
+  for (let index = 0; index < 8; index++) {
+    const next = cleaned
+      .replace(/^\s*!\[[^\]]*\]\([^\n]+\)\s*/i, '')
+      .replace(/^\s*\[[^\]]+(?:oopmaak|aflaai)\]\([^\n]+\)\s*/i, '')
+      .replace(/^\s*\(klik op die foto[^)]*\)\s*/i, '')
+      .replace(/^\s*\[Kliek hier vir \d{4} Nuus!?\]\([^\n]+\)\s*/i, '')
+      .trimStart()
+
+    if (next === cleaned) break
+    cleaned = next
+  }
+
+  return cleaned
+}
+
 export function normalizeGoogleMapsLinks(value: string) {
   return value
     .replace(
@@ -51,7 +169,7 @@ export function normalizeGoogleMapsLinks(value: string) {
 }
 
 export function normalizeArticleContent(value: string) {
-  return normalizeGoogleMapsLinks(stripLeadingWordPressPageChrome(value))
+  return normalizeGoogleMapsLinks(labelEmptyAssetLinks(stripLeadingArticleChrome(value)))
     .replace(/\uE016/g, '')
     .replace(/[ \t]{2,}/g, ' ')
     .trim()
@@ -77,11 +195,12 @@ export function normalizeReadingMaterialContent(value: string, title: string) {
 }
 
 export function stripMarkdown(value: string) {
-  return value
-    .replace(markdownImagePattern, ' ')
-    .replace(markdownLinkPattern, '$1')
+  return stripMarkdownLinksAndImages(
+    value.replace(malformedNestedImageLinkPattern, '$1')
+  )
     .replace(incompleteMarkdownImagePattern, ' ')
     .replace(incompleteMarkdownLinkPattern, '$1')
+    .replace(/!?\[\s*\]\s*\(?/g, ' ')
     .replace(bareUrlPattern, ' ')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^>\s+/gm, '')
@@ -104,7 +223,7 @@ export function createExcerpt(value: string, maxLength = 180) {
 }
 
 export function createArticleExcerpt(value: string, maxLength = 220) {
-  return createExcerpt(normalizeArticleContent(value), maxLength)
+  return createExcerpt(stripLeadingArticlePreviewMedia(normalizeArticleContent(value)), maxLength)
 }
 
 export function normalizeServiceGroupContent(value: string, title: string) {

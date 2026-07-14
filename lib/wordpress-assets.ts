@@ -85,6 +85,17 @@ function cleanLabel(value: string) {
     .trim()
 }
 
+function assetLabelFromMarkdown(content: string, href: string) {
+  const imageLabel = [...content.matchAll(markdownImagePattern)]
+    .map((match) => cleanLabel(match[1] || ''))
+    .find(Boolean)
+
+  if (imageLabel) return imageLabel
+
+  const filename = filenameFromUrl(href)
+  return filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim()
+}
+
 function imageMarkdown(src: string, alt = '') {
   const cleanedSrc = decodeWordPressEntities(src).trim()
   if (!cleanedSrc) return ''
@@ -99,7 +110,8 @@ function linkMarkdown(href: string, label = '') {
 
 function preserveAnchor(href: string, content: string) {
   const cleanedHref = decodeWordPressEntities(href).trim()
-  const images = [...content.matchAll(markdownImagePattern)]
+  const normalizedContent = content.trim()
+  const images = [...normalizedContent.matchAll(markdownImagePattern)]
 
   if (images.length === 0) {
     return linkMarkdown(cleanedHref, content)
@@ -108,15 +120,19 @@ function preserveAnchor(href: string, content: string) {
   if (isImageAssetUrl(cleanedHref)) {
     const firstImage = images[0]
     const fullMatch = firstImage?.[0]
-    const alt = firstImage?.[1] || cleanLabel(content)
-    return fullMatch ? content.replace(fullMatch, imageMarkdown(cleanedHref, alt)) : content
+    const alt = firstImage?.[1] || cleanLabel(normalizedContent)
+    return fullMatch
+      ? normalizedContent.replace(fullMatch, imageMarkdown(cleanedHref, alt))
+      : normalizedContent
   }
 
-  if (content.toLowerCase().includes(cleanedHref.toLowerCase())) {
-    return content
+  if (normalizedContent.toLowerCase().includes(cleanedHref.toLowerCase())) {
+    return normalizedContent
   }
 
-  return `${content}\n\n${linkMarkdown(cleanedHref, cleanLabel(content))}`
+  const assetLabel = assetLabelFromMarkdown(normalizedContent, cleanedHref)
+  const linkLabel = assetLabel ? `${assetLabel} oopmaak` : 'Maak lêer oop'
+  return `${normalizedContent}\n\n${linkMarkdown(cleanedHref, linkLabel)}`
 }
 
 export function preserveWordPressAssetMarkup(html: string) {
