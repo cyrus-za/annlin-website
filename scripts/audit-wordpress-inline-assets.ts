@@ -4,6 +4,7 @@ import { existsSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { disconnectDatabase, prisma } from '../lib/db'
 import { slugify } from '../lib/slug'
+import { decodeWordPressEntities } from '../lib/wordpress-assets'
 
 type WpRendered = { rendered?: string }
 
@@ -90,21 +91,8 @@ function env(name: string) {
   return value.replace(/\/+$/, '')
 }
 
-function decodeEntities(value: string) {
-  return value
-    .replaceAll('&amp;', '&')
-    .replaceAll('&#038;', '&')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#8220;', '"')
-    .replaceAll('&#8221;', '"')
-    .replaceAll('&#8216;', "'")
-    .replaceAll('&#8217;', "'")
-    .replaceAll('&#x27;', "'")
-    .replaceAll('&nbsp;', ' ')
-}
-
 function htmlToText(html = '') {
-  return decodeEntities(html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+  return decodeWordPressEntities(html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
 }
 
 function titleOf(page: WpPage) {
@@ -113,10 +101,10 @@ function titleOf(page: WpPage) {
 
 function filenameFromUrl(url: string) {
   try {
-    const parsed = new URL(decodeEntities(url))
+    const parsed = new URL(decodeWordPressEntities(url))
     return decodeURIComponent(parsed.pathname.split('/').filter(Boolean).pop() || '')
   } catch {
-    return decodeEntities(url).split('/').filter(Boolean).pop() || ''
+    return decodeWordPressEntities(url).split('/').filter(Boolean).pop() || ''
   }
 }
 
@@ -125,7 +113,7 @@ function extensionFromFilename(filename: string) {
 }
 
 function normalizeUrl(url: string) {
-  return decodeEntities(url).replace(/^http:\/\//i, 'https://').trim()
+  return decodeWordPressEntities(url).replace(/^http:\/\//i, 'https://').trim()
 }
 
 function assetFromUrl(url: string): ExtractedAsset | null {
@@ -160,7 +148,7 @@ function uniqueAssets(assets: ExtractedAsset[]) {
 
 function extractAssets(html = '') {
   const assets: ExtractedAsset[] = []
-  const decodedHtml = decodeEntities(html)
+  const decodedHtml = decodeWordPressEntities(html)
 
   for (const match of decodedHtml.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)) {
     const asset = assetFromUrl(match[1] ?? '')
@@ -344,6 +332,8 @@ async function main() {
         linkedFiles: assets.filter((asset) => asset.kind === 'linked-file').length,
         missingFromMigratedContent,
         missingFromAssetArchive,
+        customSingletonDifference:
+          pageType === 'singleton' && missingFromMigratedContent.length > 0,
       }
     })
     .filter(
@@ -361,6 +351,8 @@ async function main() {
       )
     )
   )
+  const migratedPageAudits = pageAudits.filter((audit) => audit.pageType !== 'singleton')
+  const singletonPageAudits = pageAudits.filter((audit) => audit.pageType === 'singleton')
 
   console.log(
     JSON.stringify(
@@ -373,6 +365,20 @@ async function main() {
             (audit) => audit.missingFromMigratedContent.length > 0
           ).length,
           missingRenderedAssetReferences: pageAudits.reduce(
+            (total, audit) => total + audit.missingFromMigratedContent.length,
+            0
+          ),
+          migratedPagesWithMissingRenderedAssets: migratedPageAudits.filter(
+            (audit) => audit.missingFromMigratedContent.length > 0
+          ).length,
+          missingMigratedAssetReferences: migratedPageAudits.reduce(
+            (total, audit) => total + audit.missingFromMigratedContent.length,
+            0
+          ),
+          redesignedSingletonPagesWithAssetDifferences: singletonPageAudits.filter(
+            (audit) => audit.missingFromMigratedContent.length > 0
+          ).length,
+          redesignedSingletonAssetDifferences: singletonPageAudits.reduce(
             (total, audit) => total + audit.missingFromMigratedContent.length,
             0
           ),

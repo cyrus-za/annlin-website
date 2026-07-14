@@ -11,6 +11,10 @@ import {
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
 import { slugify } from '../lib/slug'
 import {
+  decodeWordPressEntities,
+  ensureWordPressAssetsPreserved,
+} from '../lib/wordpress-assets'
+import {
   buildWordPressPageRouteMap,
   replaceWordPressPageLinks,
 } from '../lib/wordpress-migration'
@@ -139,30 +143,6 @@ const KERKDIENSTGEMIST_STATION_TEST_PATTERN =
 const YOUTUBE_SERMON_CHANNEL_PATTERN =
   /\bhttps?:\/\/(?:www\.)?youtube\.com\/channel\/UC4NmYnuAd0293vFhf1i-tpg[^\s]*/i
 
-function decodeEntities(value: string) {
-  let decoded = value
-
-  for (let index = 0; index < 2; index++) {
-    decoded = decoded
-      .replaceAll('&amp;', '&')
-      .replaceAll('&#038;', '&')
-      .replaceAll('&quot;', '"')
-      .replaceAll('&#8220;', '"')
-      .replaceAll('&#8221;', '"')
-      .replaceAll('&#8216;', "'")
-      .replaceAll('&#8217;', "'")
-      .replaceAll('&#x27;', "'")
-      .replaceAll('&#8211;', '-')
-      .replaceAll('&#8212;', '-')
-      .replaceAll('&#8230;', '...')
-      .replaceAll('&nbsp;', ' ')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-  }
-
-  return decoded
-}
-
 function attributeValue(tag: string, attribute: string) {
   const pattern = new RegExp(`\\b${attribute}=["']([^"']+)["']`, 'i')
   return tag.match(pattern)?.[1] || ''
@@ -170,18 +150,18 @@ function attributeValue(tag: string, attribute: string) {
 
 function markdownImageFromAsset(src: string, alt = '') {
   if (!src) return ''
-  return `\n\n![${decodeEntities(alt)}](${decodeEntities(src)})\n\n`
+  return `\n\n![${decodeWordPressEntities(alt)}](${decodeWordPressEntities(src)})\n\n`
 }
 
 function markdownLinkFromAsset(href: string, label = '') {
   if (!href) return ''
-  const cleanedHref = decodeEntities(href)
+  const cleanedHref = decodeWordPressEntities(href)
   const cleanedLabel = htmlToText(label || cleanedHref)
   return `[${cleanedLabel || cleanedHref}](${cleanedHref})`
 }
 
 function preserveAssetMarkup(html: string) {
-  return decodeEntities(html)
+  return decodeWordPressEntities(html)
     .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (match, href, text) => {
       return markdownLinkFromAsset(href, text)
     })
@@ -258,7 +238,7 @@ function getDefaultContactEmail() {
 
 function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
   const preparedHtml = options.preserveAssets ? preserveAssetMarkup(html) : html
-  const text = decodeEntities(
+  const text = decodeWordPressEntities(
     preparedHtml
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
@@ -284,8 +264,16 @@ function contentOf(
   wordpressBaseUrl: string,
   legacyPageRoutes: ReadonlyMap<string, string>
 ) {
-  const content = htmlToText(page.content.rendered || '', { preserveAssets: true })
-  const excerpt = htmlToText(page.excerpt?.rendered || '', { preserveAssets: true })
+  const rawContent = page.content.rendered || ''
+  const rawExcerpt = page.excerpt?.rendered || ''
+  const content = ensureWordPressAssetsPreserved(
+    rawContent,
+    htmlToText(rawContent, { preserveAssets: true })
+  )
+  const excerpt = ensureWordPressAssetsPreserved(
+    rawExcerpt,
+    htmlToText(rawExcerpt, { preserveAssets: true })
+  )
   return replaceWordPressPageLinks(
     content || excerpt || titleOf(page),
     wordpressBaseUrl,
