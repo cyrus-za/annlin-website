@@ -163,7 +163,11 @@ function ServiceGroupGridSection({
             transition={{ duration: 0.35, delay: index * 0.04 }}
           >
             <Card className="h-full overflow-hidden border-stone-200 bg-white shadow-sm">
-              <Link href={`/diensgroepe/${group.slug}`} className="block">
+              <Link
+                href={`/diensgroepe/${group.slug}`}
+                className="block"
+                aria-label={`Meer oor ${group.name}`}
+              >
                 <ServiceGroupImage group={group} className="aspect-[16/7]" />
               </Link>
               <CardHeader className="space-y-3">
@@ -253,7 +257,11 @@ function ServiceGroupRail({
               transition={{ duration: 0.3, delay: index * 0.03 }}
               className="flex w-[18rem] shrink-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm"
             >
-              <Link href={`/diensgroepe/${group.slug}`} className="block">
+              <Link
+                href={`/diensgroepe/${group.slug}`}
+                className="block"
+                aria-label={`Meer oor ${group.name}`}
+              >
                 <ServiceGroupImage group={group} className="aspect-[16/9]" />
               </Link>
 
