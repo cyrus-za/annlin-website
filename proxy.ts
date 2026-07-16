@@ -19,7 +19,8 @@ export async function proxy(request: NextRequest) {
       pathname === '/api/events' ||
       pathname.startsWith('/api/events/') ||
       pathname === '/api/diensgroepe' ||
-      pathname.startsWith('/api/diensgroepe/')
+      pathname.startsWith('/api/diensgroepe/') ||
+      pathname.startsWith('/api/content-pages/public/')
     )
 
     const publicApiRoutes = [
