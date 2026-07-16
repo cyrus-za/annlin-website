@@ -9,19 +9,24 @@ import { Card, CardContent } from '@/components/ui/card'
 interface ServiceGroup {
   id: string
   name: string
+  slug: string
   description: string
+  category: 'DIAKONIE' | 'OTHER'
   contactPerson: string
   contactEmail: string
-  contactPhone?: string
-  thumbnailUrl?: string
+  contactPhone?: string | null
+  thumbnailUrl?: string | null
+  bannerUrl?: string | null
+  displayOrder: number
   isActive: boolean
 }
 
-export default function EditServiceGroupPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default function EditServiceGroupPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
 }) {
+  const { id } = React.use(params)
   const router = useRouter()
   const [serviceGroup, setServiceGroup] = React.useState<ServiceGroup | null>(null)
   const [loading, setLoading] = React.useState(true)
@@ -30,7 +35,7 @@ export default function EditServiceGroupPage({
   React.useEffect(() => {
     const fetchServiceGroup = async () => {
       try {
-        const response = await fetch(`/api/diensgroepe/${params.id}`)
+        const response = await fetch(`/api/diensgroepe/${id}`)
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -51,7 +56,7 @@ export default function EditServiceGroupPage({
     }
 
     fetchServiceGroup()
-  }, [params.id])
+  }, [id])
 
   const handleSuccess = () => {
     showSuccessToast('Diensgroep opgedateer!', 'Die diensgroep is suksesvol opgedateer.')

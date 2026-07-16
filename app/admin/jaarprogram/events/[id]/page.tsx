@@ -24,11 +24,12 @@ interface Event {
   }
 }
 
-export default function EditEventPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default function EditEventPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
 }) {
+  const { id } = React.use(params)
   const router = useRouter()
   const [event, setEvent] = React.useState<Event | null>(null)
   const [loading, setLoading] = React.useState(true)
@@ -37,7 +38,7 @@ export default function EditEventPage({
   React.useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`/api/events/${params.id}`)
+        const response = await fetch(`/api/events/${id}`)
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -58,7 +59,7 @@ export default function EditEventPage({
     }
 
     fetchEvent()
-  }, [params.id])
+  }, [id])
 
   const handleSuccess = () => {
     showSuccessToast('Gebeurtenis opgedateer!', 'Die gebeurtenis is suksesvol opgedateer.')
