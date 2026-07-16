@@ -266,10 +266,22 @@ export default function CalendarAdminPage() {
                     {format(currentDate, 'MMMM yyyy', { locale: af })}
                   </CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePreviousMonth}
+                      aria-label="Vorige maand"
+                      title="Vorige maand"
+                    >
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={handleNextMonth}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNextMonth}
+                      aria-label="Volgende maand"
+                      title="Volgende maand"
+                    >
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>

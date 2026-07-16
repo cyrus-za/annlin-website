@@ -14,6 +14,7 @@ import { CalendarIcon, Clock, MapPin, Link as LinkIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
+import { useWatch } from 'react-hook-form'
 
 const linkSchema = z.string().url("Ongeldige URL").or(z.string().regex(/^\/[^\s]*$/, "Ongeldige skakel"))
 
@@ -48,6 +49,46 @@ interface EventFormProps {
   onCancel?: () => void
 }
 
+function RecurringPatternField({
+  isLoading,
+  options,
+}: {
+  isLoading: boolean
+  options: Array<{ value: 'WEEKLY' | 'MONTHLY' | 'YEARLY'; label: string }>
+}) {
+  const isRecurring = useWatch<EventFormData>({ name: 'isRecurring' })
+
+  return (
+    <FormField
+      name="recurringPattern"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Herhalende Patroon</FormLabel>
+          <FormControl>
+            <select
+              {...field}
+              value={field.value || ''}
+              disabled={!isRecurring || isLoading}
+              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">Kies patroon</option>
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </FormControl>
+          <FormDescription>
+            Slegs beskikbaar vir herhalende gebeure
+          </FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+}
+
 export function EventForm({
   initialData,
   eventId,
@@ -73,7 +114,7 @@ export function EventForm({
         location: initialData.location || '',
         categoryId: initialData.categoryId || '',
         isRecurring: initialData.isRecurring || false,
-        recurringPattern: initialData.recurringPattern as any,
+        recurringPattern: initialData.recurringPattern || undefined,
         sermonUrl: initialData.sermonUrl || '',
       }
     }
@@ -170,7 +211,10 @@ export function EventForm({
     label: cat.name,
   }))
 
-  const recurringOptions = [
+  const recurringOptions: Array<{
+    value: 'WEEKLY' | 'MONTHLY' | 'YEARLY'
+    label: string
+  }> = [
     { value: 'WEEKLY', label: 'Weekliks' },
     { value: 'MONTHLY', label: 'Maandeliks' },
     { value: 'YEARLY', label: 'Jaarliks' },
@@ -397,31 +441,9 @@ export function EventForm({
                   )}
                 />
 
-                <FormField
-                  name="recurringPattern"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Herhalende Patroon</FormLabel>
-                      <FormControl>
-                        <select
-                          {...field}
-                          disabled={!field.value || loadingCategories}
-                          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <option value="">Kies patroon</option>
-                          {recurringOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </FormControl>
-                      <FormDescription>
-                        Slegs beskikbaar vir herhalende gebeure
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <RecurringPatternField
+                  isLoading={loadingCategories}
+                  options={recurringOptions}
                 />
               </CardContent>
             </Card>

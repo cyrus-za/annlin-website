@@ -222,6 +222,7 @@ export default function DiensgroepeListPage() {
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Diensgroepe</h1>
       <DataTable
         title="Diensgroepe"
         description="Bestuur kerkdiensgroepe en bedienings"

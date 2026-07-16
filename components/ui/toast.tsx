@@ -139,6 +139,7 @@ const ToastClose = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Close
     ref={ref}
+    aria-label="Maak kennisgewing toe"
     className={cn(
       "absolute right-2 top-2 rounded-full p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200",
       className

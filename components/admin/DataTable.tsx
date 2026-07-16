@@ -151,13 +151,13 @@ export function DataTable<T extends Record<string, any>>({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
           {onAdd && (
-            <Button onClick={onAdd}>
+            <Button onClick={onAdd} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               {addButtonText}
             </Button>
@@ -228,7 +228,11 @@ export function DataTable<T extends Record<string, any>>({
                           actions.length > 0 && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                <Button
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0"
+                                  aria-label={`Maak aksies vir ${title.toLowerCase()}-ry ${index + 1} oop`}
+                                >
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
