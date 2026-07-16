@@ -123,3 +123,4 @@ backups/
 # WordPress migration temporary files
 wp-export-temp/
 migration-logs/
+.gstack/
