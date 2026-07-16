@@ -1,6 +1,6 @@
 # Website Transition Notes
 
-Last updated: 2026-07-06
+Last updated: 2026-07-16
 
 ## Confirmed from the live WordPress site
 
@@ -58,15 +58,19 @@ Audit run against:
 - WordPress: `https://annlin.co.za`
 - New site: `https://annlin.venter.pro`
 
-Results on `2026-07-06`:
+Results on `2026-07-16`:
 
 - WordPress pages checked: `48`
 - Active service groups migrated: `16 / 16`
 - News pages migrated: `8 / 8`
-- Events migrated: `38 / 38`
-- Public route failures: `0`
+- Events retained in the new database: `38`
+  - The current WordPress events API returned `34`; all `34` were present in the new database.
+- Public pages crawled on the deployed site: `49`
+- Broken public pages: `0`
+- Public request or route-discovery failures: `0`
 - Redirect failures for legacy slugs: `0`
-- Remaining hardcoded old-domain references in app data audited by script: `0`
+- Links back to old WordPress pages: `0`
+- Remaining old-domain data references are WordPress media URLs only; there are no old-page links.
 
 ## Inline WordPress assets audit
 
@@ -95,28 +99,36 @@ Source fix added on `2026-07-06`:
 - The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
   dynamically.
 
-Pending verification:
+Verification on `2026-07-16`:
 
-- Re-run `scripts/import-wordpress-content.ts` against the production database.
-- Re-run `scripts/audit-wordpress-inline-assets.ts`.
-- Expected improvement: the missing news and archive page assets above should be restored
-  in rendered DB content after the re-import.
-- The remaining singleton pages (`jaarprogram`, `oor-annlin-gemeente`, and the redesigned
-  homepage) should be reviewed manually because they are intentionally implemented as
-  custom pages, not imported WordPress body content.
+- Migrated pages with missing rendered asset references: `0`
+- Missing migrated asset references: `0`
+- Redesigned singleton pages with expected source differences: `3`
+  - These are intentionally custom implementations rather than copied WordPress bodies.
+- WordPress page-level asset references not yet present in the independent media archive: `186`
+- The text-coverage audit still reports `11` low-scoring records. Manual checks confirmed
+  that its strongest outliers are expected normalization differences:
+  - `Pinksterfeesvieringe 4 & 5 Junie 2022` preserves the source event image but omits the
+    expired WordPress RSVP form.
+  - `Fontein Redaksie` preserves the source's substantive status text, `Webblad onder konstruksie`.
+- `npm run content:test` passes.
 
 ## Remaining blocker before WordPress can be fully switched off
 
-- WordPress media archive is not yet fully copied into Vercel Blob.
-- Audit found:
-  - WordPress media items: `584`
-  - Missing archived media items in the new system: `584`
-  - Known WordPress media size: about `902,885,400` bytes
-  - Media entries with unknown source size metadata: `219`
-- I attempted the automated blob migration, but the local `BLOB_READ_WRITE_TOKEN` is still a placeholder, so the full copy could not run.
-- The latest inline-asset audit also found `186` page-level asset references that are not
-  yet archived in the new system. They can render from WordPress for now, but they are not
-  safe if WordPress is switched off before the media copy runs.
+- The WordPress media archive is not yet copied into independent storage.
+- Current audit:
+  - WordPress media items: `587`
+  - Media items in the complete independent archive: `0 / 587`
+  - Known WordPress media size: `903,517,441` bytes, about `862 MiB`
+  - Media entries without source size metadata: `219`
+  - WordPress media links currently reachable from public migrated pages: `54`
+  - Page-level asset references not yet present in the archive: `186`
+- Selected images and documents already live in `public/migrated`, but that is not a complete
+  backup of the WordPress media library.
+- The planned destination is Cloudflare R2. The migration needs the church Cloudflare account,
+  an R2 bucket, a public media URL, and appropriately scoped credentials.
+- Existing media continues to render from WordPress for now, but it is not safe to switch off
+  WordPress before the R2 copy and URL rewrite are complete.
 
 ## Practical implication
 
@@ -126,4 +138,5 @@ Pending verification:
   - bulletin files
   - historical images
   - downloadable attachments
-- Before taking WordPress offline, provide a real blob write token and run the media archive migration.
+- Before taking WordPress offline, complete the R2 archive copy, rewrite old media URLs, and
+  rerun both migration audits and the deployed public crawler.
