@@ -1,6 +1,6 @@
 # Website Transition Notes
 
-Last updated: 2026-07-16
+Last updated: 2026-07-18
 
 ## Confirmed from the live WordPress site
 
@@ -58,19 +58,25 @@ Audit run against:
 - WordPress: `https://annlin.co.za`
 - New site: `https://annlin.venter.pro`
 
-Results on `2026-07-16`:
+Results on `2026-07-18`:
 
 - WordPress pages checked: `48`
 - Active service groups migrated: `16 / 16`
 - News pages migrated: `8 / 8`
 - Events retained in the new database: `38`
   - The current WordPress events API returned `34`; all `34` were present in the new database.
+- WordPress media items independently archived to Cloudflare R2: `592 / 592`
+  - The live WordPress library grew from the earlier `587` count to `592` items before the final run.
+  - `UploadedAsset` inventory rows: `592`
+  - Total archived bytes copied or confirmed in R2: `1,047,314,911`
+  - WordPress media entries without source size metadata: `219`
 - Public pages crawled on the deployed site: `49`
 - Broken public pages: `0`
 - Public request or route-discovery failures: `0`
 - Redirect failures for legacy slugs: `0`
 - Links back to old WordPress pages: `0`
-- Remaining old-domain data references are WordPress media URLs only; there are no old-page links.
+- Links back to old WordPress media URLs: `0`
+- Remaining old-domain data references in migrated records: `0`
 
 ## Inline WordPress assets audit
 
@@ -99,83 +105,38 @@ Source fix added on `2026-07-06`:
 - The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
   dynamically.
 
-Verification on `2026-07-16`:
+Verification on `2026-07-18`:
 
-- Migrated pages with missing rendered asset references: `0`
-- Missing migrated asset references: `0`
+- Migrated pages with missing rendered asset references in the comparison audit: `6`
+- Missing migrated asset references in the comparison audit: `9`
 - Redesigned singleton pages with expected source differences: `3`
   - These are intentionally custom implementations rather than copied WordPress bodies.
-- WordPress page-level asset references not yet present in the independent media archive: `186`
-- The text-coverage audit still reports `11` low-scoring records. Manual checks confirmed
-  that its strongest outliers are expected normalization differences:
+- WordPress page-level asset references not yet present in the independent media archive: `25`
+- The remaining inline-asset mismatches are not live broken links on the new site:
+  - `susters-saamtrek-2024`, `nuus-2023`, `nuus-2022`, `nuus-2021`, and `preke-op-skrif` still reference source-only WordPress files that now return `404` on WordPress and were therefore removed from migrated public content.
+  - `kinderwerkkaarte` still differs by one historical PDF link that is not in the independent archive, but the page no longer publishes old-domain URLs.
+  - The singleton pages `homepagenew`, `oor-annlin-gemeente`, and `jaarprogram` are deliberate custom builds rather than mirrored WordPress bodies.
+- The text-coverage audit still reports `11` low-scoring records. Manual checks confirmed that its strongest outliers are expected normalization differences:
   - `Pinksterfeesvieringe 4 & 5 Junie 2022` preserves the source event image but omits the
     expired WordPress RSVP form.
   - `Fontein Redaksie` preserves the source's substantive status text, `Webblad onder konstruksie`.
 - `npm run content:test` passes.
+## WordPress media shutdown status
 
-## Remaining blocker before WordPress can be fully switched off
-
-- The WordPress media archive is not yet copied into independent storage.
-- Current audit:
-  - WordPress media items: `587`
-  - Media items in the complete independent archive: `0 / 587`
-  - Known WordPress media size: `903,517,441` bytes, about `862 MiB`
-  - Media entries without source size metadata: `219`
-  - WordPress media links currently reachable from public migrated pages: `54`
-  - Page-level asset references not yet present in the archive: `186`
-- Selected images and documents already live in `public/migrated`, but that is not a complete
-  backup of the WordPress media library.
-- The planned destination is Cloudflare R2. The migration needs the church Cloudflare account,
-  an R2 bucket, a public media URL, and appropriately scoped credentials.
-- Existing media continues to render from WordPress for now, but it is not safe to switch off
-  WordPress before the R2 copy and URL rewrite are complete.
-
-### R2 migration runbook
-
-Use the church Cloudflare account and keep all credentials in ignored local environment files.
-The importer is resumable: it records an asset only after a successful upload, and a later run
-skips matching completed objects.
-
-1. Create the archive bucket and enable its temporary public URL:
-
-   ```bash
-   wrangler r2 bucket create annlin-media
-   wrangler r2 bucket dev-url enable annlin-media
-   wrangler r2 bucket dev-url get annlin-media
-   ```
-
-2. Configure these migration variables without a `NEXT_PUBLIC_` prefix:
-
-   ```dotenv
-   R2_BUCKET_NAME=annlin-media
-   R2_PUBLIC_BASE_URL=https://the-generated-public-host.r2.dev
-   ```
-
-3. Load both the website/database environment and the church Cloudflare environment. Run a
-   single-object smoke test first:
-
-   ```bash
-   npx tsx scripts/import-wordpress-media.ts --storage=r2 --copy-files --limit=1
-   ```
-
-4. Confirm the generated object URL is publicly readable, then run the complete archive:
-
-   ```bash
-   npx tsx scripts/import-wordpress-media.ts --storage=r2 --copy-files
-   ```
-
-5. Rerun `scripts/audit-wordpress-migration.ts`, `scripts/audit-wordpress-inline-assets.ts`,
-   `npm run content:test`, the production build, and the deployed public link crawler. WordPress
-   may be retired only after all copied objects are accounted for and no public WordPress media
-   links remain.
+- The WordPress media archive blocker is cleared.
+- Technical evidence on `2026-07-18`:
+  - `scripts/import-wordpress-media.ts` completed with `failed: 0`
+  - `inventoried: 592`
+  - `copiedToStorage + skippedExistingStorage = 592`
+  - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 592`, `missingMedia: 0`, and `oldDomainRows: 0`
+  - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
+  - Representative public R2 PDF and image URLs returned HTTP `200`
+- Caveat:
+  - Browser automation on the devbox was unavailable because the shared T3 preview tools returned `Auth required`, so console/network inspection on live pages could not be completed from this session.
+  - Production HTTP checks and crawl-based verification passed, and no public pages now depend on WordPress media URLs.
 
 ## Practical implication
 
-- The new structured pages, service groups, news items, and events are migrated.
-- The major remaining shutdown risk is the WordPress media library itself:
-  - PDFs
-  - bulletin files
-  - historical images
-  - downloadable attachments
-- Before taking WordPress offline, complete the R2 archive copy, rewrite old media URLs, and
-  rerun both migration audits and the deployed public crawler.
+- The new structured pages, service groups, news items, events, and WordPress media archive are migrated.
+- It is technically safe to switch WordPress off from a media-dependency perspective.
+- Pieter should still make the final shutdown decision after reviewing the audit evidence above.
