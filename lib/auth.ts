@@ -12,10 +12,11 @@ export const auth = betterAuth({
     enabled: true,
     disableSignUp: true,
     requireEmailVerification: false,
+    resetPasswordTokenExpiresIn: 60 * 60,
     revokeSessionsOnPasswordReset: true,
     async sendResetPassword({ user, url }) {
       const sent = await sendPasswordResetEmail({
-        recipientName: user.name,
+        recipientName: user.name || 'Administrateur',
         recipientEmail: user.email,
         resetUrl: url,
       })

@@ -82,6 +82,57 @@ export async function sendEmail({ to, subject, html, text, replyTo }: EmailTempl
   }
 }
 
+export async function sendPasswordResetEmail({
+  recipientName,
+  recipientEmail,
+  resetUrl,
+}: PasswordResetEmailData): Promise<boolean> {
+  const safeName = escapeHtml(recipientName)
+  const safeUrl = escapeHtml(resetUrl)
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="af">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Herstel jou Annlin-webwerfwagwoord</title>
+      </head>
+      <body style="margin:0;background:#f7f7f5;color:#2f2925;font-family:Arial,sans-serif;line-height:1.6;">
+        <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
+          <div style="background:#ffffff;border:1px solid #e7e2dc;border-radius:8px;padding:28px;">
+            <p style="margin:0 0 8px;color:#8a5d3b;font-size:14px;font-weight:700;">Annlin Gemeente</p>
+            <h1 style="margin:0 0 20px;font-size:24px;">Herstel jou wagwoord</h1>
+            <p>Hallo ${safeName},</p>
+            <p>Ons het 'n versoek ontvang om jou bestuurderwagwoord te herstel. Die skakel hieronder is vir een uur geldig.</p>
+            <p style="margin:24px 0;">
+              <a href="${safeUrl}" style="display:inline-block;background:#875a39;color:#ffffff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Kies 'n nuwe wagwoord</a>
+            </p>
+            <p style="font-size:14px;color:#6b625c;">Indien jy nie hierdie versoek gerig het nie, kan jy die boodskap ignoreer. Jou huidige wagwoord bly onveranderd.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `
+
+  const text = [
+    `Hallo ${recipientName},`,
+    '',
+    "Ons het 'n versoek ontvang om jou Annlin-webwerf se bestuurderwagwoord te herstel.",
+    'Die volgende skakel is vir een uur geldig:',
+    resetUrl,
+    '',
+    'Indien jy nie hierdie versoek gerig het nie, kan jy die boodskap ignoreer.',
+  ].join('\n')
+
+  return sendEmail({
+    to: recipientEmail,
+    subject: 'Herstel jou Annlin-webwerfwagwoord',
+    html,
+    text,
+  })
+}
+
 /**
  * Notify the church office that a public contact form was submitted.
  * The database remains the source of truth if email delivery is unavailable.
@@ -157,37 +208,6 @@ export async function sendContactSubmissionNotification(
     subject: `Nuwe webwerfnavraag: ${submission.subject}`,
     html,
     text,
-  })
-}
-
-export async function sendPasswordResetEmail({
-  recipientName,
-  recipientEmail,
-  resetUrl,
-}: PasswordResetEmailData): Promise<boolean> {
-  const safeName = escapeHtml(recipientName)
-  const safeUrl = escapeHtml(resetUrl)
-
-  return sendEmail({
-    to: recipientEmail,
-    subject: 'Herstel jou Annlin webwerf-wagwoord',
-    html: `
-      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#2f2925;max-width:600px;margin:0 auto;padding:24px;">
-        <h1 style="font-size:24px;">Herstel jou wagwoord</h1>
-        <p>Hallo ${safeName},</p>
-        <p>Gebruik die skakel hieronder om jou Annlin webwerf-wagwoord te herstel. Die skakel verval oor een uur.</p>
-        <p><a href="${safeUrl}" style="display:inline-block;background:#875a39;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Herstel wagwoord</a></p>
-        <p>As jy dit nie versoek het nie, kan jy hierdie e-pos ignoreer.</p>
-      </div>
-    `,
-    text: [
-      `Hallo ${recipientName},`,
-      '',
-      'Gebruik hierdie skakel om jou Annlin webwerf-wagwoord te herstel. Die skakel verval oor een uur:',
-      resetUrl,
-      '',
-      'As jy dit nie versoek het nie, kan jy hierdie e-pos ignoreer.',
-    ].join('\n'),
   })
 }
 
