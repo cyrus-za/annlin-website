@@ -9,7 +9,10 @@ import {
   preserveWordPressAssetMarkup,
   stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
-import { replaceMigratedWordPressAssetLinks } from '../lib/wordpress-migration'
+import {
+  parseWordPressLocalDate,
+  replaceMigratedWordPressAssetLinks,
+} from '../lib/wordpress-migration'
 import { markdownToHtml } from '../lib/markdown'
 import {
   createArticleExcerpt,
@@ -29,6 +32,15 @@ const malformedBulkMarkup = `
       url=&#8221;${fileUrl}&#8221; _builder_version=&#8221;4.14.7&#8243;]
   </a>
 `
+
+assert.equal(
+  parseWordPressLocalDate('2026-07-19 08:30:00').toISOString(),
+  '2026-07-19T06:30:00.000Z'
+)
+assert.equal(
+  parseWordPressLocalDate('2026-07-19T08:30:00Z').toISOString(),
+  '2026-07-19T08:30:00.000Z'
+)
 
 assert.equal(decodeWordPressEntities('4.14.7&#8243;'), '4.14.7"')
 

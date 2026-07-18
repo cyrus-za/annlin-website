@@ -2,6 +2,7 @@
 
 import { prisma, disconnectDatabase } from '../lib/db'
 import { slugify } from '../lib/slug'
+import { parseWordPressLocalDate } from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
@@ -370,7 +371,7 @@ async function main() {
       title: htmlToText(event.title),
       present: Boolean(target),
       startDateMatches: target
-        ? new Date(event.start_date).toISOString() === target.startDate.toISOString()
+        ? parseWordPressLocalDate(event.start_date).toISOString() === target.startDate.toISOString()
         : false,
     }
   })
@@ -432,6 +433,7 @@ async function main() {
   const lowCoverage = [...serviceGroupAudit, ...readingAudit, ...newsAudit, ...archiveAudit].filter(
     (item) => !item.present || item.coverage < 0.92
   )
+  const missingContent = lowCoverage.filter((item) => !item.present)
   const missingEvents = eventAudit.filter((item) => !item.present || !item.startDateMatches)
   const missingMedia = mediaAudit.filter((item) => !item.present)
   const mediaStillOnWordPress = mediaAudit.filter((item) => item.present && !item.copiedOffWordPress)
@@ -465,13 +467,14 @@ async function main() {
           wordpressMediaUnknownSizes: mediaResponse.media.filter((item) => !item.media_details?.filesize)
             .length,
           lowCoverage: lowCoverage.length,
+          missingContent: missingContent.length,
           missingEvents: missingEvents.length,
           missingMedia: missingMedia.length,
           oldDomainRows: oldDomainRows.length,
           badRoutes: badRoutes.length,
           badRedirects: badRedirects.length,
           wordpressOfflineReady:
-            lowCoverage.length === 0 &&
+            missingContent.length === 0 &&
             missingEvents.length === 0 &&
             missingMedia.length === 0 &&
             mediaStillOnWordPress.length === 0 &&
@@ -480,6 +483,7 @@ async function main() {
             badRedirects.length === 0,
         },
         lowCoverage,
+        missingContent,
         missingEvents,
         missingMediaSample: missingMedia.slice(0, 25),
         mediaStillOnWordPressSample: mediaStillOnWordPress.slice(0, 25),

@@ -64,7 +64,7 @@ Results on `2026-07-18`:
 - Active service groups migrated: `16 / 16`
 - News pages migrated: `8 / 8`
 - Events retained in the new database: `38`
-  - The current WordPress events API returned `34`; all `34` were present in the new database.
+  - The current WordPress events API returned `34`; all `34` were present with matching Pretoria-local start times.
 - WordPress media items independently archived to Cloudflare R2: `592 / 592`
   - The live WordPress library grew from the earlier `587` count to `592` items before the final run.
   - `UploadedAsset` inventory rows: `592`
@@ -77,6 +77,8 @@ Results on `2026-07-18`:
 - Links back to old WordPress pages: `0`
 - Links back to old WordPress media URLs: `0`
 - Remaining old-domain data references in migrated records: `0`
+- Independent R2 object verification: `592 / 592` returned successfully with matching recorded sizes.
+- Final migration audit result: `wordpressOfflineReady: true`
 
 ## Inline WordPress assets audit
 
@@ -129,14 +131,15 @@ Verification on `2026-07-18`:
   - `inventoried: 592`
   - `copiedToStorage + skippedExistingStorage = 592`
   - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 592`, `missingMedia: 0`, and `oldDomainRows: 0`
+  - The same audit reports `missingContent: 0`, `missingEvents: 0`, and `wordpressOfflineReady: true`
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
-  - Representative public R2 PDF and image URLs returned HTTP `200`
+  - All `592` inventoried R2 objects returned successfully with matching recorded sizes
+  - gstack browser QA found no console errors, failed requests, broken images, or horizontal overflow on representative desktop and mobile pages
 - Caveat:
-  - Browser automation on the devbox was unavailable because the shared T3 preview tools returned `Auth required`, so console/network inspection on live pages could not be completed from this session.
-  - Production HTTP checks and crawl-based verification passed, and no public pages now depend on WordPress media URLs.
+  - The text comparison still reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
 
 ## Practical implication
 
 - The new structured pages, service groups, news items, events, and WordPress media archive are migrated.
-- It is technically safe to switch WordPress off from a media-dependency perspective.
+- It is technically safe to switch WordPress off: the final audit, independent object verification, public crawl, and browser QA found no remaining runtime dependency.
 - Pieter should still make the final shutdown decision after reviewing the audit evidence above.

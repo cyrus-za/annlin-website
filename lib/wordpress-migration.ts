@@ -17,6 +17,14 @@ const migratedPublicAssets = new Map([
   ['pray-hands.png', '/migrated/leesstof/oordenkings-gebed.png'],
 ])
 
+export function parseWordPressLocalDate(value: string) {
+  const normalized = value.trim().replace(' ', 'T')
+  const hasExplicitTimezone = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized)
+
+  // The Events Calendar API returns local Pretoria time without an offset.
+  return new Date(hasExplicitTimezone ? normalized : `${normalized}+02:00`)
+}
+
 export function migratedPublicAssetUrlForWordPressUrl(value: string) {
   try {
     const pathname = new URL(value).pathname

@@ -4,7 +4,7 @@ A modern church website built with Next.js 15+, migrated from WordPress to provi
 
 ## 🚀 Features
 
-- **Modern Tech Stack**: Next.js 15+ with TypeScript, Turbopack, and Tailwind CSS
+- **Modern Tech Stack**: Next.js 16 with TypeScript, Turbopack, and Tailwind CSS
 - **Content Management**: Rich text editor for news articles and announcements
 - **Event Calendar**: Interactive calendar with recurring events support
 - **Service Groups**: Showcase ministry groups with contact information
@@ -16,11 +16,11 @@ A modern church website built with Next.js 15+, migrated from WordPress to provi
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Next.js 15+, React 19, TypeScript
+- **Frontend**: Next.js 16, React 19, TypeScript
 - **Styling**: Tailwind CSS with custom design tokens
 - **Database**: NeonDB (PostgreSQL) with Prisma ORM
 - **Authentication**: better-auth for secure admin access
-- **File Storage**: Vercel Blob for media and document storage
+- **File Storage**: Cloudflare R2 for the WordPress media archive and Vercel Blob for new admin uploads
 - **Email**: Resend for transactional emails
 - **Rich Text**: Tiptap editor with Markdown storage
 - **Deployment**: Vercel with automatic deployments
@@ -104,7 +104,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the website.
 - `npm run build` - Build production application
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
+- `npx tsc --noEmit` - Run TypeScript type checking
 
 ### Code Quality
 
@@ -145,10 +145,10 @@ npm run start
 
 The project includes migration scripts to import content from the existing WordPress site:
 
-1. Export WordPress content as XML
-2. Run migration scripts to transform and import data
-3. Update media references and internal links
-4. Set up redirects for SEO preservation
+1. Import structured content from the WordPress REST APIs.
+2. Archive the complete WordPress media library to Cloudflare R2.
+3. Rewrite database media and internal-page references.
+4. Run the migration, inline-asset, and public-link audits before shutdown.
 
 See migration scripts in the `scripts/` directory.
 

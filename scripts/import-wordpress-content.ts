@@ -18,6 +18,7 @@ import {
 } from '../lib/wordpress-assets'
 import {
   buildWordPressPageRouteMap,
+  parseWordPressLocalDate,
   replaceMigratedWordPressAssetLinks,
   replaceWordPressPageLinks,
 } from '../lib/wordpress-migration'
@@ -502,10 +503,10 @@ async function main() {
   }
 
   for (const event of eventResponse.events || []) {
-    const startDate = new Date(event.start_date)
+    const startDate = parseWordPressLocalDate(event.start_date)
     if (Number.isNaN(startDate.getTime())) continue
 
-    const endDate = event.end_date ? new Date(event.end_date) : undefined
+    const endDate = event.end_date ? parseWordPressLocalDate(event.end_date) : undefined
     const rawDescription = replaceWordPressPageLinks(
       htmlToText(event.description || event.excerpt || ''),
       wordpressBaseUrl,
