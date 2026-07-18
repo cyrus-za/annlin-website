@@ -21,34 +21,34 @@ const CustomImage = Image.extend({
       width: {
         default: null,
         renderHTML: attributes => {
-          if (!attributes.width) {
+          if (!attributes['width']) {
             return {}
           }
-          return { width: attributes.width }
+          return { width: attributes['width'] }
         },
       },
       height: {
         default: null,
         renderHTML: attributes => {
-          if (!attributes.height) {
+          if (!attributes['height']) {
             return {}
           }
-          return { height: attributes.height }
+          return { height: attributes['height'] }
         },
       },
       alt: {
         default: '',
         renderHTML: attributes => {
-          return { alt: attributes.alt }
+          return { alt: attributes['alt'] }
         },
       },
       title: {
         default: '',
         renderHTML: attributes => {
-          if (!attributes.title) {
+          if (!attributes['title']) {
             return {}
           }
-          return { title: attributes.title }
+          return { title: attributes['title'] }
         },
       },
     }
@@ -231,21 +231,21 @@ export const toolbarButtons: ToolbarButton[] = [
     name: 'heading1',
     label: 'Hoofopskrif 1',
     icon: 'Heading1',
-    action: () => 'toggleHeading',
+    action: 'toggleHeading',
     isActive: (editor) => editor.isActive('heading', { level: 1 }),
   },
   {
     name: 'heading2',
     label: 'Hoofopskrif 2',
     icon: 'Heading2',
-    action: () => 'toggleHeading',
+    action: 'toggleHeading',
     isActive: (editor) => editor.isActive('heading', { level: 2 }),
   },
   {
     name: 'heading3',
     label: 'Hoofopskrif 3',
     icon: 'Heading3',
-    action: () => 'toggleHeading',
+    action: 'toggleHeading',
     isActive: (editor) => editor.isActive('heading', { level: 3 }),
   },
   {

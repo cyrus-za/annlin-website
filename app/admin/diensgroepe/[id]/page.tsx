@@ -136,7 +136,12 @@ export default function EditServiceGroupPage({
       </div>
 
       <DiensgroepeForm
-        initialData={serviceGroup}
+        initialData={{
+          ...serviceGroup,
+          contactPhone: serviceGroup.contactPhone ?? undefined,
+          thumbnailUrl: serviceGroup.thumbnailUrl ?? undefined,
+          bannerUrl: serviceGroup.bannerUrl ?? undefined,
+        }}
         serviceGroupId={serviceGroup.id}
         onSuccess={handleSuccess}
         onCancel={handleCancel}

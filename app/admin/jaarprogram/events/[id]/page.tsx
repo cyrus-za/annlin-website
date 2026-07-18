@@ -15,7 +15,7 @@ interface Event {
   location?: string
   categoryId: string
   isRecurring: boolean
-  recurringPattern?: string
+  recurringPattern?: 'WEEKLY' | 'MONTHLY' | 'YEARLY'
   sermonUrl?: string
   category: {
     id: string
@@ -139,7 +139,12 @@ export default function EditEventPage({
       </div>
 
       <EventForm
-        initialData={event}
+        initialData={{
+          ...event,
+          startDate: new Date(event.startDate),
+          endDate: event.endDate ? new Date(event.endDate) : undefined,
+          startTime: new Date(event.startDate).toTimeString().slice(0, 5),
+        }}
         eventId={event.id}
         onSuccess={handleSuccess}
         onCancel={handleCancel}

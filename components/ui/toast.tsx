@@ -59,7 +59,7 @@ const toastAnimations = {
     y: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 500,
       damping: 30,
     },
@@ -183,7 +183,10 @@ ToastDescription.displayName = ToastPrimitives.Description.displayName
 
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>
 
-type ToastActionElement = React.ReactElement<typeof ToastAction>
+type ToastActionElement = React.ReactElement<
+  React.ComponentPropsWithoutRef<typeof ToastAction>,
+  typeof ToastAction
+>
 
 export {
   type ToastProps,

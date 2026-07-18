@@ -19,17 +19,13 @@ interface RouteParams {
 // Validation schema for updating users
 const updateUserSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
-  role: z.enum(['ADMIN', 'EDITOR'], {
-    errorMap: () => ({ message: 'Role must be either ADMIN or EDITOR' })
-  }).optional(),
+  role: z.enum(['ADMIN', 'EDITOR'], 'Role must be either ADMIN or EDITOR').optional(),
   image: z.string().url('Invalid image URL').optional(),
 })
 
 // Validation schema for user actions
 const userActionSchema = z.object({
-  action: z.enum(['activate', 'deactivate', 'delete'], {
-    errorMap: () => ({ message: 'Action must be activate, deactivate, or delete' })
-  })
+  action: z.enum(['activate', 'deactivate', 'delete'], 'Action must be activate, deactivate, or delete')
 })
 
 /**

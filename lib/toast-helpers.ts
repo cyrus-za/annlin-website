@@ -1,4 +1,7 @@
 import { toast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import type { ToastActionElement } from "@/components/ui/toast"
+import { createElement } from "react"
 
 // Common toast messages in Afrikaans
 export const toastMessages = {
@@ -136,10 +139,10 @@ export const showDeleteConfirmationToast = (itemName: string, onConfirm: () => v
     title: `Verwyder ${itemName}?`,
     description: toastMessages.warning.confirmDelete,
     variant: "warning",
-    action: {
-      altText: "Bevestig",
-      onClick: onConfirm,
-    },
+    action: createElement(
+      ToastAction,
+      { altText: "Bevestig", onClick: onConfirm },
+      "Bevestig",
+    ) as ToastActionElement,
   })
 }
-

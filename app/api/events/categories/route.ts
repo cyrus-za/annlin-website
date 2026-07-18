@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Validasie fout',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.issues.map(e => `${e.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       )
@@ -117,4 +117,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

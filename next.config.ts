@@ -184,13 +184,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // TypeScript configuration
-  typescript: {
-    // Legacy rewrite attempts still contain type drift; keep deploy builds unblocked
-    // while the new v1 surfaces are rewritten.
-    ignoreBuildErrors: true,
-  },
-
   // Output configuration for deployment
   output: 'standalone',
   

@@ -1,7 +1,8 @@
 import { prisma, safeDatabaseOperation } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 import { addWeeks, addMonths, addYears, isBefore, format } from 'date-fns'
 
-interface RecurringEventData {
+export interface RecurringEventData {
   title: string
   description: string
   startDate: Date
@@ -23,7 +24,7 @@ export class EventsService {
     userId: string
   ): Promise<{ success: boolean; eventsCreated?: number; error?: string }> {
     const result = await safeDatabaseOperation(async () => {
-      const eventsToCreate: any[] = []
+      const eventsToCreate: Prisma.EventCreateManyInput[] = []
       const maxOccurrences = baseEventData.maxOccurrences || 52 // Default to 1 year of weekly events
       const endRecurrence = baseEventData.endRecurrence || addYears(baseEventData.startDate, 2) // Default to 2 years
       
@@ -91,7 +92,12 @@ export class EventsService {
             changes: {
               pattern: baseEventData.recurringPattern,
               eventsCreated: events.length,
-              baseEvent: baseEventData,
+              baseEvent: {
+                ...baseEventData,
+                startDate: baseEventData.startDate.toISOString(),
+                endDate: baseEventData.endDate?.toISOString(),
+                endRecurrence: baseEventData.endRecurrence?.toISOString(),
+              },
             },
           },
         })
@@ -305,4 +311,3 @@ export class EventsService {
       : { success: false, error: result.error }
   }
 }
-

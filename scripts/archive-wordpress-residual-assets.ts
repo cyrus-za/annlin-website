@@ -250,7 +250,7 @@ async function main() {
     ) {
       await prisma.serviceGroup.update({
         where: { id: group.id },
-        data: { description, thumbnailUrl, bannerUrl },
+        data: { description: description ?? group.description, thumbnailUrl, bannerUrl },
       })
       rewrittenRecords++
     }

@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
 import { format } from 'date-fns'
+import type { Event, EventCategory, Prisma } from '@prisma/client'
+import { requireAuth } from '@/lib/auth-config'
+import { EventsService, type RecurringEventData } from '@/lib/services/events'
+
+type ExportEvent = Event & { category: Pick<EventCategory, 'id' | 'name' | 'color'> }
 
 // Generate iCal format
-function generateICalEvent(event: any): string {
+function generateICalEvent(event: ExportEvent): string {
   const formatDate = (date: Date) => {
     return format(date, "yyyyMMdd'T'HHmmss'Z'")
   }
@@ -12,7 +17,7 @@ function generateICalEvent(event: any): string {
   const endDate = event.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 60 * 60 * 1000) // Default 1 hour
   const now = new Date()
 
-  let icalEvent = [
+  const icalEvent = [
     'BEGIN:VEVENT',
     `UID:${event.id}@annlin-gemeente.co.za`,
     `DTSTAMP:${formatDate(now)}`,
@@ -64,15 +69,12 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId')
     
     const result = await safeDatabaseOperation(async () => {
-      const where: any = {}
+      const where: Prisma.EventWhereInput = {}
       
       if (startDate || endDate) {
-        where.startDate = {}
-        if (startDate) {
-          where.startDate.gte = new Date(startDate)
-        }
-        if (endDate) {
-          where.startDate.lte = new Date(endDate)
+        where.startDate = {
+          ...(startDate ? { gte: new Date(startDate) } : {}),
+          ...(endDate ? { lte: new Date(endDate) } : {}),
         }
       }
       
@@ -144,7 +146,7 @@ export async function GET(request: NextRequest) {
 // POST /api/events/export - Generate recurring events
 export async function POST(request: NextRequest) {
   try {
-    const { user } = await require('@/lib/auth-config').requireAuth()
+    const { user } = await requireAuth()
     
     // Only admins and editors can generate recurring events
     if (!['ADMIN', 'EDITOR'].includes(user.role)) {
@@ -191,4 +193,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

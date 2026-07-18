@@ -43,9 +43,6 @@ async function testConnection() {
       console.log(`✅ Database is healthy`)
       console.log(`⚡ Latency: ${health.latency}ms`)
       
-      if (health.poolInfo) {
-        console.log(`🔗 Neon Pool Info: ${health.poolInfo.idle} idle, ${health.poolInfo.total} total, ${health.poolInfo.waiting} waiting`)
-      }
     } else {
       console.log(`❌ Database health check failed: ${health.error}`)
     }

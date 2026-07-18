@@ -1,5 +1,5 @@
 import { prisma } from '../db'
-import type { User, UserRole } from '../db'
+import type { User, UserRole } from '@prisma/client'
 import { createAuditLog, AUDIT_ACTIONS, ENTITY_TYPES } from './audit-log'
 
 export interface UpdateUserData {

@@ -22,7 +22,7 @@ const linkSchema = z.string().url("Ongeldige URL").or(z.string().regex(/^\/[^\s]
 const eventSchema = z.object({
   title: z.string().min(1, "Titel is verplig").max(200, "Titel mag nie langer as 200 karakters wees nie"),
   description: z.string().min(10, "Beskrywing moet ten minste 10 karakters wees").max(2000, "Beskrywing mag nie langer as 2000 karakters wees nie"),
-  startDate: z.date({ required_error: "Begin datum is verplig" }),
+  startDate: z.date('Begin datum is verplig'),
   startTime: z.string().min(1, "Begin tyd is verplig"),
   endDate: z.date().optional(),
   endTime: z.string().optional(),
@@ -157,13 +157,13 @@ export function EventForm({
     // Combine date and time
     const [startHours, startMinutes] = data.startTime.split(':').map(Number)
     const startDateTime = new Date(data.startDate)
-    startDateTime.setHours(startHours, startMinutes)
+    startDateTime.setHours(startHours ?? 0, startMinutes ?? 0)
 
     let endDateTime: Date | undefined
     if (data.endDate && data.endTime) {
       const [endHours, endMinutes] = data.endTime.split(':').map(Number)
       endDateTime = new Date(data.endDate)
-      endDateTime.setHours(endHours, endMinutes)
+      endDateTime.setHours(endHours ?? 0, endMinutes ?? 0)
     }
 
     const submitData = {

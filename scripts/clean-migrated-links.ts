@@ -71,7 +71,7 @@ function mapJsonStrings(
   transform: (value: string) => string
 ): Prisma.JsonValue | undefined {
   if (typeof value === 'string') return transform(value)
-  if (Array.isArray(value)) return value.map((item) => mapJsonStrings(item, transform))
+  if (Array.isArray(value)) return value.map((item) => mapJsonStrings(item, transform) ?? null)
   if (value && typeof value === 'object') {
     return Object.fromEntries(
       Object.entries(value).map(([key, item]) => [key, mapJsonStrings(item, transform)])

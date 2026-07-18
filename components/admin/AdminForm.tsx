@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
+import type { DefaultValues, FieldValues } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -23,12 +24,12 @@ import { Badge } from '@/components/ui/badge'
 import { showSuccessToast, showErrorToast, showSavingToast } from '@/lib/toast-helpers'
 import { Loader2, Save, X } from 'lucide-react'
 
-interface AdminFormProps<T extends z.ZodType> {
+interface AdminFormProps<TInput extends FieldValues, TOutput extends FieldValues> {
   title: string
   description?: string
-  schema: T
-  defaultValues?: z.infer<T>
-  onSubmit: (data: z.infer<T>) => Promise<void>
+  schema: z.ZodType<TOutput, TInput>
+  defaultValues?: DefaultValues<TInput>
+  onSubmit: (data: TOutput) => Promise<void>
   onCancel?: () => void
   children?: React.ReactNode
   isLoading?: boolean
@@ -36,7 +37,7 @@ interface AdminFormProps<T extends z.ZodType> {
   cancelText?: string
 }
 
-export function AdminForm<T extends z.ZodType>({
+export function AdminForm<TInput extends FieldValues, TOutput extends FieldValues>({
   title,
   description,
   schema,
@@ -47,15 +48,15 @@ export function AdminForm<T extends z.ZodType>({
   isLoading = false,
   submitText = 'Stoor',
   cancelText = 'Kanselleer'
-}: AdminFormProps<T>) {
+}: AdminFormProps<TInput, TOutput>) {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const form = useForm<z.infer<T>>({
+  const form = useForm<TInput, unknown, TOutput>({
     resolver: zodResolver(schema),
     defaultValues,
   })
 
-  const handleSubmit = async (data: z.infer<T>) => {
+  const handleSubmit = async (data: TOutput) => {
     let loadingToast: any
     
     try {

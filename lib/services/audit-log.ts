@@ -1,5 +1,5 @@
 import { prisma } from '../db'
-import type { AuditLog } from '../db'
+import { Prisma, type AuditLog } from '@prisma/client'
 
 export interface AuditLogEntry {
   userId: string
@@ -49,7 +49,7 @@ export async function createAuditLog({
         changes: {
           ...changes,
           ...(metadata && { metadata })
-        }
+        } as Prisma.InputJsonValue
       }
     })
 
@@ -72,7 +72,7 @@ export async function getAuditLogs(
   try {
     const offset = (page - 1) * limit
     
-    const where: Record<string, unknown> = {}
+    const where: Prisma.AuditLogWhereInput = {}
     
     if (filters.userId) where.userId = filters.userId
     if (filters.entityType) where.entityType = filters.entityType
@@ -80,9 +80,10 @@ export async function getAuditLogs(
     if (filters.action) where.action = filters.action
     
     if (filters.dateFrom || filters.dateTo) {
-      where.createdAt = {}
-      if (filters.dateFrom) (where.createdAt as Record<string, unknown>).gte = filters.dateFrom
-      if (filters.dateTo) (where.createdAt as Record<string, unknown>).lte = filters.dateTo
+      where.createdAt = {
+        ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+        ...(filters.dateTo ? { lte: filters.dateTo } : {}),
+      }
     }
 
     const [logs, total] = await Promise.all([
@@ -169,12 +170,13 @@ export async function getAuditStatistics(
   recentActivity: AuditLogWithUser[]
 }> {
   try {
-    const where: Record<string, unknown> = {}
+    const where: Prisma.AuditLogWhereInput = {}
     
     if (dateFrom || dateTo) {
-      where.createdAt = {}
-      if (dateFrom) (where.createdAt as Record<string, unknown>).gte = dateFrom
-      if (dateTo) (where.createdAt as Record<string, unknown>).lte = dateTo
+      where.createdAt = {
+        ...(dateFrom ? { gte: dateFrom } : {}),
+        ...(dateTo ? { lte: dateTo } : {}),
+      }
     }
 
     const [
