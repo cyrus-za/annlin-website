@@ -2,7 +2,9 @@
 
 import { put } from '@vercel/blob'
 import { Prisma } from '@prisma/client'
-import { spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { spawn, spawnSync } from 'node:child_process'
 import { Readable } from 'node:stream'
 import type { ReadableStream as NodeReadableStream } from 'node:stream/web'
 import { disconnectDatabase, prisma } from '../lib/db'
@@ -47,9 +49,32 @@ type ArchivedObject = {
   size: number
 }
 
+type WranglerCommand = {
+  command: string
+  args: string[]
+}
+
 const USER_AGENT = 'Annlin WordPress media migration'
 const VERCEL_HOBBY_BLOB_LIMIT_BYTES = 1_000_000_000
 const MULTIPART_THRESHOLD_BYTES = 5 * 1024 * 1024
+
+function resolveWranglerCommand(): WranglerCommand {
+  const localWrangler = join(process.cwd(), 'node_modules', '.bin', 'wrangler')
+  if (existsSync(localWrangler)) {
+    return { command: localWrangler, args: [] }
+  }
+
+  const globalWrangler = spawnSync('wrangler', ['--version'], {
+    stdio: 'ignore',
+  })
+  if (globalWrangler.status === 0) {
+    return { command: 'wrangler', args: [] }
+  }
+
+  return { command: 'npx', args: ['--yes', 'wrangler'] }
+}
+
+const wranglerCommand = resolveWranglerCommand()
 
 function env(name: string) {
   const value = process.env[name]
@@ -348,8 +373,9 @@ function runWranglerUpload(
 ) {
   return new Promise<number>((resolve, reject) => {
     const child = spawn(
-      'wrangler',
+      wranglerCommand.command,
       [
+        ...wranglerCommand.args,
         'r2',
         'object',
         'put',
