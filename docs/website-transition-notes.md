@@ -130,6 +130,45 @@ Verification on `2026-07-16`:
 - Existing media continues to render from WordPress for now, but it is not safe to switch off
   WordPress before the R2 copy and URL rewrite are complete.
 
+### R2 migration runbook
+
+Use the church Cloudflare account and keep all credentials in ignored local environment files.
+The importer is resumable: it records an asset only after a successful upload, and a later run
+skips matching completed objects.
+
+1. Create the archive bucket and enable its temporary public URL:
+
+   ```bash
+   wrangler r2 bucket create annlin-media
+   wrangler r2 bucket dev-url enable annlin-media
+   wrangler r2 bucket dev-url get annlin-media
+   ```
+
+2. Configure these migration variables without a `NEXT_PUBLIC_` prefix:
+
+   ```dotenv
+   R2_BUCKET_NAME=annlin-media
+   R2_PUBLIC_BASE_URL=https://the-generated-public-host.r2.dev
+   ```
+
+3. Load both the website/database environment and the church Cloudflare environment. Run a
+   single-object smoke test first:
+
+   ```bash
+   npx tsx scripts/import-wordpress-media.ts --storage=r2 --copy-files --limit=1
+   ```
+
+4. Confirm the generated object URL is publicly readable, then run the complete archive:
+
+   ```bash
+   npx tsx scripts/import-wordpress-media.ts --storage=r2 --copy-files
+   ```
+
+5. Rerun `scripts/audit-wordpress-migration.ts`, `scripts/audit-wordpress-inline-assets.ts`,
+   `npm run content:test`, the production build, and the deployed public link crawler. WordPress
+   may be retired only after all copied objects are accounted for and no public WordPress media
+   links remain.
+
 ## Practical implication
 
 - The new structured pages, service groups, news items, and events are migrated.

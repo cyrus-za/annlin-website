@@ -1,12 +1,11 @@
 #!/usr/bin/env tsx
 
 import { put } from '@vercel/blob'
-import { Prisma, ReadingMaterialFileType } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { spawn } from 'node:child_process'
 import { Readable } from 'node:stream'
+import type { ReadableStream as NodeReadableStream } from 'node:stream/web'
 import { disconnectDatabase, prisma } from '../lib/db'
-
-type WpRendered = { rendered?: string }
 
 type WpMediaSize = {
   file?: string
@@ -16,7 +15,6 @@ type WpMediaSize = {
 type WpMedia = {
   id: number
   slug: string
-  title: WpRendered
   source_url: string
   mime_type: string
   date?: string
@@ -46,6 +44,7 @@ type StorageProvider = 'vercel' | 'r2'
 type ArchivedObject = {
   url: string
   pathname: string
+  size: number
 }
 
 const USER_AGENT = 'Annlin WordPress media migration'
@@ -67,6 +66,18 @@ function parseConcurrency() {
   const argument = process.argv.find((value) => value.startsWith('--size-concurrency='))
   const parsed = Number(argument?.split('=')[1] || 8)
   return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 20) : 8
+}
+
+function parseMediaLimit() {
+  const argument = process.argv.find((value) => value.startsWith('--limit='))
+  if (!argument) return null
+
+  const parsed = Number(argument.split('=')[1])
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error('--limit must be a positive integer.')
+  }
+
+  return parsed
 }
 
 function parseStorageProvider(): StorageProvider {
@@ -102,10 +113,6 @@ function decodeEntities(value: string) {
   return decoded
 }
 
-function titleOf(media: WpMedia) {
-  return decodeEntities(media.title?.rendered || media.slug)
-}
-
 function pathnameFromUrl(url: string, fallback: string) {
   try {
     const parsed = new URL(url)
@@ -129,21 +136,6 @@ function formatBytes(bytes: number | null) {
   return `${value.toFixed(unit === 0 ? 0 : 2)} ${units[unit]}`
 }
 
-function fileTypeForMime(mimeType: string): ReadingMaterialFileType {
-  if (mimeType === 'application/pdf') return ReadingMaterialFileType.PDF
-  if (mimeType.includes('word') || mimeType.includes('presentation')) return ReadingMaterialFileType.DOC
-  return ReadingMaterialFileType.LINK
-}
-
-function shouldExposeAsReadingMaterial(mimeType: string) {
-  return (
-    mimeType === 'application/pdf' ||
-    mimeType === 'audio/mpeg' ||
-    mimeType.includes('word') ||
-    mimeType.includes('presentation')
-  )
-}
-
 function isBlobUrl(value: string) {
   try {
     return new URL(value).hostname.endsWith('.blob.vercel-storage.com')
@@ -153,7 +145,7 @@ function isBlobUrl(value: string) {
 }
 
 function normalizedPublicBaseUrl() {
-  return process.env.R2_PUBLIC_BASE_URL?.replace(/\/+$/, '') || null
+  return process.env['R2_PUBLIC_BASE_URL']?.replace(/\/+$/, '') || null
 }
 
 function isR2Url(value: string) {
@@ -192,7 +184,7 @@ async function fetchJson<T>(url: string): Promise<{ data: T; totalPages: number;
 }
 
 async function fetchAllMedia(wordpressBaseUrl: string) {
-  const fields = 'id,slug,title,source_url,mime_type,date,modified,media_details'
+  const fields = 'id,slug,source_url,mime_type,date,modified,media_details'
   const first = await fetchJson<WpMedia[]>(
     `${wordpressBaseUrl}/wp-json/wp/v2/media?per_page=100&page=1&_fields=${fields}`
   )
@@ -264,7 +256,7 @@ async function mapWithConcurrency<T, R>(
   async function worker() {
     while (nextIndex < values.length) {
       const index = nextIndex++
-      results[index] = await mapper(values[index], index)
+      results[index] = await mapper(values[index]!, index)
     }
   }
 
@@ -281,7 +273,7 @@ async function resolveMediaSizes(media: WpMedia[], concurrency: number) {
     return result
   })
 
-  return new Map(media.map((item, index) => [item.id, results[index]]))
+  return new Map(media.map((item, index) => [item.id, results[index]!]))
 }
 
 function printPreflight(media: WpMedia[], sizeById: Map<number, SizeResult>) {
@@ -354,7 +346,7 @@ function runWranglerUpload(
   contentType: string,
   body: ReadableStream<Uint8Array>
 ) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<number>((resolve, reject) => {
     const child = spawn(
       'wrangler',
       [
@@ -372,31 +364,40 @@ function runWranglerUpload(
       {
         env: {
           ...process.env,
-          WRANGLER_LOG_PATH: process.env.WRANGLER_LOG_PATH || '/tmp/annlin-wrangler.log',
+          WRANGLER_LOG_PATH:
+            process.env['WRANGLER_LOG_PATH'] || '/tmp/annlin-wrangler.log',
         },
         stdio: ['pipe', 'ignore', 'pipe'],
       }
     )
     let stderr = ''
+    let uploadedBytes = 0
 
     child.stderr.on('data', (chunk) => {
       stderr += String(chunk)
     })
     child.on('error', reject)
     child.on('close', (code) => {
-      if (code === 0) {
-        resolve()
+      if (code === 0 && uploadedBytes > 0) {
+        resolve(uploadedBytes)
+      } else if (code === 0) {
+        reject(new Error(`Wrangler uploaded an empty R2 object: ${objectPath}`))
       } else {
         reject(new Error(`Wrangler R2 upload failed (${code ?? 'unknown'}): ${stderr.trim()}`))
       }
     })
 
-    Readable.fromWeb(body).on('error', reject).pipe(child.stdin)
+    Readable.fromWeb(body as unknown as NodeReadableStream<Uint8Array>)
+      .on('data', (chunk: Buffer) => {
+        uploadedBytes += chunk.length
+      })
+      .on('error', reject)
+      .pipe(child.stdin)
   })
 }
 
 async function copyToR2(media: WpMedia): Promise<ArchivedObject> {
-  const bucket = process.env.R2_BUCKET_NAME
+  const bucket = process.env['R2_BUCKET_NAME']
   const publicBaseUrl = normalizedPublicBaseUrl()
 
   if (!bucket || !publicBaseUrl) {
@@ -417,16 +418,33 @@ async function copyToR2(media: WpMedia): Promise<ArchivedObject> {
   const pathname = `wordpress-media/${media.id}-${filename}`
   const contentType = response.headers.get('content-type') || media.mime_type || 'application/octet-stream'
 
-  await runWranglerUpload(`${bucket}/${pathname}`, contentType, response.body)
+  const size = await runWranglerUpload(`${bucket}/${pathname}`, contentType, response.body)
 
   return {
     pathname,
     url: `${publicBaseUrl}/${encodeObjectPath(pathname)}`,
+    size,
   }
 }
 
-async function copyToStorage(media: WpMedia, bytes: number, provider: StorageProvider) {
-  return provider === 'vercel' ? copyToBlob(media, bytes) : copyToR2(media)
+async function copyToStorage(media: WpMedia, bytes: number | null, provider: StorageProvider) {
+  if (provider === 'vercel') {
+    if (bytes === null) {
+      throw new Error(`Cannot upload an unresolved-size file to Vercel Blob: ${media.source_url}`)
+    }
+
+    const blob = await copyToBlob(media, bytes)
+    return { url: blob.url, pathname: blob.pathname, size: bytes }
+  }
+
+  const archivedObject = await copyToR2(media)
+  if (bytes !== null && archivedObject.size !== bytes) {
+    throw new Error(
+      `R2 upload size mismatch for ${media.source_url}: expected ${bytes}, uploaded ${archivedObject.size}`
+    )
+  }
+
+  return archivedObject
 }
 
 function mediaReferenceUrls(media: WpMedia, wordpressBaseUrl: string) {
@@ -607,6 +625,7 @@ async function main() {
   const copyFiles = process.argv.includes('--copy-files')
   const preflight = process.argv.includes('--preflight')
   const sizeConcurrency = parseConcurrency()
+  const mediaLimit = parseMediaLimit()
   const storageProvider = parseStorageProvider()
 
   if (copyFiles && storageProvider === 'vercel' && !hasUsableBlobToken()) {
@@ -616,21 +635,22 @@ async function main() {
   if (
     copyFiles &&
     storageProvider === 'r2' &&
-    (!process.env.R2_BUCKET_NAME || !normalizedPublicBaseUrl())
+    (!process.env['R2_BUCKET_NAME'] || !normalizedPublicBaseUrl())
   ) {
     throw new Error(
       'R2_BUCKET_NAME and R2_PUBLIC_BASE_URL are required when using --storage=r2.'
     )
   }
 
-  const media = await fetchAllMedia(wordpressBaseUrl)
+  const allMedia = await fetchAllMedia(wordpressBaseUrl)
+  const media = mediaLimit === null ? allMedia : allMedia.slice(0, mediaLimit)
   const sizeById = await resolveMediaSizes(media, sizeConcurrency)
   printPreflight(media, sizeById)
 
   if (preflight) return
 
   const unresolved = media.filter((item) => sizeById.get(item.id)?.bytes === null)
-  if (copyFiles && unresolved.length > 0) {
+  if (copyFiles && storageProvider === 'vercel' && unresolved.length > 0) {
     throw new Error(
       `${unresolved.length} media files have an unresolved size. Refusing a partial archive upload.`
     )
@@ -655,31 +675,20 @@ async function main() {
   const existingById = new Map<string, ExistingAsset>(
     existingAssets.map((item) => [item.id, item])
   )
-  const mediaCategory = dryRun
-    ? null
-    : await prisma.readingMaterialCategory.upsert({
-        where: { name: 'WordPress Media Argief' },
-        update: {},
-        create: {
-          name: 'WordPress Media Argief',
-          description: 'Opgelaaide WordPress-lêers wat bewaar is tydens migrasie.',
-        },
-      })
-
   let copied = 0
   let skippedExisting = 0
   let inventoried = 0
-  let exposed = 0
   let failed = 0
+  let archivedTotalBytes = 0
   const replacements = new Map<string, string>()
 
   for (const [index, item] of media.entries()) {
     try {
-      const title = titleOf(item)
       const originalFilename = pathnameFromUrl(item.source_url, `${item.id}-${item.slug}`)
       const assetId = `wp-media-${item.id}`
       const existing = existingById.get(assetId)
-      const bytes = sizeById.get(item.id)?.bytes || 0
+      const expectedBytes = sizeById.get(item.id)?.bytes ?? null
+      let archivedBytes = expectedBytes ?? 0
       let finalUrl = item.source_url
       let pathname = `wordpress-media/original/${item.id}-${originalFilename}`
 
@@ -687,19 +696,22 @@ async function main() {
         copyFiles &&
         existing &&
         isArchivedUrl(existing.url, storageProvider) &&
-        existing.size === bytes
+        (expectedBytes === null ? existing.size > 0 : existing.size === expectedBytes)
       ) {
         finalUrl = existing.url
         pathname = existing.pathname || pathname
+        archivedBytes = existing.size
         skippedExisting++
       } else if (copyFiles) {
-        const archivedObject = await copyToStorage(item, bytes, storageProvider)
+        const archivedObject = await copyToStorage(item, expectedBytes, storageProvider)
         finalUrl = archivedObject.url
         pathname = archivedObject.pathname
+        archivedBytes = archivedObject.size
         copied++
       }
 
       if (isArchivedUrl(finalUrl, storageProvider)) {
+        archivedTotalBytes += archivedBytes
         for (const sourceUrl of mediaReferenceUrls(item, wordpressBaseUrl)) {
           replacements.set(sourceUrl, finalUrl)
         }
@@ -713,7 +725,7 @@ async function main() {
             pathname,
             filename: originalFilename,
             mimeType: item.mime_type,
-            size: bytes,
+            size: archivedBytes,
             purpose: 'wordpress-media-archive',
           },
           create: {
@@ -722,36 +734,11 @@ async function main() {
             pathname,
             filename: originalFilename,
             mimeType: item.mime_type,
-            size: bytes,
+            size: archivedBytes,
             purpose: 'wordpress-media-archive',
           },
         })
 
-        if (shouldExposeAsReadingMaterial(item.mime_type)) {
-          await prisma.readingMaterial.upsert({
-            where: { id: assetId },
-            update: {
-              title,
-              description: `WordPress media argief: ${originalFilename}`,
-              fileUrl: finalUrl,
-              externalUrl: null,
-              categoryId: mediaCategory!.id,
-              fileType: fileTypeForMime(item.mime_type),
-              fileSize: bytes || null,
-            },
-            create: {
-              id: assetId,
-              title,
-              description: `WordPress media argief: ${originalFilename}`,
-              fileUrl: finalUrl,
-              externalUrl: null,
-              categoryId: mediaCategory!.id,
-              fileType: fileTypeForMime(item.mime_type),
-              fileSize: bytes || null,
-            },
-          })
-          exposed++
-        }
       }
 
       inventoried++
@@ -779,9 +766,10 @@ async function main() {
         totalBytes,
         totalSize: formatBytes(totalBytes),
         inventoried,
-        copiedToBlob: copied,
-        skippedExistingBlob: skippedExisting,
-        exposedAsReadingMaterial: exposed,
+        copiedToStorage: copied,
+        skippedExistingStorage: skippedExisting,
+        archivedBytes: archivedTotalBytes,
+        archivedSize: formatBytes(archivedTotalBytes),
         replacementUrls: replacements.size,
         rewrittenRecords: rewritten.records,
         rewrittenFields: rewritten.fields,
@@ -789,6 +777,7 @@ async function main() {
         dryRun,
         copyFiles,
         storageProvider,
+        mediaLimit,
       },
       null,
       2
