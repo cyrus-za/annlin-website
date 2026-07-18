@@ -7,9 +7,7 @@ import { createUserInvitation, getInvitations, cleanupExpiredInvitations } from 
 const createInvitationSchema = z.object({
   email: z.string().email('Invalid email address'),
   name: z.string().min(1, 'Name is required'),
-  role: z.enum(['ADMIN', 'EDITOR'], {
-    errorMap: () => ({ message: 'Role must be either ADMIN or EDITOR' })
-  })
+  role: z.enum(['ADMIN', 'EDITOR'], 'Role must be either ADMIN or EDITOR')
 })
 
 /**

@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { prisma } from "./db"
 import { env } from "./env"
+import { sendPasswordResetEmail } from "./email"
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -11,6 +12,18 @@ export const auth = betterAuth({
     enabled: true,
     disableSignUp: true,
     requireEmailVerification: false,
+    revokeSessionsOnPasswordReset: true,
+    async sendResetPassword({ user, url }) {
+      const sent = await sendPasswordResetEmail({
+        recipientName: user.name,
+        recipientEmail: user.email,
+        resetUrl: url,
+      })
+
+      if (!sent) {
+        throw new Error('Password reset email delivery failed')
+      }
+    },
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days

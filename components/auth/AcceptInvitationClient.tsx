@@ -58,11 +58,11 @@ export function AcceptInvitationClient({ token }: AcceptInvitationClientProps) {
 
     const loadInvitation = async () => {
       try {
-        const response = await fetch(`/api/invitations/${token}`)
+        const response = await fetch(`/api/invitations/accept?token=${encodeURIComponent(token)}`)
 
         if (response.ok) {
           const data = await response.json()
-          setInvitation(data)
+          setInvitation(data.invitation)
         } else {
           const errorData = await response.json()
           setError(errorData.error || 'Uitnodiging nie gevind nie')

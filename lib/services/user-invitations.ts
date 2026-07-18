@@ -1,6 +1,7 @@
 import { prisma } from '../db'
 import { sendInvitationEmail } from '../email'
-import type { User, UserInvitation, UserRole, UserInvitationStatus } from '../db'
+import { hashPassword } from 'better-auth/crypto'
+import type { User, UserInvitation, UserRole, UserInvitationStatus } from '@prisma/client'
 
 export interface CreateInvitationData {
   email: string
@@ -100,7 +101,7 @@ export async function getInvitationByToken(token: string): Promise<InvitationWit
 /**
  * Accept an invitation and create the user
  */
-export async function acceptInvitation(token: string, _password: string): Promise<{ success: boolean; user?: User; error?: string }> {
+export async function acceptInvitation(token: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
   try {
     // Get the invitation
     const invitation = await getInvitationByToken(token)
@@ -122,29 +123,51 @@ export async function acceptInvitation(token: string, _password: string): Promis
       return { success: false, error: 'Uitnodiging het verval' }
     }
 
-    // Check if user already exists (race condition check)
-    const existingUser = await prisma.user.findUnique({
-      where: { email: invitation.email }
-    })
+    const passwordHash = await hashPassword(password)
+    const acceptedAt = new Date()
 
-    if (existingUser) {
-      return { success: false, error: 'Gebruiker bestaan reeds' }
-    }
+    const user = await prisma.$transaction(async (transaction) => {
+      const accepted = await transaction.userInvitation.updateMany({
+        where: {
+          id: invitation.id,
+          status: 'PENDING',
+          expiresAt: { gt: acceptedAt },
+        },
+        data: { status: 'ACCEPTED', acceptedAt },
+      })
 
-    // Create the user (this will be handled by better-auth registration)
-    // We'll mark the invitation as accepted but let better-auth handle user creation
-    await prisma.userInvitation.update({
-      where: { id: invitation.id },
-      data: {
-        status: 'ACCEPTED',
-        acceptedAt: new Date()
+      if (accepted.count !== 1) {
+        throw new Error('INVITATION_ALREADY_USED')
       }
+
+      const createdUser = await transaction.user.create({
+        data: {
+          email: invitation.email,
+          name: invitation.name,
+          role: invitation.role,
+          emailVerified: true,
+        },
+      })
+
+      await transaction.account.create({
+        data: {
+          userId: createdUser.id,
+          providerId: 'credential',
+          accountId: createdUser.id,
+          password: passwordHash,
+        },
+      })
+
+      return createdUser
     })
 
-    return { success: true }
+    return { success: true, user }
 
   } catch (error) {
     console.error('Error accepting invitation:', error)
+    if (error instanceof Error && error.message === 'INVITATION_ALREADY_USED') {
+      return { success: false, error: 'Uitnodiging is nie meer geldig nie' }
+    }
     return { success: false, error: 'Kon nie uitnodiging aanvaar nie' }
   }
 }

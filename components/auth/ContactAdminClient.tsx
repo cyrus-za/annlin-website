@@ -24,7 +24,7 @@ export function ContactAdminClient() {
     setError('')
 
     try {
-      const response = await fetch('/api/contact/admin-access', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,8 +32,9 @@ export function ContactAdminClient() {
         body: JSON.stringify({
           name,
           email,
+          subject: 'Versoek om webwerf-administrasietoegang',
           message,
-          type: 'ADMIN_ACCESS',
+          type: 'SPECIFIC',
         }),
       })
 

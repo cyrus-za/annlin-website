@@ -26,6 +26,12 @@ export interface ContactSubmissionEmailData {
   serviceGroupName?: string | null
 }
 
+export interface PasswordResetEmailData {
+  recipientName: string
+  recipientEmail: string
+  resetUrl: string
+}
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
@@ -151,6 +157,37 @@ export async function sendContactSubmissionNotification(
     subject: `Nuwe webwerfnavraag: ${submission.subject}`,
     html,
     text,
+  })
+}
+
+export async function sendPasswordResetEmail({
+  recipientName,
+  recipientEmail,
+  resetUrl,
+}: PasswordResetEmailData): Promise<boolean> {
+  const safeName = escapeHtml(recipientName)
+  const safeUrl = escapeHtml(resetUrl)
+
+  return sendEmail({
+    to: recipientEmail,
+    subject: 'Herstel jou Annlin webwerf-wagwoord',
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#2f2925;max-width:600px;margin:0 auto;padding:24px;">
+        <h1 style="font-size:24px;">Herstel jou wagwoord</h1>
+        <p>Hallo ${safeName},</p>
+        <p>Gebruik die skakel hieronder om jou Annlin webwerf-wagwoord te herstel. Die skakel verval oor een uur.</p>
+        <p><a href="${safeUrl}" style="display:inline-block;background:#875a39;color:#fff;text-decoration:none;padding:11px 18px;border-radius:6px;font-weight:700;">Herstel wagwoord</a></p>
+        <p>As jy dit nie versoek het nie, kan jy hierdie e-pos ignoreer.</p>
+      </div>
+    `,
+    text: [
+      `Hallo ${recipientName},`,
+      '',
+      'Gebruik hierdie skakel om jou Annlin webwerf-wagwoord te herstel. Die skakel verval oor een uur:',
+      resetUrl,
+      '',
+      'As jy dit nie versoek het nie, kan jy hierdie e-pos ignoreer.',
+    ].join('\n'),
   })
 }
 
