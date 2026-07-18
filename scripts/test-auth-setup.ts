@@ -17,6 +17,14 @@ async function testAuthSetup() {
     console.log('📊 Auth baseURL:', auth.options.baseURL)
     console.log('📊 Email verification required:', auth.options.emailAndPassword?.requireEmailVerification)
     console.log('📊 Session expires in:', auth.options.session?.expiresIn, 'seconds')
+
+    if (auth.options.emailAndPassword?.disableSignUp !== true) {
+      throw new Error('Public email/password registration must remain disabled')
+    }
+
+    if (auth.options.user?.additionalFields?.role?.defaultValue !== 'EDITOR') {
+      throw new Error('The fallback user role must not grant administrator access')
+    }
     
     // Test database adapter connection
     console.log('🔄 Testing database adapter...')

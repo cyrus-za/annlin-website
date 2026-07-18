@@ -9,6 +9,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    disableSignUp: true,
     requireEmailVerification: false,
   },
   session: {
@@ -20,7 +21,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        defaultValue: "ADMIN",
+        defaultValue: "EDITOR",
         input: false, // Don't allow setting role through registration
       },
     },
