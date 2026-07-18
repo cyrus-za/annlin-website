@@ -236,9 +236,8 @@ function responseSize(response: Response) {
 
 async function probeMediaSize(media: WpMedia): Promise<SizeResult> {
   const wordpressSize = Number(media.media_details?.filesize || 0)
-  if (wordpressSize > 0) {
-    return { bytes: wordpressSize, source: 'wordpress' }
-  }
+  let fallbackWordpressSize: SizeResult | null =
+    wordpressSize > 0 ? { bytes: wordpressSize, source: 'wordpress' } : null
 
   try {
     const response = await fetch(media.source_url, {
@@ -247,7 +246,13 @@ async function probeMediaSize(media: WpMedia): Promise<SizeResult> {
     })
     const bytes = response.ok ? responseSize(response) : null
     await response.body?.cancel()
-    if (bytes !== null) return { bytes, source: 'head' }
+    if (bytes !== null) {
+      if (fallbackWordpressSize && fallbackWordpressSize.bytes === bytes) {
+        return fallbackWordpressSize
+      }
+
+      return { bytes, source: 'head' }
+    }
   } catch {
     // Some older WordPress hosts reject HEAD requests; the range fallback handles those files.
   }
@@ -262,9 +267,19 @@ async function probeMediaSize(media: WpMedia): Promise<SizeResult> {
     })
     const bytes = response.ok ? responseSize(response) : null
     await response.body?.cancel()
-    if (bytes !== null) return { bytes, source: 'range' }
+    if (bytes !== null) {
+      if (fallbackWordpressSize && fallbackWordpressSize.bytes === bytes) {
+        return fallbackWordpressSize
+      }
+
+      return { bytes, source: 'range' }
+    }
   } catch {
     // Report the unresolved item below rather than treating an estimate as exact.
+  }
+
+  if (fallbackWordpressSize) {
+    return fallbackWordpressSize
   }
 
   return { bytes: null, source: 'unresolved' }

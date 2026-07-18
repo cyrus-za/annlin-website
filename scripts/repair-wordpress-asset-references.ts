@@ -95,15 +95,25 @@ function humanizeFilename(value: string) {
     .trim()
 }
 
-function referenceUrl(reference: WordPressAssetReference) {
+function referenceUrl(
+  reference: WordPressAssetReference,
+  archivedUrlByFilename: ReadonlyMap<string, string>
+) {
+  const archivedUrl = archivedUrlByFilename.get(filenameFromUrl(reference.url))
+  if (archivedUrl) return archivedUrl
+
   const value =
     migratedPublicAssetUrlForWordPressUrl(reference.url) || reference.url.replace(/^http:/i, 'https:')
 
   return value.replace(/(?<=\d)×(?=\d)/g, 'x')
 }
 
-function contentContainsReference(content: string, reference: WordPressAssetReference) {
-  const url = referenceUrl(reference).toLowerCase()
+function contentContainsReference(
+  content: string,
+  reference: WordPressAssetReference,
+  archivedUrlByFilename: ReadonlyMap<string, string>
+) {
+  const url = referenceUrl(reference, archivedUrlByFilename).toLowerCase()
 
   if (reference.kind === 'image') {
     return [...content.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].some(
@@ -114,8 +124,11 @@ function contentContainsReference(content: string, reference: WordPressAssetRefe
   return content.toLowerCase().includes(url)
 }
 
-function referenceToMarkdown(reference: WordPressAssetReference) {
-  const url = referenceUrl(reference)
+function referenceToMarkdown(
+  reference: WordPressAssetReference,
+  archivedUrlByFilename: ReadonlyMap<string, string>
+) {
+  const url = referenceUrl(reference, archivedUrlByFilename)
   const label = reference.label || humanizeFilename(filenameFromUrl(url))
 
   return reference.kind === 'image'
@@ -123,12 +136,16 @@ function referenceToMarkdown(reference: WordPressAssetReference) {
     : `[${label || 'Maak lêer oop'}](${url})`
 }
 
-function appendMissingReferences(content: string, references: WordPressAssetReference[]) {
+function appendMissingReferences(
+  content: string,
+  references: WordPressAssetReference[],
+  archivedUrlByFilename: ReadonlyMap<string, string>
+) {
   let normalizedContent = content
   const rewritten: Array<{ from: string; to: string }> = []
 
   for (const reference of references) {
-    const canonicalUrl = referenceUrl(reference)
+    const canonicalUrl = referenceUrl(reference, archivedUrlByFilename)
     const sourceUrls = [reference.url, reference.url.replace(/^http:/i, 'https:')]
 
     for (const sourceUrl of sourceUrls) {
@@ -139,12 +156,12 @@ function appendMissingReferences(content: string, references: WordPressAssetRefe
   }
 
   const missing = references.filter(
-    (reference) => !contentContainsReference(normalizedContent, reference)
+    (reference) => !contentContainsReference(normalizedContent, reference, archivedUrlByFilename)
   )
   const uniqueMissing = [
     ...new Map(
       missing.map((reference) => [
-        `${reference.kind}:${referenceUrl(reference).toLowerCase()}`,
+        `${reference.kind}:${referenceUrl(reference, archivedUrlByFilename).toLowerCase()}`,
         reference,
       ])
     ).values(),
@@ -159,7 +176,10 @@ function appendMissingReferences(content: string, references: WordPressAssetRefe
   }
 
   return {
-    content: [normalizedContent.trimEnd(), ...uniqueMissing.map(referenceToMarkdown)]
+    content: [
+      normalizedContent.trimEnd(),
+      ...uniqueMissing.map((reference) => referenceToMarkdown(reference, archivedUrlByFilename)),
+    ]
       .filter(Boolean)
       .join('\n\n'),
     added: uniqueMissing,
@@ -213,7 +233,11 @@ async function fetchGalleryMedia(pages: WpPage[]) {
   return new Map(media.map((item) => [item.id, item]))
 }
 
-function referencesForPage(page: WpPage, mediaById: ReadonlyMap<number, WpMedia>) {
+function referencesForPage(
+  page: WpPage,
+  mediaById: ReadonlyMap<number, WpMedia>,
+  archivedUrlByFilename: ReadonlyMap<string, string>
+) {
   const html = page.content.rendered || ''
   const references = extractWordPressAssetReferences(html)
 
@@ -232,7 +256,10 @@ function referencesForPage(page: WpPage, mediaById: ReadonlyMap<number, WpMedia>
 
   return [
     ...new Map(
-      references.map((reference) => [`${reference.kind}:${referenceUrl(reference)}`, reference])
+      references.map((reference) => [
+        `${reference.kind}:${referenceUrl(reference, archivedUrlByFilename)}`,
+        reference,
+      ])
     ).values(),
   ]
 }
@@ -247,15 +274,17 @@ async function main() {
 
   const pages = await fetchPages()
   const mediaById = await fetchGalleryMedia(pages)
-  const [serviceGroups, articles, readingMaterials] = await Promise.all([
+  const [serviceGroups, articles, readingMaterials, uploadedAssets] = await Promise.all([
     prisma.serviceGroup.findMany({ select: { id: true, slug: true, description: true } }),
     prisma.article.findMany({ select: { id: true, slug: true, content: true } }),
     prisma.readingMaterial.findMany({ select: { id: true, description: true } }),
+    prisma.uploadedAsset.findMany({ select: { filename: true, url: true } }),
   ])
 
   const serviceGroupBySlug = new Map(serviceGroups.map((item) => [item.slug, item]))
   const articleBySlug = new Map(articles.map((item) => [item.slug, item]))
   const readingById = new Map(readingMaterials.map((item) => [item.id, item]))
+  const archivedUrlByFilename = new Map(uploadedAssets.map((item) => [item.filename, item.url]))
   const changes: Array<{
     type: 'serviceGroup' | 'article' | 'readingMaterial'
     id: string
@@ -271,7 +300,7 @@ async function main() {
     if (singletonPageSlugs.has(page.slug)) continue
 
     const html = page.content.rendered || ''
-    const references = referencesForPage(page, mediaById)
+    const references = referencesForPage(page, mediaById, archivedUrlByFilename)
     const sourceAssets = references.length
     if (sourceAssets === 0) continue
 
@@ -295,7 +324,7 @@ async function main() {
 
     if (!target) continue
 
-    const repaired = appendMissingReferences(target.content, references)
+    const repaired = appendMissingReferences(target.content, references, archivedUrlByFilename)
     const after = repaired.content
 
     if (after !== target.content) {
@@ -354,7 +383,7 @@ async function main() {
           afterLength: change.after.length,
           addedReferences: change.addedReferences.map((reference) => ({
             kind: reference.kind,
-            url: referenceUrl(reference),
+            url: referenceUrl(reference, archivedUrlByFilename),
           })),
           rewrittenReferences: change.rewrittenReferences,
         })),
@@ -365,7 +394,7 @@ async function main() {
           .map((page) => ({
             slug: page.slug,
             htmlLength: page.content.rendered?.length || 0,
-            extractedReferences: referencesForPage(page, mediaById).length,
+            extractedReferences: referencesForPage(page, mediaById, archivedUrlByFilename).length,
           })),
       },
       null,
