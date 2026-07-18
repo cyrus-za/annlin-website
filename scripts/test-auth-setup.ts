@@ -43,6 +43,20 @@ async function testAuthSetup() {
     }
 
     console.log('✅ Anonymous session check successful')
+
+    const resetRequest = await auth.api.requestPasswordReset({
+      body: {
+        email: 'auth-reset-probe@example.invalid',
+        redirectTo: '/auth/reset-password',
+      },
+      headers: new Headers({ origin: auth.options.baseURL ?? 'http://localhost:3000' }),
+    })
+
+    if (!resetRequest.status) {
+      throw new Error('Unknown-user password reset requests must return a generic success response')
+    }
+
+    console.log('✅ Password reset enumeration boundary successful')
     console.log('✅ Authentication setup test passed!')
     
   } catch (error) {

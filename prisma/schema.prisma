@@ -75,7 +75,7 @@ model Session {
   @@map("sessions")
 }
 
-model VerificationToken {
+model Verification {
   id         String   @id @default(cuid())
   identifier String
   value      String
