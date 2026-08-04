@@ -24,7 +24,7 @@ Last updated: 2026-08-04
 - WordPress service-group pages expose these named contacts publicly:
   - `Jeug`: Lisa Vosloo, oudl. Thomas Venter, Zoë Venter, Clarissa Rehder
   - `Gebedsgroep`: Carina Pyper
-  - `Terebinte`: ouderling Hannes Venter
+  - `Terebinte`: oudl. Hannes Venter
   - `Susters`: Magda du Toit
   - `Sekuriteit`: oudl. Jan Rehder
   - `Vroue Bedieningsgroep`: Anne-Marie (the page copy does not state a surname)

@@ -17,7 +17,7 @@ const explicitServiceGroupContactDetails = new Map<string, ServiceGroupContactDe
   [
     'terebinte',
     {
-      contactPerson: 'Ouderling Hannes Venter',
+      contactPerson: 'oudl. Hannes Venter',
     },
   ],
   [
@@ -29,7 +29,7 @@ const explicitServiceGroupContactDetails = new Map<string, ServiceGroupContactDe
   [
     'sekuriteit',
     {
-      contactPerson: 'Ouderling Jan Rehder',
+      contactPerson: 'oudl. Jan Rehder',
     },
   ],
   [
