@@ -9,13 +9,13 @@ export function Footer() {
 
   return (
     <footer className="bg-amber-900 text-amber-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {/* Church Information */}
           <div className="space-y-4">
             <Link
               href="/"
-              className="inline-flex w-full max-w-64 overflow-hidden rounded-lg bg-white ring-1 ring-amber-500/40"
+              className="inline-flex w-full max-w-48 overflow-hidden rounded-lg bg-white ring-1 ring-amber-500/40 md:max-w-64"
               aria-label="Gereformeerde Kerk Pretoria-Annlin tuisblad"
             >
               <Image
@@ -38,7 +38,7 @@ export function Footer() {
               </div>
               <span>Deel van die Gereformeerde Kerke in Suid-Afrika</span>
             </div>
-            <p className="text-sm text-amber-200">
+            <p className="hidden text-sm text-amber-200 md:block">
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.
             </p>
             <div className="flex">
@@ -111,7 +111,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="hidden space-y-4 md:block">
             <h3 className="text-lg font-semibold text-white">Vinnige Skakels</h3>
             <div className="space-y-2">
               <Link 
@@ -155,7 +155,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-amber-800">
+        <div className="mt-8 border-t border-amber-800 pt-6 md:mt-12 md:pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <p className="text-sm text-amber-300">
