@@ -1,6 +1,7 @@
 import { ServiceGroups } from '@/components/public/ServiceGroups'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,16 +44,16 @@ export default async function DiensgroepePage() {
             <p className="mx-auto mb-8 max-w-2xl text-xl text-primary-foreground/90">
               Kontak ons vandag om uit te vind hoe jy by een van ons diensgroepe kan aansluit.
             </p>
-            <div className="space-x-4">
-              <a
+            <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
+              <Link
                 href="/kontak"
-                className="inline-flex items-center rounded-md border border-transparent bg-white px-6 py-3 text-base font-medium text-primary transition-colors duration-200 hover:bg-secondary"
+                className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-6 py-3 text-center text-base font-medium text-primary transition-colors duration-200 hover:bg-secondary sm:w-auto"
               >
                 Kontak Ons
-              </a>
+              </Link>
               <a
                 href="tel:012-567-1492"
-                className="inline-flex items-center rounded-md border-2 border-white px-6 py-3 text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-primary"
+                className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-6 py-3 text-center text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-primary sm:w-auto"
               >
                 Bel Ons: 012 567 1492
               </a>

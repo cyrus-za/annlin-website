@@ -1,5 +1,6 @@
 import { PublicCalendar } from '@/components/public/Calendar'
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -115,19 +116,19 @@ export default function JaarprogramPage() {
             <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
               Al ons gebeure is oop vir die publiek. Kom soos jy is - jy is altyd welkom!
             </p>
-            <div className="space-x-4">
-              <a
+            <div className="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
+              <Link
                 href="/kontak"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-800 bg-white hover:bg-amber-50 transition-colors duration-200"
+                className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-6 py-3 text-center text-base font-medium text-amber-800 transition-colors duration-200 hover:bg-amber-50 sm:w-auto"
               >
                 Kontak Ons vir Meer Info
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/diensgroepe"
-                className="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-white hover:text-amber-800 transition-colors duration-200"
+                className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-6 py-3 text-center text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-amber-800 sm:w-auto"
               >
                 Raak Betrokke
-              </a>
+              </Link>
             </div>
           </div>
         </div>
