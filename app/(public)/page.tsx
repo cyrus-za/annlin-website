@@ -8,6 +8,7 @@ import { Metadata } from 'next'
 import { APP_CONFIG } from '@/lib/constants'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
+import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 
 export const revalidate = 300
 
@@ -17,7 +18,10 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  const { sections } = await getPublicContentPage('tuis')
+  const [{ sections }, serviceGroups] = await Promise.all([
+    getPublicContentPage('tuis'),
+    getPublicServiceGroups(),
+  ])
   const copy = (path: string) => readContentText(sections, path)
 
   return (
@@ -67,7 +71,7 @@ export default async function Home() {
 
       {/* Service Groups Section */}
       <ServiceGroups
-        limit={16}
+        initialGroups={serviceGroups}
         heading={copy('serviceGroups.title')}
         description={copy('serviceGroups.body')}
       />

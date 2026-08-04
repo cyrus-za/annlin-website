@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-interface ServiceGroup {
+export interface PublicServiceGroup {
   id: string
   name: string
   slug: string
@@ -26,6 +26,7 @@ interface ServiceGroup {
 }
 
 interface ServiceGroupsProps {
+  initialGroups?: PublicServiceGroup[]
   limit?: number
   showAll?: boolean
   heading?: string
@@ -35,16 +36,19 @@ interface ServiceGroupsProps {
 const PUBLIC_SERVICE_GROUP_LIMIT = 100
 
 export function ServiceGroups({
+  initialGroups,
   limit,
   showAll = false,
   heading = 'Diensgroepe',
   description = 'Raak betrokke by die bedieningswerk van die gemeente.',
 }: ServiceGroupsProps) {
-  const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
-  const [loading, setLoading] = React.useState(true)
+  const [serviceGroups, setServiceGroups] = React.useState<PublicServiceGroup[]>(initialGroups ?? [])
+  const [loading, setLoading] = React.useState(!initialGroups)
   const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
+    if (initialGroups) return
+
     const fetchServiceGroups = async () => {
       try {
         const requestedLimit = showAll ? PUBLIC_SERVICE_GROUP_LIMIT : (limit ?? PUBLIC_SERVICE_GROUP_LIMIT)
@@ -71,7 +75,7 @@ export function ServiceGroups({
     }
 
     fetchServiceGroups()
-  }, [limit, showAll])
+  }, [initialGroups, limit, showAll])
 
   if (loading) {
     return showAll ? <ServiceGroupGridSkeleton /> : <ServiceGroupRailSkeleton />
@@ -94,8 +98,6 @@ export function ServiceGroups({
 
   const diakonieGroups = serviceGroups.filter((group) => group.category === 'DIAKONIE')
   const otherGroups = serviceGroups.filter((group) => group.category === 'OTHER')
-  const featuredDiakonieGroups = diakonieGroups.slice(0, 4)
-  const featuredOtherGroups = otherGroups.slice(0, 4)
 
   return showAll ? (
     <section className="bg-stone-50 py-12">
@@ -124,12 +126,12 @@ export function ServiceGroups({
 
         <ServiceGroupRail
           title="Diakonie"
-          groups={featuredDiakonieGroups}
+          groups={diakonieGroups}
           totalCount={diakonieGroups.length}
         />
         <ServiceGroupRail
           title="Ander diensgroepe"
-          groups={featuredOtherGroups}
+          groups={otherGroups}
           totalCount={otherGroups.length}
           className="mt-8"
         />
@@ -152,7 +154,7 @@ function ServiceGroupGridSection({
   groups,
 }: {
   title: string
-  groups: ServiceGroup[]
+  groups: PublicServiceGroup[]
 }) {
   if (groups.length === 0) return null
 
@@ -247,7 +249,7 @@ function ServiceGroupRail({
   className,
 }: {
   title: string
-  groups: ServiceGroup[]
+  groups: PublicServiceGroup[]
   totalCount: number
   className?: string
 }) {
@@ -321,7 +323,7 @@ function ServiceGroupImage({
   group,
   className,
 }: {
-  group: ServiceGroup
+  group: PublicServiceGroup
   className: string
 }) {
   const imageUrl = group.thumbnailUrl || group.bannerUrl
@@ -389,7 +391,7 @@ function ServiceGroupGridSkeleton() {
 }
 
 export function ServiceGroupsCompact() {
-  const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
+  const [serviceGroups, setServiceGroups] = React.useState<PublicServiceGroup[]>([])
   const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {

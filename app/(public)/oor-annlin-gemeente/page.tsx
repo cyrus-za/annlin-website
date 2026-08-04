@@ -1,8 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Breadcrumb } from '@/components/public/Navigation'
 import Link from 'next/link'
-import { Calendar, Users, Heart, BookOpen, ArrowRight } from 'lucide-react'
+import { Calendar, Users, Heart, BookOpen } from 'lucide-react'
 import { Metadata } from 'next'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
@@ -21,8 +20,6 @@ export default async function AboutPage() {
 
   return (
     <div>
-      <Breadcrumb items={[{ name: 'Oor Annlin-Gemeente' }]} />
-      
       {/* Hero Section */}
       <section 
         className="relative text-white py-20 bg-cover bg-center bg-no-repeat"

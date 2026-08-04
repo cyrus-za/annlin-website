@@ -1,4 +1,5 @@
 import { ServiceGroups } from '@/components/public/ServiceGroups'
+import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
   description: 'Raak betrokke by ons verskillende diensgroepe en bedienings. Help maak \'n verskil in ons gemeente.',
 }
 
-export default function DiensgroepePage() {
+export default async function DiensgroepePage() {
+  const serviceGroups = await getPublicServiceGroups()
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -28,7 +31,7 @@ export default function DiensgroepePage() {
       </section>
 
       {/* Service Groups Grid */}
-      <ServiceGroups showAll={true} />
+      <ServiceGroups initialGroups={serviceGroups} showAll={true} />
 
       {/* Call to Action */}
       <section className="bg-primary py-16">
