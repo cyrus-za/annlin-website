@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { YouTubeEmbed } from '@/components/public/YouTubeEmbed'
 import { Calendar, ExternalLink, User } from 'lucide-react'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Uitsendings | Annlin Gemeente',
@@ -299,15 +300,191 @@ async function getLatestKerkdienstgemistRecordings(): Promise<KerkdienstgemistRe
   }
 }
 
-export default async function UitsendingsPage() {
-  const [youtubeUploads, kerkdienstgemistRecordings] = await Promise.all([
-    getLatestYouTubeUploads(),
-    getLatestKerkdienstgemistRecordings(),
-  ])
+function BroadcastSectionSkeleton({ title, video = false }: { title: string; video?: boolean }) {
+  return (
+    <section className="mb-12" aria-label={`${title} laai`} aria-busy="true">
+      <div className="mb-6 h-8 w-72 animate-pulse rounded bg-stone-200" />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {[0, 1, 2].map((item) => (
+          <Card key={item} className="overflow-hidden">
+            {video ? <div className="aspect-video animate-pulse bg-stone-200" /> : null}
+            <CardHeader className="space-y-3">
+              <div className="h-5 w-4/5 animate-pulse rounded bg-stone-200" />
+              <div className="h-4 w-1/2 animate-pulse rounded bg-stone-100" />
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+async function YouTubeSection() {
+  const youtubeUploads = await getLatestYouTubeUploads()
 
   return (
+    <section className="mb-12">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Nuutste YouTube uitsendings</h2>
+          <p className="mt-2 text-muted-foreground">
+            Die drie mees onlangse opnames vanaf ons YouTube-kanaal.
+          </p>
+        </div>
+        <Button asChild variant="outline">
+          <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            YouTube-kanaal
+          </a>
+        </Button>
+      </div>
+
+      {youtubeUploads.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {youtubeUploads.map((upload) => (
+            <Card key={upload.id} className="overflow-hidden">
+              <YouTubeEmbed videoId={upload.id} title={upload.title} />
+              <CardHeader>
+                <CardTitle className="line-clamp-2 text-base leading-tight">
+                  {stripLeadingDate(upload.title)}
+                </CardTitle>
+                {upload.publishedAt ? (
+                  <CardDescription>
+                    {upload.publishedAt.toLocaleDateString('af-ZA', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </CardDescription>
+                ) : null}
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="outline" className="w-full">
+                  <a href={upload.url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Maak oop op YouTube
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>YouTube uitsendings</CardTitle>
+            <CardDescription>
+              Ons kon nie die jongste YouTube-video's outomaties laai nie. Gebruik intussen die kanaalskakel.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
+    </section>
+  )
+}
+
+async function KerkdienstgemistSection() {
+  const recordings = await getLatestKerkdienstgemistRecordings()
+
+  return (
+    <section className="mb-12">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Laaste Kerkdienstgemist opnames</h2>
+          <p className="mt-2 text-muted-foreground">
+            Opnames wat deur Kerkdienstgemist beskikbaar gestel word.
+          </p>
+        </div>
+        <Button asChild variant="outline">
+          <a href={KERKDIENSTGEMIST_STATION_URL} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Kerkdienstgemist
+          </a>
+        </Button>
+      </div>
+
+      {recordings.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {recordings.map((recording) => (
+            <Card key={recording.id} className="flex h-full flex-col">
+              <CardHeader>
+                <CardTitle className="line-clamp-2 text-base leading-tight">
+                  {recording.title}
+                </CardTitle>
+                {recording.description ? (
+                  <CardDescription className="line-clamp-2">
+                    {recording.description}
+                  </CardDescription>
+                ) : null}
+              </CardHeader>
+              <CardContent className="mt-auto space-y-4">
+                <div className="space-y-2">
+                  {recording.preachedAt ? (
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {recording.preachedAt.toLocaleDateString('af-ZA', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </div>
+                  ) : null}
+                  {recording.preacher ? (
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <User className="mr-2 h-4 w-4" />
+                      {recording.preacher}
+                    </div>
+                  ) : null}
+                  {formatDuration(recording.duration) ? (
+                    <div className="text-sm text-muted-foreground">
+                      {formatDuration(recording.duration)}
+                    </div>
+                  ) : null}
+                </div>
+
+                {recording.audioUrl ? (
+                  <audio controls preload="none" className="w-full">
+                    <source src={recording.audioUrl} type="audio/mpeg" />
+                    Jou blaaier ondersteun nie die klankspeler nie.
+                  </audio>
+                ) : null}
+
+                <Button asChild variant={recording.audioUrl ? 'ghost' : 'outline'} className="w-full">
+                  <a href={recording.url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Maak oop op Kerkdienstgemist
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Kerkdienstgemist opnames</CardTitle>
+            <CardDescription>
+              Ons kon nie die jongste Kerkdienstgemist-opnames outomaties laai nie. Gebruik intussen die stasieskakel.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline">
+              <a href={KERKDIENSTGEMIST_STATION_URL} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Maak Kerkdienstgemist oop
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </section>
+  )
+}
+
+export default function UitsendingsPage() {
+  return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-12 max-w-3xl">
           <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
             Onlangse video uitsendings
@@ -317,155 +494,12 @@ export default async function UitsendingsPage() {
           </p>
         </div>
 
-        <section className="mb-12">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Nuutste YouTube uitsendings</h2>
-              <p className="mt-2 text-muted-foreground">
-                Die drie mees onlangse opnames vanaf ons YouTube-kanaal.
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                YouTube-kanaal
-              </a>
-            </Button>
-          </div>
-
-          {youtubeUploads.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {youtubeUploads.map((upload) => (
-                <Card key={upload.id} className="overflow-hidden">
-                  <YouTubeEmbed videoId={upload.id} title={upload.title} />
-                  <CardHeader>
-                    <CardTitle className="line-clamp-2 text-base leading-tight">
-                      {stripLeadingDate(upload.title)}
-                    </CardTitle>
-                    {upload.publishedAt ? (
-                      <CardDescription>
-                        {upload.publishedAt.toLocaleDateString('af-ZA', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })}
-                      </CardDescription>
-                    ) : null}
-                  </CardHeader>
-                  <CardContent>
-                    <Button asChild variant="outline" className="w-full">
-                      <a href={upload.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Maak oop op YouTube
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>YouTube uitsendings</CardTitle>
-                <CardDescription>
-                  Ons kon nie die jongste YouTube-video's outomaties laai nie. Gebruik intussen die kanaalskakel.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          )}
-        </section>
-
-        <section className="mb-12">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Laaste Kerkdienstgemist opnames</h2>
-              <p className="mt-2 text-muted-foreground">
-                Opnames wat deur Kerkdienstgemist beskikbaar gestel word.
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <a href={KERKDIENSTGEMIST_STATION_URL} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Kerkdienstgemist
-              </a>
-            </Button>
-          </div>
-
-          {kerkdienstgemistRecordings.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {kerkdienstgemistRecordings.map((recording) => (
-                <Card key={recording.id} className="flex h-full flex-col">
-                  <CardHeader>
-                    <CardTitle className="line-clamp-2 text-base leading-tight">
-                      {recording.title}
-                    </CardTitle>
-                    {recording.description ? (
-                      <CardDescription className="line-clamp-2">
-                        {recording.description}
-                      </CardDescription>
-                    ) : null}
-                  </CardHeader>
-                  <CardContent className="mt-auto space-y-4">
-                    <div className="space-y-2">
-                      {recording.preachedAt ? (
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          {recording.preachedAt.toLocaleDateString('af-ZA', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                          })}
-                        </div>
-                      ) : null}
-                      {recording.preacher ? (
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <User className="h-4 w-4 mr-2" />
-                          {recording.preacher}
-                        </div>
-                      ) : null}
-                      {formatDuration(recording.duration) ? (
-                        <div className="text-sm text-muted-foreground">
-                          {formatDuration(recording.duration)}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {recording.audioUrl ? (
-                      <audio controls preload="none" className="w-full">
-                        <source src={recording.audioUrl} type="audio/mpeg" />
-                        Jou blaaier ondersteun nie die klankspeler nie.
-                      </audio>
-                    ) : null}
-
-                    <Button asChild variant={recording.audioUrl ? 'ghost' : 'outline'} className="w-full">
-                      <a href={recording.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Maak oop op Kerkdienstgemist
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>Kerkdienstgemist opnames</CardTitle>
-                <CardDescription>
-                  Ons kon nie die jongste Kerkdienstgemist-opnames outomaties laai nie. Gebruik intussen die stasieskakel.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline">
-                  <a href={KERKDIENSTGEMIST_STATION_URL} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Maak Kerkdienstgemist oop
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </section>
+        <Suspense fallback={<BroadcastSectionSkeleton title="YouTube uitsendings" video />}>
+          <YouTubeSection />
+        </Suspense>
+        <Suspense fallback={<BroadcastSectionSkeleton title="Kerkdienstgemist opnames" />}>
+          <KerkdienstgemistSection />
+        </Suspense>
       </div>
     </div>
   )
