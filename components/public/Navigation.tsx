@@ -93,8 +93,8 @@ export function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3">
+          <div className="flex shrink-0 items-center">
+            <Link href="/" className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
                 <Image
                   src="/annlin-mark.png"
@@ -105,15 +105,14 @@ export function Navigation() {
                   priority
                 />
               </div>
-              <div className="hidden sm:block">
-                <span className="block text-xl font-bold text-amber-900">Annlin Gemeente</span>
-                <p className="text-xs text-amber-700">Gereformeerde Kerk Pretoria-Annlin</p>
-              </div>
+              <span className="hidden whitespace-nowrap text-lg font-bold text-amber-900 sm:block">
+                GK Pretoria-Annlin
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden items-center gap-6 xl:flex">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href || 
                 (item.href !== '/' && pathname.startsWith(item.href))
@@ -123,7 +122,7 @@ export function Navigation() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "text-sm font-medium transition-colors duration-200 hover:text-amber-700",
+                    "whitespace-nowrap text-sm font-medium transition-colors duration-200 hover:text-amber-700",
                     isActive 
                       ? "text-amber-800 border-b-2 border-amber-600 pb-1" 
                       : "text-gray-700"
@@ -136,7 +135,7 @@ export function Navigation() {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden items-center space-x-4 xl:flex">
             {/* Search */}
             <div className="relative">
               <Button
@@ -198,7 +197,7 @@ export function Navigation() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden">
+          <div className="xl:hidden">
             <Button
               variant="ghost"
               size="sm"
@@ -226,7 +225,7 @@ export function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
             
@@ -236,7 +235,7 @@ export function Navigation() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl z-50 lg:hidden"
+              className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl z-50 xl:hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
