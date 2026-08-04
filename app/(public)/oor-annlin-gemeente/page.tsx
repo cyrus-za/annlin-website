@@ -355,6 +355,41 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      <section className="border-y border-amber-100 bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-bold text-amber-900">{copy('heritage.title')}</h2>
+            <p className="mt-4 text-lg text-muted-foreground">{copy('heritage.body')}</p>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {readContentList(sections, 'heritage.facts').map((fact, index) => (
+              <Card key={fact} className="bg-amber-50/60">
+                <CardContent className="pt-6">
+                  <span className="text-sm font-bold uppercase tracking-[0.18em] text-amber-700">
+                    Erfenis {index + 1}
+                  </span>
+                  <p className="mt-4 leading-7 text-muted-foreground">{fact}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Lees ook die openbare geskiedenis op{' '}
+            <a
+              href="https://af.wikipedia.org/wiki/Gereformeerde_kerk_Pretoria-Annlin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-amber-800 underline underline-offset-4 hover:text-amber-950"
+            >
+              Wikipedia
+            </a>
+            .
+          </p>
+        </div>
+      </section>
+
       {/* Location and Contact */}
       <section id="besoek-ons" className="py-16 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

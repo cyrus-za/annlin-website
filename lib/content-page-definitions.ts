@@ -206,6 +206,15 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
           'Die sendingopdrag is hoog op ons prioriteit en lidmate is aktief met evangelisasie in eie omgewing, omliggende gebiede en in die buiteland.',
         ],
       },
+      heritage: {
+        title: 'Kerkgebou en Erfenis',
+        body: 'Klein besonderhede wat deel vorm van die gemeente se besondere verhaal.',
+        facts: [
+          'Die eerste eredienste is in die klein kerksaaltjie by Wonderboom-lughawe gehou en later na Laerskool Wonderboom se skoolsaal verskuif.',
+          'Die kerkgebou is op 20 April 1974 in gebruik geneem; die orrel met 800 pype het op 3 Augustus 1974 gevolg.',
+          'Die Nagmaalservies en doopbak kom uit die Gereformeerde Kerk Eldoret in Kenia, wat in 1966 ontbind het.',
+        ],
+      },
       visit: {
         title: 'Kom Besoek Ons',
         body: 'Ons is geleë in die hart van Wonderboom, Pretoria',
@@ -293,6 +302,14 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
           paragraphs('detailedHistory.buildingParagraphs', 'Kerkbou-paragrawe', 'Skei paragrawe met ’n leë reël.'),
           text('detailedHistory.modernTitle', 'Moderne era-opskrif'),
           paragraphs('detailedHistory.modernParagraphs', 'Moderne era-paragrawe', 'Skei paragrawe met ’n leë reël.'),
+        ],
+      },
+      {
+        title: 'Kerkgebou en erfenis',
+        fields: [
+          text('heritage.title', 'Afdelingopskrif'),
+          area('heritage.body', 'Inleidende teks'),
+          paragraphs('heritage.facts', 'Erfenisfeite', 'Skei feite met ’n leë reël.'),
         ],
       },
       {
