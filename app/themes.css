@@ -1,0 +1,289 @@
+:root,
+:root[data-theme='heritage'] {
+  color-scheme: light;
+
+  /* Foundation */
+  --color-white: 0 0% 100%;
+  --color-black: 0 0% 0%;
+  --gray-50: 210 20% 98%;
+  --gray-100: 220 14% 96%;
+  --gray-200: 220 13% 91%;
+  --gray-300: 216 12% 84%;
+  --gray-400: 218 11% 65%;
+  --gray-500: 220 9% 46%;
+  --gray-600: 215 14% 34%;
+  --gray-700: 217 19% 27%;
+  --gray-800: 215 28% 17%;
+  --gray-900: 221 39% 11%;
+  --gray-950: 224 71% 4%;
+  --stone-50: 60 9% 98%;
+  --stone-100: 60 5% 96%;
+  --stone-200: 20 6% 90%;
+  --stone-300: 24 6% 83%;
+  --stone-400: 24 5% 64%;
+  --stone-500: 25 5% 45%;
+  --stone-600: 33 5% 32%;
+  --stone-700: 30 6% 25%;
+  --stone-800: 12 6% 15%;
+  --stone-900: 24 10% 10%;
+  --stone-950: 20 14% 4%;
+
+  /* Status colors stay stable across visual themes. */
+  --red-50: 0 86% 97%;
+  --red-100: 0 93% 94%;
+  --red-200: 0 96% 89%;
+  --red-300: 0 94% 82%;
+  --red-400: 0 91% 71%;
+  --red-500: 0 84% 60%;
+  --red-600: 0 72% 51%;
+  --red-700: 0 74% 42%;
+  --red-800: 0 70% 35%;
+  --red-900: 0 63% 31%;
+  --red-950: 0 75% 15%;
+  --green-50: 138 76% 97%;
+  --green-100: 141 84% 93%;
+  --green-200: 141 79% 85%;
+  --green-300: 142 77% 73%;
+  --green-400: 142 69% 58%;
+  --green-500: 142 71% 45%;
+  --green-600: 142 76% 36%;
+  --green-700: 142 72% 29%;
+  --green-800: 143 64% 24%;
+  --green-900: 144 61% 20%;
+  --green-950: 145 80% 10%;
+  --yellow-50: 55 92% 95%;
+  --yellow-100: 55 97% 88%;
+  --yellow-200: 53 98% 77%;
+  --yellow-300: 50 98% 64%;
+  --yellow-400: 48 96% 53%;
+  --yellow-500: 45 93% 47%;
+  --yellow-600: 41 96% 40%;
+  --yellow-700: 35 92% 33%;
+  --yellow-800: 32 81% 29%;
+  --yellow-900: 28 73% 26%;
+  --yellow-950: 26 83% 14%;
+  --blue-50: 214 100% 97%;
+  --blue-100: 214 95% 93%;
+  --blue-200: 213 97% 87%;
+  --blue-300: 212 96% 78%;
+  --blue-400: 213 94% 68%;
+  --blue-500: 217 91% 60%;
+  --blue-600: 221 83% 53%;
+  --blue-700: 224 76% 48%;
+  --blue-800: 226 71% 40%;
+  --blue-900: 224 64% 33%;
+  --blue-950: 226 57% 21%;
+  --orange-50: 33 100% 96%;
+  --orange-100: 34 100% 92%;
+  --orange-200: 32 98% 83%;
+  --orange-300: 31 97% 72%;
+  --orange-400: 27 96% 61%;
+  --orange-500: 25 95% 53%;
+  --orange-600: 21 90% 48%;
+  --orange-700: 17 88% 40%;
+  --orange-800: 15 79% 34%;
+  --orange-900: 15 75% 28%;
+  --orange-950: 13 81% 15%;
+
+  /* Annlin Erfenis */
+  --amber-50: 48 100% 96%;
+  --amber-100: 48 96% 89%;
+  --amber-200: 48 97% 77%;
+  --amber-300: 46 97% 65%;
+  --amber-400: 43 96% 56%;
+  --amber-500: 38 92% 50%;
+  --amber-600: 32 95% 44%;
+  --amber-700: 26 90% 37%;
+  --amber-800: 23 83% 31%;
+  --amber-900: 22 78% 26%;
+  --amber-950: 21 92% 14%;
+  --background: 0 0% 100%;
+  --foreground: 25 25% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 25 25% 15%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 25 25% 15%;
+  --primary: 25 45% 35%;
+  --primary-foreground: 30 15% 95%;
+  --secondary: 30 25% 85%;
+  --secondary-foreground: 25 25% 15%;
+  --muted: 30 20% 92%;
+  --muted-foreground: 25 15% 25%;
+  --accent: 30 30% 88%;
+  --accent-foreground: 25 25% 15%;
+  --border: 30 20% 88%;
+  --input: 30 20% 94%;
+  --ring: 25 45% 35%;
+  --church-brown: 25 45% 35%;
+  --church-tan: 30 35% 65%;
+  --church-cream: 30 15% 95%;
+  --church-gold: 45 85% 60%;
+}
+
+:root[data-theme='jacaranda'] {
+  --amber-50: 225 100% 97%;
+  --amber-100: 224 86% 93%;
+  --amber-200: 224 77% 86%;
+  --amber-300: 228 70% 76%;
+  --amber-400: 235 63% 65%;
+  --amber-500: 241 52% 56%;
+  --amber-600: 244 48% 47%;
+  --amber-700: 246 48% 39%;
+  --amber-800: 242 46% 31%;
+  --amber-900: 236 48% 24%;
+  --amber-950: 235 55% 14%;
+  --background: 225 45% 98%;
+  --foreground: 235 35% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 235 35% 16%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 235 35% 16%;
+  --primary: 241 52% 42%;
+  --primary-foreground: 225 100% 98%;
+  --secondary: 269 38% 89%;
+  --secondary-foreground: 249 38% 22%;
+  --muted: 226 35% 93%;
+  --muted-foreground: 233 20% 34%;
+  --accent: 268 42% 91%;
+  --accent-foreground: 249 38% 22%;
+  --border: 228 31% 86%;
+  --input: 226 35% 94%;
+  --ring: 241 52% 48%;
+  --church-brown: 236 48% 24%;
+  --church-tan: 228 45% 70%;
+  --church-cream: 225 45% 97%;
+  --church-gold: 269 48% 68%;
+}
+
+:root[data-theme='olive'] {
+  --amber-50: 60 33% 96%;
+  --amber-100: 59 30% 89%;
+  --amber-200: 57 31% 78%;
+  --amber-300: 55 32% 65%;
+  --amber-400: 52 38% 51%;
+  --amber-500: 49 51% 42%;
+  --amber-600: 75 42% 35%;
+  --amber-700: 84 40% 29%;
+  --amber-800: 88 36% 24%;
+  --amber-900: 91 34% 19%;
+  --amber-950: 94 39% 10%;
+  --background: 48 30% 97%;
+  --foreground: 85 27% 14%;
+  --card: 48 36% 99%;
+  --card-foreground: 85 27% 14%;
+  --popover: 48 36% 99%;
+  --popover-foreground: 85 27% 14%;
+  --primary: 84 40% 29%;
+  --primary-foreground: 55 45% 96%;
+  --secondary: 48 29% 85%;
+  --secondary-foreground: 85 27% 14%;
+  --muted: 54 20% 91%;
+  --muted-foreground: 80 16% 28%;
+  --accent: 50 34% 86%;
+  --accent-foreground: 85 27% 14%;
+  --border: 55 22% 82%;
+  --input: 52 22% 92%;
+  --ring: 76 42% 34%;
+  --church-brown: 84 40% 24%;
+  --church-tan: 52 30% 61%;
+  --church-cream: 48 30% 96%;
+  --church-gold: 43 62% 56%;
+}
+
+:root[data-theme='stained-glass'] {
+  --amber-50: 43 70% 96%;
+  --amber-100: 43 69% 88%;
+  --amber-200: 42 72% 75%;
+  --amber-300: 40 76% 61%;
+  --amber-400: 38 78% 51%;
+  --amber-500: 36 82% 45%;
+  --amber-600: 348 61% 42%;
+  --amber-700: 344 62% 33%;
+  --amber-800: 222 55% 28%;
+  --amber-900: 220 58% 20%;
+  --amber-950: 221 65% 11%;
+  --background: 42 42% 97%;
+  --foreground: 221 48% 14%;
+  --card: 42 50% 99%;
+  --card-foreground: 221 48% 14%;
+  --popover: 42 50% 99%;
+  --popover-foreground: 221 48% 14%;
+  --primary: 220 58% 25%;
+  --primary-foreground: 43 70% 96%;
+  --secondary: 43 51% 84%;
+  --secondary-foreground: 221 48% 14%;
+  --muted: 42 24% 91%;
+  --muted-foreground: 220 21% 30%;
+  --accent: 348 38% 88%;
+  --accent-foreground: 344 62% 25%;
+  --border: 42 26% 82%;
+  --input: 42 28% 92%;
+  --ring: 348 61% 42%;
+  --church-brown: 220 58% 20%;
+  --church-tan: 42 46% 62%;
+  --church-cream: 43 70% 96%;
+  --church-gold: 40 76% 61%;
+}
+
+:root[data-theme='highveld'] {
+  --amber-50: 28 72% 97%;
+  --amber-100: 27 72% 91%;
+  --amber-200: 25 70% 82%;
+  --amber-300: 22 67% 70%;
+  --amber-400: 18 65% 59%;
+  --amber-500: 15 61% 50%;
+  --amber-600: 12 60% 43%;
+  --amber-700: 9 56% 35%;
+  --amber-800: 205 49% 29%;
+  --amber-900: 207 55% 22%;
+  --amber-950: 208 60% 13%;
+  --background: 37 52% 97%;
+  --foreground: 208 44% 15%;
+  --card: 35 60% 99%;
+  --card-foreground: 208 44% 15%;
+  --popover: 35 60% 99%;
+  --popover-foreground: 208 44% 15%;
+  --primary: 12 60% 40%;
+  --primary-foreground: 35 70% 97%;
+  --secondary: 198 40% 86%;
+  --secondary-foreground: 208 44% 18%;
+  --muted: 34 32% 91%;
+  --muted-foreground: 207 21% 31%;
+  --accent: 44 60% 85%;
+  --accent-foreground: 208 44% 18%;
+  --border: 30 32% 83%;
+  --input: 34 34% 92%;
+  --ring: 12 60% 43%;
+  --church-brown: 207 55% 22%;
+  --church-tan: 22 45% 65%;
+  --church-cream: 37 52% 96%;
+  --church-gold: 44 70% 57%;
+}
+
+/* Swatches remain accurate regardless of the active theme. */
+.theme-swatch--heritage { --swatch-primary: #92400e; --swatch-secondary: #d97706; --swatch-surface: #fffbeb; }
+.theme-swatch--jacaranda { --swatch-primary: #3730a3; --swatch-secondary: #a78bfa; --swatch-surface: #eef2ff; }
+.theme-swatch--olive { --swatch-primary: #4d5f24; --swatch-secondary: #b59a45; --swatch-surface: #f4f3e7; }
+.theme-swatch--stained-glass { --swatch-primary: #162b51; --swatch-secondary: #ad2948; --swatch-surface: #faf2dc; }
+.theme-swatch--highveld { --swatch-primary: #a9432c; --swatch-secondary: #4f8ba8; --swatch-surface: #fbf2e5; }
+
+.theme-swatch__color:nth-child(1) { background-color: var(--swatch-primary); }
+.theme-swatch__color:nth-child(2) { background-color: var(--swatch-secondary); }
+.theme-swatch__color:nth-child(3) { background-color: var(--swatch-surface); }
+
+:root {
+  --destructive: var(--red-500);
+  --destructive-foreground: 210 40% 98%;
+  --hero-overlay-start: var(--amber-800);
+  --hero-overlay-end: var(--amber-900);
+  --radius: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root.theme-transition,
+  :root.theme-transition * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 180ms;
+    transition-timing-function: ease-out;
+  }
+}

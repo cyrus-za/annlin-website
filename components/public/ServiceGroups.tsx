@@ -332,7 +332,7 @@ function ServiceGroupImage({
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
       ) : (
-        <div className="h-full w-full bg-[linear-gradient(135deg,#f5f5f4,#e7e5e4)]" />
+        <div className="h-full w-full bg-gradient-to-br from-stone-100 to-stone-200" />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-stone-950/25 via-transparent to-transparent" />
     </div>

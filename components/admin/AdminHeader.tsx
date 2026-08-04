@@ -3,6 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ThemeSwitcher } from '@/components/public/ThemeSwitcher'
 import { 
   Menu,
   Bell,
@@ -67,6 +68,8 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }:
               </Link>
             </Button>
           )}
+
+          <ThemeSwitcher />
 
           {/* User menu */}
           <div className="relative">

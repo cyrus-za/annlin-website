@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
+import "./themes.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { themeInitializationScript } from "@/lib/themes";
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
@@ -31,7 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="af">
+    <html lang="af" data-theme="heritage" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
+      </head>
       <body className={`${sourceSans.variable} ${cormorant.variable} antialiased`}>
         {children}
         <Toaster />

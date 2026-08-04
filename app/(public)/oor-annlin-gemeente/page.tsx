@@ -24,7 +24,7 @@ export default async function AboutPage() {
       <section 
         className="relative text-white py-20 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.85), rgba(120, 53, 15, 0.85)), url('/church-building-main.jpg')`
+          backgroundImage: `linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85)), url('/church-building-main.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -324,7 +324,7 @@ export default async function AboutPage() {
               <div 
                 className="h-64 bg-cover bg-center rounded-lg shadow-lg order-2 lg:order-1"
                 style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/church-building-1974.jpg')`
+                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.3), hsl(var(--color-black) / 0.3)), url('/church-building-1974.jpg')`
                 }}
               >
                 <div className="h-full flex items-end p-6">
@@ -357,7 +357,7 @@ export default async function AboutPage() {
               <div 
                 className="h-64 bg-cover bg-center rounded-lg shadow-lg"
                 style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/church-building-main.jpg')`
+                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.3), hsl(var(--color-black) / 0.3)), url('/church-building-main.jpg')`
                 }}
               >
                 <div className="h-full flex items-end p-6">

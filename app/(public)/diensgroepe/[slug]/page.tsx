@@ -68,7 +68,7 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
             className="object-cover opacity-70"
           />
         ) : (
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,#44403c,#78350f)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-stone-700 to-amber-900" />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/30" />
 

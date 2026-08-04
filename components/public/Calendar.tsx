@@ -407,13 +407,13 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   }}
                   modifiersStyles={{
                     event: {
-                      backgroundColor: 'hsl(30 30% 88%)',
-                      color: 'hsl(25 35% 20%)',
+                      backgroundColor: 'hsl(var(--accent))',
+                      color: 'hsl(var(--accent-foreground))',
                       fontWeight: '600',
                     },
                     selectedEvent: {
-                      backgroundColor: 'hsl(25 45% 35%)',
-                      color: 'hsl(30 15% 95%)',
+                      backgroundColor: 'hsl(var(--primary))',
+                      color: 'hsl(var(--primary-foreground))',
                       fontWeight: '700',
                     },
                   }}

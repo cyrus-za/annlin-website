@@ -1,3 +1,19 @@
+const themedScale = (name) => ({
+  50: `hsl(var(--${name}-50) / <alpha-value>)`,
+  100: `hsl(var(--${name}-100) / <alpha-value>)`,
+  200: `hsl(var(--${name}-200) / <alpha-value>)`,
+  300: `hsl(var(--${name}-300) / <alpha-value>)`,
+  400: `hsl(var(--${name}-400) / <alpha-value>)`,
+  500: `hsl(var(--${name}-500) / <alpha-value>)`,
+  600: `hsl(var(--${name}-600) / <alpha-value>)`,
+  700: `hsl(var(--${name}-700) / <alpha-value>)`,
+  800: `hsl(var(--${name}-800) / <alpha-value>)`,
+  900: `hsl(var(--${name}-900) / <alpha-value>)`,
+  950: `hsl(var(--${name}-950) / <alpha-value>)`,
+})
+
+const themedColor = (name) => `hsl(var(--${name}) / <alpha-value>)`
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -12,44 +28,53 @@ module.exports = {
         display: ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        white: themedColor('color-white'),
+        black: themedColor('color-black'),
+        amber: themedScale('amber'),
+        gray: themedScale('gray'),
+        stone: themedScale('stone'),
+        red: themedScale('red'),
+        green: themedScale('green'),
+        yellow: themedScale('yellow'),
+        blue: themedScale('blue'),
+        orange: themedScale('orange'),
+        border: themedColor('border'),
+        input: themedColor('input'),
+        ring: themedColor('ring'),
+        background: themedColor('background'),
+        foreground: themedColor('foreground'),
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: themedColor('primary'),
+          foreground: themedColor('primary-foreground'),
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+          DEFAULT: themedColor('secondary'),
+          foreground: themedColor('secondary-foreground'),
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+          DEFAULT: themedColor('destructive'),
+          foreground: themedColor('destructive-foreground'),
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: themedColor('muted'),
+          foreground: themedColor('muted-foreground'),
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+          DEFAULT: themedColor('accent'),
+          foreground: themedColor('accent-foreground'),
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: themedColor('popover'),
+          foreground: themedColor('popover-foreground'),
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: themedColor('card'),
+          foreground: themedColor('card-foreground'),
         },
-        // Church-specific colors
-        'church-brown': 'hsl(var(--church-brown))',
-        'church-tan': 'hsl(var(--church-tan))',
-        'church-cream': 'hsl(var(--church-cream))',
-        'church-gold': 'hsl(var(--church-gold))',
+        'church-brown': themedColor('church-brown'),
+        'church-tan': themedColor('church-tan'),
+        'church-cream': themedColor('church-cream'),
+        'church-gold': themedColor('church-gold'),
       },
       borderRadius: {
         lg: 'var(--radius)',

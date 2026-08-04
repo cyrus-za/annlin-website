@@ -9,6 +9,7 @@ import { useSession } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { LayoutDashboard, Menu, X, Search } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ThemeSwitcher } from '@/components/public/ThemeSwitcher'
 
 interface NavigationItem {
   name: string
@@ -194,10 +195,12 @@ export function Navigation() {
                 Kontak Ons
               </Link>
             </Button>
+            <ThemeSwitcher />
           </div>
 
           {/* Mobile menu button */}
-          <div className="xl:hidden">
+          <div className="flex items-center gap-1 xl:hidden">
+            <ThemeSwitcher />
             <Button
               variant="ghost"
               size="sm"

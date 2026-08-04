@@ -30,7 +30,7 @@ export default async function Home() {
       <section 
         className="relative bg-cover bg-center bg-no-repeat py-16 text-white sm:py-20"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(146, 64, 14, 0.85), rgba(120, 53, 15, 0.85)), url('/church-building-main.jpg')`
+          backgroundImage: `linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85)), url('/church-building-main.jpg')`
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,7 +202,7 @@ export default async function Home() {
             <div className="grid gap-5">
               <Card className="overflow-hidden border-stone-200 shadow-sm">
                 <div className="h-48 bg-cover bg-center" style={{
-                  backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('/church-building-1974.jpg')`
+                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.35), hsl(var(--color-black) / 0.35)), url('/church-building-1974.jpg')`
                 }}>
                   <div className="h-full flex items-end p-6">
                     <div className="text-white">

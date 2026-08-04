@@ -2,36 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Church brown color scheme */
-  --background: 0 0% 100%;
-  --foreground: 25 25% 15%; /* Dark brown text - good contrast on white */
-  --card: 0 0% 100%;
-  --card-foreground: 25 25% 15%; /* Dark brown text */
-  --popover: 0 0% 100%;
-  --popover-foreground: 25 25% 15%;
-  --primary: 25 45% 35%; /* Rich brown primary */
-  --primary-foreground: 30 15% 95%; /* Cream white */
-  --secondary: 30 25% 85%; /* Light tan */
-  --secondary-foreground: 25 25% 15%; /* Dark brown text on light tan */
-  --muted: 30 20% 92%; /* Very light tan */
-  --muted-foreground: 25 15% 25%; /* Much darker brown for better contrast */
-  --accent: 30 30% 88%; /* Warm accent */
-  --accent-foreground: 25 25% 15%; /* Dark brown text */
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 30 20% 88%; /* Tan border */
-  --input: 30 20% 94%; /* Light tan input */
-  --ring: 25 45% 35%; /* Brown focus ring */
-  --radius: 0.75rem;
-  
-  /* Additional church-specific colors */
-  --church-brown: 25 45% 35%; /* Main brown */
-  --church-tan: 30 35% 65%; /* Medium tan */
-  --church-cream: 30 15% 95%; /* Cream background */
-  --church-gold: 45 85% 60%; /* Gold accent */
-}
-
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
