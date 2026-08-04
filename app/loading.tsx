@@ -22,7 +22,7 @@ export default function Loading() {
                   Laai Tans...
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Ons berei die inhoud voor jou voor
+                  Ons berei die inhoud vir jou voor
                 </p>
                 
                 {/* Animated Loading Indicator */}
