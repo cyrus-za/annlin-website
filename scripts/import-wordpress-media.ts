@@ -526,6 +526,11 @@ function urlVariants(value: string) {
     // Non-URL values do not need URL variants.
   }
 
+  for (const variant of [...variants]) {
+    variants.add(variant.replace(/(\d+)x(\d+)/g, '$1×$2'))
+    variants.add(variant.replace(/(\d+)×(\d+)/g, '$1x$2'))
+  }
+
   return [...variants].filter(Boolean)
 }
 

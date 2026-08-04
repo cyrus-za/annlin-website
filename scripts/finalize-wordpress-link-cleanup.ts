@@ -25,8 +25,9 @@ const READING_TITLES = ['Preek Samevattings'] as const
 function filenameFromUrl(value: string) {
   try {
     return decodeURIComponent(new URL(value).pathname.split('/').pop() || '')
+      .replace(/(\d+)×(\d+)/g, '$1x$2')
   } catch {
-    return value.split('/').pop() || ''
+    return (value.split('/').pop() || '').replace(/(\d+)×(\d+)/g, '$1x$2')
   }
 }
 
