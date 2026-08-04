@@ -3,7 +3,7 @@ import { UpcomingEvents } from '@/components/public/Calendar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Calendar, Newspaper, BookOpen, Mail, ArrowRight } from 'lucide-react'
+import { Calendar, Newspaper, BookOpen, Mail, ArrowRight, PlayCircle } from 'lucide-react'
 import { Metadata } from 'next'
 import { APP_CONFIG } from '@/lib/constants'
 import { getPublicContentPage } from '@/lib/content-pages.server'
@@ -43,8 +43,8 @@ export default async function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0 w-full sm:w-auto">
                 <Link href="/uitsendings">
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Bekyk Eredienste
+                  <PlayCircle className="mr-2 h-5 w-5" />
+                  Kyk na Uitsendings
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-amber-100 hover:bg-white hover:text-amber-800 bg-transparent w-full sm:w-auto">

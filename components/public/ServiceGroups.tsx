@@ -94,6 +94,8 @@ export function ServiceGroups({
 
   const diakonieGroups = serviceGroups.filter((group) => group.category === 'DIAKONIE')
   const otherGroups = serviceGroups.filter((group) => group.category === 'OTHER')
+  const featuredDiakonieGroups = diakonieGroups.slice(0, 4)
+  const featuredOtherGroups = otherGroups.slice(0, 4)
 
   return showAll ? (
     <section className="bg-stone-50 py-12">
@@ -120,8 +122,17 @@ export function ServiceGroups({
           </Button>
         </div>
 
-        <ServiceGroupRail title="Diakonie" groups={diakonieGroups} />
-        <ServiceGroupRail title="Ander diensgroepe" groups={otherGroups} className="mt-8" />
+        <ServiceGroupRail
+          title="Diakonie"
+          groups={featuredDiakonieGroups}
+          totalCount={diakonieGroups.length}
+        />
+        <ServiceGroupRail
+          title="Ander diensgroepe"
+          groups={featuredOtherGroups}
+          totalCount={otherGroups.length}
+          className="mt-8"
+        />
 
         <div className="mt-8 sm:hidden">
           <Button asChild variant="outline" className="w-full">
@@ -232,10 +243,12 @@ function ServiceGroupGridSection({
 function ServiceGroupRail({
   title,
   groups,
+  totalCount,
   className,
 }: {
   title: string
   groups: ServiceGroup[]
+  totalCount: number
   className?: string
 }) {
   if (groups.length === 0) return null
@@ -244,7 +257,9 @@ function ServiceGroupRail({
     <div className={className}>
       <div className="mb-4 flex items-center justify-between gap-4">
         <h3 className="text-xl font-semibold text-foreground">{title}</h3>
-        <span className="text-sm text-muted-foreground">{groups.length} groepe</span>
+        <span className="text-sm text-muted-foreground">
+          {groups.length === totalCount ? `${totalCount} groepe` : `${groups.length} van ${totalCount}`}
+        </span>
       </div>
 
       <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
