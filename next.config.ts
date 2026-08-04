@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
+    qualities: [75, 80],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -36,6 +37,12 @@ const nextConfig: NextConfig = {
         hostname: 'i.ytimg.com',
         port: '',
         pathname: '/vi/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev',
+        port: '',
+        pathname: '/wordpress-media/**',
       },
     ],
   },

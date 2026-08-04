@@ -177,7 +177,11 @@ function ServiceGroupGridSection({
                 className="block"
                 aria-label={`Meer oor ${group.name}`}
               >
-                <ServiceGroupImage group={group} className="aspect-[16/7]" />
+                <ServiceGroupImage
+                  group={group}
+                  className="aspect-[16/7]"
+                  sizes="(min-width: 1024px) 44vw, 100vw"
+                />
               </Link>
               <CardHeader className="space-y-3">
                 <div className="flex items-start justify-between gap-4">
@@ -272,7 +276,7 @@ function ServiceGroupRail({
                 className="block"
                 aria-label={`Meer oor ${group.name}`}
               >
-                <ServiceGroupImage group={group} className="aspect-[16/9]" />
+                <ServiceGroupImage group={group} className="aspect-[16/9]" sizes="288px" />
               </Link>
 
               <div className="flex flex-1 flex-col p-5">
@@ -315,9 +319,11 @@ function ServiceGroupRail({
 function ServiceGroupImage({
   group,
   className,
+  sizes,
 }: {
   group: PublicServiceGroup
   className: string
+  sizes: string
 }) {
   const imageUrl = group.thumbnailUrl || group.bannerUrl
 
@@ -328,7 +334,7 @@ function ServiceGroupImage({
           src={imageUrl}
           alt=""
           fill
-          sizes="(min-width: 1024px) 35vw, (min-width: 640px) 50vw, 18rem"
+          sizes={sizes}
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
       ) : (

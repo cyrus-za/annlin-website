@@ -72,9 +72,17 @@ export default async function ReadingPage() {
   return (
     <div className="min-h-screen bg-stone-50">
       <section
-        className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 bg-cover bg-center sm:min-h-[30rem]"
-        style={{ backgroundImage: `url(${readingHeroImage})` }}
+        className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 sm:min-h-[30rem]"
       >
+        <Image
+          src={readingHeroImage}
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/45 to-stone-950/10" />
         <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-6 sm:pb-16 lg:px-8">
           <div className="max-w-3xl text-white">

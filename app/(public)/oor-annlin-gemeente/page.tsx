@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
 import { CONTACT_DETAILS } from '@/lib/constants'
+import Image from 'next/image'
 
 export const revalidate = 300
 
@@ -22,12 +23,24 @@ export default async function AboutPage() {
     <div>
       {/* Hero Section */}
       <section 
-        className="relative text-white py-20 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85)), url('/church-building-main.jpg')`
-        }}
+        className="relative overflow-hidden py-20 text-white"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Image
+          src="/church-building-main.jpg"
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85))',
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               {copy('hero.title')}
@@ -150,13 +163,15 @@ export default async function AboutPage() {
             </div>
 
             <div className="space-y-6">
-              <div 
-                className="h-64 bg-cover bg-center rounded-lg shadow-lg"
-                style={{
-                  backgroundImage: `url('/church-building-1974.jpg')`
-                }}
-              >
-                <div className="h-full bg-gradient-to-t from-black/50 to-transparent rounded-lg flex items-end p-6">
+              <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src="/church-building-1974.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="relative flex h-full items-end rounded-lg bg-gradient-to-t from-black/50 to-transparent p-6">
                   <div className="text-white">
                     <h4 className="font-bold text-lg">{copy('history.oldImageTitle')}</h4>
                     <p className="text-sm text-gray-200">{copy('history.oldImageBody')}</p>
@@ -164,13 +179,15 @@ export default async function AboutPage() {
                 </div>
               </div>
 
-              <div 
-                className="h-64 bg-cover bg-center rounded-lg shadow-lg"
-                style={{
-                  backgroundImage: `url('/church-building-main.jpg')`
-                }}
-              >
-                <div className="h-full bg-gradient-to-t from-black/50 to-transparent rounded-lg flex items-end p-6">
+              <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src="/church-building-main.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="relative flex h-full items-end rounded-lg bg-gradient-to-t from-black/50 to-transparent p-6">
                   <div className="text-white">
                     <h4 className="font-bold text-lg">{copy('history.currentImageTitle')}</h4>
                     <p className="text-sm text-gray-200">{copy('history.currentImageBody')}</p>
@@ -321,13 +338,16 @@ export default async function AboutPage() {
 
             {/* 1970s */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div 
-                className="h-64 bg-cover bg-center rounded-lg shadow-lg order-2 lg:order-1"
-                style={{
-                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.3), hsl(var(--color-black) / 0.3)), url('/church-building-1974.jpg')`
-                }}
-              >
-                <div className="h-full flex items-end p-6">
+              <div className="relative order-2 h-64 overflow-hidden rounded-lg shadow-lg lg:order-1">
+                <Image
+                  src="/church-building-1974.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30" />
+                <div className="relative flex h-full items-end p-6">
                   <div className="text-white">
                     <h4 className="font-bold text-lg">Kerkgebou 1974</h4>
                     <p className="text-sm text-gray-200">Ontwerp deur argitek Johan de Ridder</p>
@@ -354,13 +374,16 @@ export default async function AboutPage() {
                   </p>
                 ))}
               </div>
-              <div 
-                className="h-64 bg-cover bg-center rounded-lg shadow-lg"
-                style={{
-                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.3), hsl(var(--color-black) / 0.3)), url('/church-building-main.jpg')`
-                }}
-              >
-                <div className="h-full flex items-end p-6">
+              <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
+                <Image
+                  src="/church-building-main.jpg"
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 44vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30" />
+                <div className="relative flex h-full items-end p-6">
                   <div className="text-white">
                     <h4 className="font-bold text-lg">Kerkgebou Vandag</h4>
                     <p className="text-sm text-gray-200">Die vergrote kerkgebou, 2019</p>

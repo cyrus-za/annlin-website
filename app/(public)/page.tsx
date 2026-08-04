@@ -9,6 +9,7 @@ import { APP_CONFIG } from '@/lib/constants'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
+import Image from 'next/image'
 
 export const revalidate = 300
 
@@ -28,12 +29,24 @@ export default async function Home() {
     <div>
       {/* Hero Section */}
       <section 
-        className="relative bg-cover bg-center bg-no-repeat py-16 text-white sm:py-20"
-        style={{
-          backgroundImage: `linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85)), url('/church-building-main.jpg')`
-        }}
+        className="relative overflow-hidden py-16 text-white sm:py-20"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Image
+          src="/church-building-main.jpg"
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85))',
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="mx-auto mb-6 max-w-5xl text-4xl font-bold leading-[0.98] md:text-6xl lg:text-7xl">
               {copy('hero.title')}
@@ -201,10 +214,16 @@ export default async function Home() {
             
             <div className="grid gap-5">
               <Card className="overflow-hidden border-stone-200 shadow-sm">
-                <div className="h-48 bg-cover bg-center" style={{
-                  backgroundImage: `linear-gradient(hsl(var(--color-black) / 0.35), hsl(var(--color-black) / 0.35)), url('/church-building-1974.jpg')`
-                }}>
-                  <div className="h-full flex items-end p-6">
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src="/church-building-1974.jpg"
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/35" />
+                  <div className="relative flex h-full items-end p-6">
                     <div className="text-white">
                       <h3 className="text-xl font-bold mb-2">{copy('history.title')}</h3>
                       <p className="text-sm text-gray-200">{copy('history.subtitle')}</p>
