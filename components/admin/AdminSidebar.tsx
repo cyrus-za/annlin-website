@@ -89,8 +89,8 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
           <div className="flex items-center space-x-2">
             <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
               <Image
-                src="/gksa-logo.png"
-                alt="Gereformeerde Kerke in Suid-Afrika"
+                src="/annlin-mark.png"
+                alt="Gereformeerde Kerk Pretoria-Annlin"
                 width={32}
                 height={32}
                 className="h-7 w-7 object-contain"

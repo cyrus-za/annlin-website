@@ -97,8 +97,8 @@ export function Navigation() {
             <Link href="/" className="flex items-center space-x-3">
               <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
                 <Image
-                  src="/gksa-logo.png"
-                  alt="Gereformeerde Kerke in Suid-Afrika"
+                  src="/annlin-mark.png"
+                  alt="Gereformeerde Kerk Pretoria-Annlin"
                   width={40}
                   height={40}
                   className="h-9 w-9 object-contain"
@@ -242,8 +242,8 @@ export function Navigation() {
                 <div className="flex items-center space-x-3">
                   <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-200">
                     <Image
-                      src="/gksa-logo.png"
-                      alt="Gereformeerde Kerke in Suid-Afrika"
+                      src="/annlin-mark.png"
+                      alt="Gereformeerde Kerk Pretoria-Annlin"
                       width={32}
                       height={32}
                       className="h-7 w-7 object-contain"

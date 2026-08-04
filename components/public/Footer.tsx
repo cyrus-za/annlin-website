@@ -13,20 +13,30 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Church Information */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-amber-500/40">
+            <Link
+              href="/"
+              className="inline-flex w-full max-w-64 overflow-hidden rounded-lg bg-white ring-1 ring-amber-500/40"
+              aria-label="Gereformeerde Kerk Pretoria-Annlin tuisblad"
+            >
+              <Image
+                src="/annlin-logo.png"
+                alt="Gereformeerde Kerk Pretoria-Annlin"
+                width={800}
+                height={494}
+                className="h-auto w-full"
+              />
+            </Link>
+            <div className="flex items-center gap-3 text-xs text-amber-300">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white ring-1 ring-amber-500/40">
                 <Image
                   src="/gksa-logo.png"
                   alt="Gereformeerde Kerke in Suid-Afrika"
-                  width={40}
-                  height={40}
-                  className="h-9 w-9 object-contain"
+                  width={36}
+                  height={36}
+                  className="h-8 w-8 object-contain"
                 />
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Annlin Gemeente</h3>
-                <p className="text-xs text-amber-300">Gereformeerde Kerk Pretoria-Annlin</p>
-              </div>
+              <span>Deel van die Gereformeerde Kerke in Suid-Afrika</span>
             </div>
             <p className="text-sm text-amber-200">
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.
