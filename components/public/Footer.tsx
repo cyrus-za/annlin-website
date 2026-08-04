@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Mail, Phone, MapPin, Calendar, Youtube } from 'lucide-react'
+import { Calendar, Mail, MapPin, Phone, Radio, Youtube } from 'lucide-react'
 import { APP_CONFIG } from '@/lib/constants'
 
 export function Footer() {
@@ -41,7 +41,7 @@ export function Footer() {
             <p className="hidden text-sm text-amber-200 md:block">
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.
             </p>
-            <div className="flex">
+            <div className="flex items-center gap-1">
               <a 
                 href="https://www.youtube.com/@gereformeerdekerkpretoria-813" 
                 target="_blank"
@@ -50,6 +50,16 @@ export function Footer() {
                 aria-label="YouTube"
               >
                 <Youtube className="h-5 w-5" />
+              </a>
+              <a
+                href="https://kerkdienstgemist.nl/stations/1246"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-11 w-11 items-center justify-center text-amber-300 transition-colors hover:text-white"
+                aria-label="Luister op Kerkdienstgemist"
+                title="Kerkdienstgemist"
+              >
+                <Radio className="h-5 w-5" />
               </a>
             </div>
           </div>
