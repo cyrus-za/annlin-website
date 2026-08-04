@@ -109,15 +109,14 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
                   {galleryImages.map((image) => (
                     <div
                       key={image.url}
-                      className="aspect-[4/3] overflow-hidden rounded-md bg-stone-100"
+                      className="relative aspect-[4/3] overflow-hidden rounded-md bg-stone-100"
                     >
-                      {/* WordPress media remains remote until the R2 archive is provisioned. */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={image.url}
                         alt={image.alt || `${serviceGroup.name} foto`}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="(min-width: 640px) 18rem, 50vw"
+                        className="object-cover"
                       />
                     </div>
                   ))}
