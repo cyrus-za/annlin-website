@@ -3,19 +3,13 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { DataTable } from '@/components/admin/DataTable'
+import { AdminPreviewDialog } from '@/components/admin/AdminPreviewDialog'
 import { StatusBadge } from '@/components/admin/AdminForm'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { MarkdownContent } from '@/components/content/MarkdownContent'
 import { showSuccessToast, showErrorToast, showDeleteConfirmationToast } from '@/lib/toast-helpers'
-import { Edit, Trash2, Eye, Users, Mail, Phone } from 'lucide-react'
+import { Edit, Users, Mail, Phone } from 'lucide-react'
 
 interface ServiceGroup {
   id: string
@@ -243,25 +237,31 @@ export default function DiensgroepeListPage() {
       />
 
       {/* Detail Dialog */}
-      <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedServiceGroup?.name}
-            </DialogTitle>
-            <DialogDescription>
-              Diensgroep besonderhede
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedServiceGroup && (
-            <div className="space-y-6">
+      <AdminPreviewDialog
+        open={showDetailDialog}
+        onOpenChange={setShowDetailDialog}
+        title={selectedServiceGroup?.name || 'Diensgroep'}
+        description="Diensgroep besonderhede"
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setShowDetailDialog(false)}>
+              Maak Toe
+            </Button>
+            {selectedServiceGroup && (
+              <Button onClick={() => handleEdit(selectedServiceGroup)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Redigeer
+              </Button>
+            )}
+          </>
+        }
+      >
+        {selectedServiceGroup && (
+          <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">Beskrywing</h4>
-                  <p className="text-gray-600 text-sm">
-                    {selectedServiceGroup.description}
-                  </p>
+                  <MarkdownContent markdown={selectedServiceGroup.description} />
                 </div>
                 
                 <div className="space-y-4">
@@ -325,22 +325,9 @@ export default function DiensgroepeListPage() {
                   />
                 </div>
               )}
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDetailDialog(false)}>
-              Maak Toe
-            </Button>
-            {selectedServiceGroup && (
-              <Button onClick={() => handleEdit(selectedServiceGroup)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Redigeer
-              </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        )}
+      </AdminPreviewDialog>
     </div>
   )
 }

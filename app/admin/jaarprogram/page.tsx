@@ -6,15 +6,10 @@ import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { AdminPreviewDialog } from '@/components/admin/AdminPreviewDialog'
 import { DataTable } from '@/components/admin/DataTable'
 import { StatusBadge } from '@/components/admin/AdminForm'
+import { MarkdownContent } from '@/components/content/MarkdownContent'
 import { showSuccessToast, showErrorToast, showDeleteConfirmationToast } from '@/lib/toast-helpers'
 import { 
   Plus, 
@@ -22,7 +17,6 @@ import {
   Clock, 
   MapPin, 
   Edit, 
-  Trash2, 
   Eye,
   ChevronLeft,
   ChevronRight
@@ -436,25 +430,31 @@ export default function CalendarAdminPage() {
       )}
 
       {/* Event Detail Dialog */}
-      <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedEvent?.title}
-            </DialogTitle>
-            <DialogDescription>
-              Gebeurtenis besonderhede
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedEvent && (
-            <div className="space-y-6">
+      <AdminPreviewDialog
+        open={showEventDialog}
+        onOpenChange={setShowEventDialog}
+        title={selectedEvent?.title || 'Gebeurtenis'}
+        description="Gebeurtenis besonderhede"
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setShowEventDialog(false)}>
+              Maak Toe
+            </Button>
+            {selectedEvent && (
+              <Button onClick={() => handleEventEdit(selectedEvent)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Redigeer
+              </Button>
+            )}
+          </>
+        }
+      >
+        {selectedEvent && (
+          <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">Beskrywing</h4>
-                  <p className="text-gray-600 text-sm">
-                    {selectedEvent.description}
-                  </p>
+                  <MarkdownContent markdown={selectedEvent.description} />
                 </div>
                 
                 <div className="space-y-4">
@@ -515,22 +515,9 @@ export default function CalendarAdminPage() {
                   </Button>
                 </div>
               )}
-            </div>
-          )}
-
-          <div className="flex justify-end space-x-4">
-            <Button variant="outline" onClick={() => setShowEventDialog(false)}>
-              Maak Toe
-            </Button>
-            {selectedEvent && (
-              <Button onClick={() => handleEventEdit(selectedEvent)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Redigeer
-              </Button>
-            )}
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </AdminPreviewDialog>
     </div>
   )
 }
