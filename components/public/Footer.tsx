@@ -41,12 +41,12 @@ export function Footer() {
             <p className="text-sm text-amber-200">
               Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex">
               <a 
                 href="https://www.youtube.com/@gereformeerdekerkpretoria-813" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-300 hover:text-white transition-colors"
+                className="-ml-3 flex h-11 w-11 items-center justify-center text-amber-300 transition-colors hover:text-white"
                 aria-label="YouTube"
               >
                 <Youtube className="h-5 w-5" />
@@ -69,25 +69,21 @@ export function Footer() {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <a
+                href="tel:012-567-1492"
+                className="flex min-h-11 items-center space-x-3 text-sm text-amber-200 transition-colors hover:text-white"
+              >
                 <Phone className="h-4 w-4 text-amber-400" />
-                <a 
-                  href="tel:012-567-1492"
-                  className="text-sm text-amber-200 hover:text-white transition-colors"
-                >
-                  012 567 1492
-                </a>
-              </div>
+                <span>012 567 1492</span>
+              </a>
               
-              <div className="flex items-center space-x-3">
+              <a
+                href={contactEmailHref}
+                className="flex min-h-11 items-center space-x-3 text-sm text-amber-200 transition-colors hover:text-white"
+              >
                 <Mail className="h-4 w-4 text-amber-400" />
-                <a 
-                  href={contactEmailHref}
-                  className="text-sm text-amber-200 hover:text-white transition-colors"
-                >
-                  {APP_CONFIG.email}
-                </a>
-              </div>
+                <span>{APP_CONFIG.email}</span>
+              </a>
             </div>
           </div>
 
@@ -120,37 +116,37 @@ export function Footer() {
             <div className="space-y-2">
               <Link 
                 href="/jaarprogram"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Kalender & Gebeure
               </Link>
               <Link 
                 href="/uitsendings"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Video Uitsendings
               </Link>
               <Link 
                 href="/diensgroepe"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Raak Betrokke
               </Link>
               <Link 
                 href="/nuus"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Nuus & Aankondigings
               </Link>
               <Link 
                 href="/leesstof"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Preke & Leesstof
               </Link>
               <Link 
                 href="/uitsendings"
-                className="block text-sm text-amber-200 hover:text-white transition-colors"
+                className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
                 Luister na Preke
               </Link>
@@ -171,13 +167,13 @@ export function Footer() {
             </div>
             
             <div className="flex items-center space-x-6 text-xs text-amber-400">
-              <Link href="/privaatheid" className="hover:text-white transition-colors">
+              <Link href="/privaatheid" className="inline-flex min-h-11 items-center transition-colors hover:text-white">
                 Privaatheid Beleid
               </Link>
-              <Link href="/gebruiksvoorwaardes" className="hover:text-white transition-colors">
+              <Link href="/gebruiksvoorwaardes" className="inline-flex min-h-11 items-center transition-colors hover:text-white">
                 Gebruiksvoorwaardes
               </Link>
-              <Link href="/admin" className="hover:text-white transition-colors">
+              <Link href="/admin" className="inline-flex min-h-11 items-center transition-colors hover:text-white">
                 Admin
               </Link>
             </div>

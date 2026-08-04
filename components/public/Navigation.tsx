@@ -45,10 +45,6 @@ const navigationItems: NavigationItem[] = [
     name: 'Leesstof',
     href: '/leesstof',
   },
-  {
-    name: 'Kontak',
-    href: '/kontakbesonderhede',
-  },
 ]
 
 export function Navigation() {
@@ -122,10 +118,10 @@ export function Navigation() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "whitespace-nowrap text-sm font-medium transition-colors duration-200 hover:text-amber-700",
+                    "flex h-11 items-center whitespace-nowrap border-b-2 text-sm font-medium transition-colors duration-200 hover:text-amber-700",
                     isActive 
-                      ? "text-amber-800 border-b-2 border-amber-600 pb-1" 
-                      : "text-gray-700"
+                      ? "border-amber-600 text-amber-800"
+                      : "border-transparent text-gray-700"
                   )}
                 >
                   {item.name}
@@ -142,7 +138,7 @@ export function Navigation() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="text-gray-600 hover:text-amber-700"
+                className="h-11 w-11 p-0 text-gray-600 hover:text-amber-700"
                 aria-label={isSearchOpen ? 'Maak soektog toe' : 'Soek op die webwerf'}
                 aria-expanded={isSearchOpen}
               >
@@ -182,14 +178,14 @@ export function Navigation() {
 
             {/* Contact Button */}
             {showAdminLink && (
-              <Button asChild size="sm" variant="outline">
+              <Button asChild size="sm" variant="outline" className="h-11">
                 <Link href="/admin">
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Bestuur
                 </Link>
               </Button>
             )}
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="h-11">
               <Link href="/kontak">
                 Kontak Ons
               </Link>
@@ -202,7 +198,7 @@ export function Navigation() {
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-600 hover:text-amber-700"
+              className="h-11 w-11 p-0 text-gray-600 hover:text-amber-700"
               aria-label={isMobileMenuOpen ? 'Maak kieslys toe' : 'Maak kieslys oop'}
               aria-expanded={isMobileMenuOpen}
             >
@@ -306,14 +302,14 @@ export function Navigation() {
                         value={searchTerm}
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Soek..."
-                        className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        className="h-11 w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                       />
                     </div>
-                    <Button type="submit" size="sm" aria-label="Soek" disabled={!searchTerm.trim()}>
+                    <Button type="submit" size="sm" className="h-11 w-11 p-0" aria-label="Soek" disabled={!searchTerm.trim()}>
                       <Search className="h-4 w-4" />
                     </Button>
                   </form>
-                  <Button asChild className="w-full">
+                  <Button asChild className="h-11 w-full">
                     <Link href="/kontak">
                       Kontak Ons
                     </Link>
