@@ -14,6 +14,9 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
+const readingHeroImage =
+  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/1854-Leesstof.jpg'
+
 const booksForSale = [
   {
     title: 'Openbaring',
@@ -68,14 +71,18 @@ export default async function ReadingPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <section className="border-b bg-white py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100">
-              <BookOpen className="h-6 w-6 text-amber-800" />
+      <section
+        className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 bg-cover bg-center sm:min-h-[30rem]"
+        style={{ backgroundImage: `url(${readingHeroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/45 to-stone-950/10" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-6 sm:pb-16 lg:px-8">
+          <div className="max-w-3xl text-white">
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-white/15 backdrop-blur-sm">
+              <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">Leesstof</h1>
-            <p className="mt-6 text-xl text-muted-foreground">
+            <h1 className="text-4xl font-bold sm:text-5xl">Leesstof</h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-100 sm:text-xl">
               Boeke, preeksamevattings en toerustingsmateriaal vir die gemeente.
             </p>
           </div>
