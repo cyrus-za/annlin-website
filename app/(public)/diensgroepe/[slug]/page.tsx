@@ -150,7 +150,7 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
                 ) : null}
               </div>
               <Button asChild className="mt-6 w-full">
-                <Link href="/kontakbesonderhede">Kontak kerkkantoor</Link>
+                <Link href="/kontak">Kontak kerkkantoor</Link>
               </Button>
             </div>
           </aside>

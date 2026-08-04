@@ -230,7 +230,7 @@ function ServiceGroupGridSection({
                     </Link>
                   </Button>
                   <Button asChild variant="outline" className="sm:flex-1">
-                    <Link href="/kontakbesonderhede">Kontak kerkkantoor</Link>
+                    <Link href="/kontak">Kontak kerkkantoor</Link>
                   </Button>
                 </div>
               </CardContent>

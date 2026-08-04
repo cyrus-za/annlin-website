@@ -45,7 +45,7 @@ export default async function DiensgroepePage() {
             </p>
             <div className="space-x-4">
               <a
-                href="/kontakbesonderhede"
+                href="/kontak"
                 className="inline-flex items-center rounded-md border border-transparent bg-white px-6 py-3 text-base font-medium text-primary transition-colors duration-200 hover:bg-secondary"
               >
                 Kontak Ons

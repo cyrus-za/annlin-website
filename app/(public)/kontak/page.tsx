@@ -20,7 +20,8 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
+import { Calendar, Clock, Mail, MapPin, Phone, Send, Users } from 'lucide-react'
+import Link from 'next/link'
 import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
 import { usePublicContentPage } from '@/hooks/use-public-content-page'
 import { readContentText } from '@/lib/content-page-definitions'
@@ -48,7 +49,9 @@ export default function ContactPage() {
   const searchParams = useSearchParams()
   const preselectedServiceGroup = searchParams.get('diensgroep')
   const contentSections = usePublicContentPage('kontak')
+  const detailsSections = usePublicContentPage('kontakbesonderhede')
   const copy = (path: string) => readContentText(contentSections, path)
+  const detailsCopy = (path: string) => readContentText(detailsSections, path)
   
   const [serviceGroups, setServiceGroups] = React.useState<ServiceGroup[]>([])
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -399,6 +402,14 @@ export default function ContactPage() {
                         </React.Fragment>
                       ))}
                     </p>
+                    <a
+                      href={CONTACT_DETAILS.mapHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-amber-800 hover:text-amber-950"
+                    >
+                      Bekyk op kaart
+                    </a>
                   </div>
                 </div>
 
@@ -435,6 +446,33 @@ export default function ContactPage() {
                     <p className="text-muted-foreground">18:30 - 19:30</p>
                   </div>
                   
+                </div>
+                <Button asChild variant="outline" className="mt-6 w-full">
+                  <Link href="/jaarprogram">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Bekyk volledige kalender
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="mr-2 h-5 w-5 text-amber-600" />
+                  Personeel
+                </CardTitle>
+                <CardDescription>Ons span wat jou kan help</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-foreground">{detailsCopy('staff.ministerTitle')}</h4>
+                  <p className="text-muted-foreground">{detailsCopy('staff.ministerName')}</p>
+                  <p className="text-sm text-muted-foreground">{detailsCopy('staff.ministerBody')}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-foreground">{detailsCopy('staff.officeTitle')}</h4>
+                  <p className="text-sm text-muted-foreground">{detailsCopy('staff.officeBody')}</p>
                 </div>
               </CardContent>
             </Card>

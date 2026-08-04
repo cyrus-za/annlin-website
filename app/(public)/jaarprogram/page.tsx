@@ -117,7 +117,7 @@ export default function JaarprogramPage() {
             </p>
             <div className="space-x-4">
               <a
-                href="/kontakbesonderhede"
+                href="/kontak"
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-amber-800 bg-white hover:bg-amber-50 transition-colors duration-200"
               >
                 Kontak Ons vir Meer Info

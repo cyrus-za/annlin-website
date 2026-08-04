@@ -82,7 +82,7 @@ export default async function NewsPage() {
                 Die nuwe webwerf het nog geen gepubliseerde nuusitems nie.
               </p>
               <Button asChild className="mt-6">
-                <Link href="/kontakbesonderhede">Kontak die kerkkantoor</Link>
+                <Link href="/kontak">Kontak die kerkkantoor</Link>
               </Button>
             </div>
           )}

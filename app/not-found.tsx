@@ -27,7 +27,7 @@ export default function NotFound() {
             Bekyk diensgroepe
           </a>
           <a
-            href="/kontakbesonderhede"
+            href="/kontak"
             className="inline-flex h-11 items-center justify-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-foreground transition-colors hover:bg-stone-50"
           >
             Kontak kerkkantoor

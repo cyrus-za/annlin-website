@@ -185,7 +185,11 @@ export function Navigation() {
                 </Link>
               </Button>
             )}
-            <Button asChild size="sm" className="h-11">
+            <Button
+              asChild
+              size="sm"
+              className={cn('h-11', pathname.startsWith('/kontak') && 'ring-2 ring-amber-300 ring-offset-2')}
+            >
               <Link href="/kontak">
                 Kontak Ons
               </Link>
@@ -309,7 +313,10 @@ export function Navigation() {
                       <Search className="h-4 w-4" />
                     </Button>
                   </form>
-                  <Button asChild className="h-11 w-full">
+                  <Button
+                    asChild
+                    className={cn('h-11 w-full', pathname.startsWith('/kontak') && 'ring-2 ring-amber-300')}
+                  >
                     <Link href="/kontak">
                       Kontak Ons
                     </Link>

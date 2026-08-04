@@ -38,7 +38,7 @@ export const ROUTES = {
   CALENDAR: '/jaarprogram',
   NEWS: '/nuus',
   READING_MATERIALS: '/leesstof',
-  CONTACT: '/kontakbesonderhede',
+  CONTACT: '/kontak',
   ADMIN: '/admin',
 } as const
 

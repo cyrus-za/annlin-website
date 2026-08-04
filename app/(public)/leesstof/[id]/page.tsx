@@ -160,7 +160,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
             </div>
 
             <Button asChild variant="ghost" className="w-full text-amber-900 hover:text-amber-950">
-              <Link href="/kontakbesonderhede">Kontak kerkkantoor</Link>
+              <Link href="/kontak">Kontak kerkkantoor</Link>
             </Button>
           </aside>
         </div>

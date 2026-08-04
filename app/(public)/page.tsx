@@ -159,7 +159,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <Button asChild variant="outline" className="w-full">
-                  <Link href="/kontakbesonderhede">
+                  <Link href="/kontak">
                     Kontak Besonderhede
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -253,7 +253,7 @@ export default async function Home() {
                     </p>
                   </div>
                   <Button asChild className="w-full">
-                    <Link href="/kontakbesonderhede">
+                    <Link href="/kontak">
                       Volledige Kontak Besonderhede
                     </Link>
                   </Button>

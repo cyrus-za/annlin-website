@@ -97,7 +97,7 @@ export default async function ReadingPage() {
             </h2>
             <p className="mt-3 text-muted-foreground">
               Beskikbaar by die{' '}
-              <Link href="/kontakbesonderhede" className="font-medium text-amber-800 underline underline-offset-4">
+              <Link href="/kontak" className="font-medium text-amber-800 underline underline-offset-4">
                 Kerkkantoor
               </Link>
             </p>

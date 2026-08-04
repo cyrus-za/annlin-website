@@ -115,7 +115,7 @@ export default function Error({ error, reset }: ErrorProps) {
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/kontakbesonderhede">Kontak ons</Link>
+                <Link href="/kontak">Kontak ons</Link>
               </Button>
             </CardContent>
           </Card>
