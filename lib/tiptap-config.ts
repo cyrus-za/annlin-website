@@ -1,4 +1,4 @@
-import { Extension } from '@tiptap/core'
+import type { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Heading from '@tiptap/extension-heading'
 import BulletList from '@tiptap/extension-bullet-list'
@@ -100,6 +100,8 @@ export const articleEditorExtensions = [
     code: false,
     blockquote: false,
     horizontalRule: false,
+    link: false,
+    underline: false,
   }),
   
   // Typography extensions
@@ -194,8 +196,8 @@ export interface ToolbarButton {
   label: string
   icon: string
   action: string
-  isActive?: (editor: any) => boolean
-  isDisabled?: (editor: any) => boolean
+  isActive?: (editor: Editor) => boolean
+  isDisabled?: (editor: Editor) => boolean
 }
 
 export const toolbarButtons: ToolbarButton[] = [
