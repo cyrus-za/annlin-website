@@ -42,8 +42,28 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      <nav aria-label="Op hierdie bladsy" className="border-b border-amber-100 bg-white">
+        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
+          {[
+            ['Ons roeping', '#roeping'],
+            ['Geskiedenis', '#geskiedenis'],
+            ['Leierskap en waardes', '#leierskap'],
+            ['Erfenis', '#erfenis'],
+            ['Besoek ons', '#besoek-ons'],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-amber-200 px-4 text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-50"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       {/* Mission and Vision */}
-      <section className="py-16 bg-white">
+      <section id="roeping" className="scroll-mt-20 bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-amber-900 mb-4">{copy('calling.title')}</h2>
@@ -163,7 +183,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Leadership and Contact */}
-      <section className="py-16 bg-white">
+      <section id="leierskap" className="scroll-mt-20 bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Leadership */}
@@ -352,7 +372,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="border-y border-amber-100 bg-white py-16">
+      <section id="erfenis" className="scroll-mt-20 border-y border-amber-100 bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold text-amber-900">{copy('heritage.title')}</h2>

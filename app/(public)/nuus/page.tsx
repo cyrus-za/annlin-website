@@ -23,6 +23,14 @@ function formatDate(date: Date | null) {
   }).format(date)
 }
 
+function getArchiveYear(title: string, publishedAt: Date | null) {
+  const match = /^Nuus\s+(\d{4})$/i.exec(title.trim())
+  if (!match || !publishedAt) return null
+
+  const archiveYear = Number(match[1])
+  return archiveYear === publishedAt.getFullYear() ? null : archiveYear
+}
+
 export default async function NewsPage() {
   const articles = await prisma.article.findMany({
     where: { status: 'PUBLISHED' },
@@ -50,30 +58,39 @@ export default async function NewsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {articles.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {articles.map((article) => (
-                <Card key={article.id}>
-                  <CardHeader>
-                    <CardTitle className="text-amber-900">{article.title}</CardTitle>
-                    {formatDate(article.publishedAt) && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        {formatDate(article.publishedAt)}
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="space-y-5">
-                    <p className="overflow-hidden break-words text-base leading-7 text-muted-foreground">
-                      {createArticleExcerpt(article.excerpt || article.content, 220)}
-                    </p>
-                    <Button asChild variant="outline">
-                      <Link href={`/nuus/${article.slug}`}>
-                        Lees volledige artikel
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {articles.map((article) => {
+                const archiveYear = getArchiveYear(article.title, article.publishedAt)
+
+                return (
+                  <Card key={article.id}>
+                    <CardHeader>
+                      <CardTitle className="text-amber-900">{article.title}</CardTitle>
+                      {archiveYear ? (
+                        <div className="flex items-center gap-2 text-sm font-semibold text-amber-800">
+                          <Calendar className="h-4 w-4" />
+                          Argief: {archiveYear}
+                        </div>
+                      ) : formatDate(article.publishedAt) ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          {formatDate(article.publishedAt)}
+                        </div>
+                      ) : null}
+                    </CardHeader>
+                    <CardContent className="space-y-5">
+                      <p className="overflow-hidden break-words text-base leading-7 text-muted-foreground">
+                        {createArticleExcerpt(article.excerpt || article.content, 220)}
+                      </p>
+                      <Button asChild variant="outline">
+                        <Link href={`/nuus/${article.slug}`}>
+                          Lees volledige artikel
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           ) : (
             <div className="rounded-lg border bg-white p-6">
