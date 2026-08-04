@@ -74,19 +74,30 @@ export default function ContactPage() {
 
   // Fetch service groups for the dropdown
   React.useEffect(() => {
+    const controller = new AbortController()
+    let cancelled = false
+
     const fetchServiceGroups = async () => {
       try {
-        const response = await fetch('/api/diensgroepe?isActive=true&limit=100')
+        const response = await fetch('/api/diensgroepe?isActive=true&limit=100', {
+          signal: controller.signal,
+        })
         if (response.ok) {
           const data = await response.json()
-          setServiceGroups(data.serviceGroups || [])
+          if (!cancelled) setServiceGroups(data.serviceGroups || [])
         }
       } catch (error) {
+        if (cancelled || (error instanceof DOMException && error.name === 'AbortError')) return
         console.error('Error fetching service groups:', error)
       }
     }
 
     fetchServiceGroups()
+
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
   }, [])
 
   const onSubmit = async (data: ContactFormData) => {
