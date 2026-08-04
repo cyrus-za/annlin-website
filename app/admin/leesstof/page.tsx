@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { createExcerpt } from '@/lib/public-content'
 import { deleteReadingMaterial } from '../_actions/content'
 
 export default async function AdminReadingPage() {
@@ -43,7 +44,9 @@ export default async function AdminReadingPage() {
                   <Badge variant="outline">{item.category.name}</Badge>
                   {item.fileType && <Badge variant="secondary">{item.fileType}</Badge>}
                 </div>
-                <p className="line-clamp-2 text-sm text-gray-600">{item.description}</p>
+                <p className="line-clamp-2 text-sm text-gray-600">
+                  {item.description ? createExcerpt(item.description, 220) : 'Geen beskrywing nie.'}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" asChild>

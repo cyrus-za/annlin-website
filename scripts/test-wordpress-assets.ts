@@ -15,6 +15,7 @@ import {
   replaceMigratedWordPressAssetLinks,
 } from '../lib/wordpress-migration'
 import { markdownToHtml } from '../lib/markdown'
+import { auditContentMarkdown, normalizeContentMarkdown } from '../lib/content-integrity'
 import {
   createArticleExcerpt,
   extractTrailingMarkdownImageGallery,
@@ -123,6 +124,19 @@ assert.match(renderedMarkdown, /<a href="https:\/\/example\.com"/)
 assert.match(renderedMarkdown, /<img src="https:\/\/example\.com\/image\.jpg"/)
 assert.match(markdownToHtml('[Onveilig](javascript:alert(1))'), /href="#"/)
 assert.doesNotMatch(markdownToHtml('<script>alert(1)<\/script>'), /<script>/)
+
+const malformedPhotoPage = `
+![](https://example.com/3344-Boodskap-aan-jeug.jpg)
+![](https://example.com/3344-Boodskap-aan-jeug.jpg)
+[/](/) Kliek enige plek op fotoblad om weer terug te gaan na Tuisblad
+[/diensgroepe/tweedehandse-goedere-verkopings](/diensgroepe/tweedehandse-goedere-verkopings)
+`
+const normalizedPhotoPage = normalizeContentMarkdown(malformedPhotoPage)
+assert.equal(auditContentMarkdown(normalizedPhotoPage)['emptyImageAlt'], undefined)
+assert.equal(auditContentMarkdown(normalizedPhotoPage)['duplicateImage'], undefined)
+assert.equal(auditContentMarkdown(normalizedPhotoPage)['legacyPhotoNavigation'], undefined)
+assert.match(normalizedPhotoPage, /!\[Boodskap aan jeug\]\(https:\/\/example\.com\/3344-Boodskap-aan-jeug\.jpg\)/)
+assert.match(normalizedPhotoPage, /\[Tweedehandse goedere verkopings\]\(\/diensgroepe\/tweedehandse-goedere-verkopings\)/)
 assert.equal(createArticleExcerpt(preservedPdfImage), '')
 
 const malformedNestedImageLink =

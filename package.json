@@ -15,6 +15,7 @@
     "db:seed": "tsx scripts/seed-database.ts",
     "db:setup": "tsx scripts/setup-database.ts",
     "auth:test": "tsx scripts/test-auth-setup.ts",
+    "content:audit": "tsx scripts/audit-content-integrity.ts --check-urls",
     "content:test": "tsx scripts/test-wordpress-assets.ts",
     "invitations:test": "tsx scripts/test-invitation-system.ts"
   },
