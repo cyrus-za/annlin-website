@@ -9,7 +9,10 @@ import {
   extractWordPressAssetReferences,
   extractWordPressGalleryMediaIds,
 } from '../lib/wordpress-assets'
-import { migratedPublicAssetUrlForWordPressUrl } from '../lib/wordpress-migration'
+import {
+  canonicalNewsArticleSlug,
+  migratedPublicAssetUrlForWordPressUrl,
+} from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
@@ -308,7 +311,12 @@ async function main() {
           .filter(Boolean)
           .join('\n')
       } else if (pageType === 'newsArticle') {
-        const article = articleBySlug.get(slugify(page.slug))
+        const article = articleBySlug.get(
+          canonicalNewsArticleSlug(
+            page.slug,
+            decodeWordPressEntities(page.title.rendered || page.slug)
+          )
+        )
         migratedContent = [article?.content, article?.excerpt, article?.featuredImageUrl]
           .filter(Boolean)
           .join('\n')

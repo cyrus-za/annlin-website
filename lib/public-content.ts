@@ -7,6 +7,8 @@ const googleMapsUrlPattern = /(?<!\()\bhttps?:\/\/(?:www\.)?google\.com\/maps\/[
 const googleMapsMarkdownLinkPattern =
   /\[[^\]]*\]\((https?:\/\/(?:www\.)?google\.com\/maps\/[^\s)]+)\)/gi
 const markdownLinkPattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi
+const articlePreviewAssetLinkPattern =
+  /\[[^\]]*\]\((?:https?:\/\/|\/)[^\s)]+\.(?:pdf|docx?|xlsx?|pptx?|zip|mp3|wav|jpe?g|png|gif|webp)(?:[?#][^\s)]*)?\)/gi
 
 function normalizeWhitespace(value: string) {
   return value
@@ -260,7 +262,17 @@ export function createExcerpt(value: string, maxLength = 180) {
 }
 
 export function createArticleExcerpt(value: string, maxLength = 220) {
-  return createExcerpt(stripLeadingArticlePreviewMedia(normalizeArticleContent(value)), maxLength)
+  const previewContent = stripLeadingArticlePreviewMedia(normalizeArticleContent(value))
+    .replace(articlePreviewAssetLinkPattern, ' ')
+
+  return createExcerpt(previewContent, maxLength)
+}
+
+export function normalizeEventTitle(value: string) {
+  return value
+    .replace(/\s*\(\s*klik\s+vir\s+detail(?:\s+detail)?\s*\)\s*$/i, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
 }
 
 export function normalizeServiceGroupContent(value: string, title: string) {

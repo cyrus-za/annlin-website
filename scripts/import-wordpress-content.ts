@@ -5,6 +5,7 @@ import { disconnectDatabase, prisma } from '../lib/db'
 import {
   createArticleExcerpt,
   normalizeArticleContent,
+  normalizeEventTitle,
   normalizeReadingMaterialContent,
   normalizeServiceGroupContent,
 } from '../lib/public-content'
@@ -18,6 +19,7 @@ import {
 } from '../lib/wordpress-assets'
 import {
   buildWordPressPageRouteMap,
+  canonicalNewsArticleSlug,
   parseWordPressLocalDate,
   replaceMigratedWordPressAssetLinks,
   replaceWordPressPageLinks,
@@ -452,8 +454,9 @@ async function main() {
     if (newsSlugs.has(page.slug)) {
       const publishedAt = new Date(page.modified || page.date || Date.now())
       const articleContent = normalizeArticleContent(content)
+      const articleSlug = canonicalNewsArticleSlug(page.slug, title)
       await prisma.article.upsert({
-        where: { slug: slugify(page.slug) },
+        where: { slug: articleSlug },
         update: {
           title,
           content: articleContent,
@@ -465,7 +468,7 @@ async function main() {
         },
         create: {
           title,
-          slug: slugify(page.slug),
+          slug: articleSlug,
           content: articleContent,
           excerpt: createArticleExcerpt(articleContent, 240),
           categoryId: articleCategory.id,
@@ -513,6 +516,7 @@ async function main() {
       legacyPageRoutes
     )
     const description = normalizeEventDescription(rawDescription)
+    const title = normalizeEventTitle(htmlToText(event.title))
     const sermonUrl = hasKerkdienstgemistStationLink(rawDescription)
       ? '/uitsendings'
       : event.url === KERKDIENSTGEMIST_STATION_URL
@@ -522,8 +526,8 @@ async function main() {
     await prisma.event.upsert({
       where: { id: `wp-event-${event.id}` },
       update: {
-        title: htmlToText(event.title),
-        description: truncate(description || htmlToText(event.title), 1800),
+        title,
+        description: truncate(description || title, 1800),
         startDate,
         endDate: endDate && !Number.isNaN(endDate.getTime()) ? endDate : undefined,
         location: locationForEvent(event),
@@ -532,8 +536,8 @@ async function main() {
       },
       create: {
         id: `wp-event-${event.id}`,
-        title: htmlToText(event.title),
-        description: truncate(description || htmlToText(event.title), 1800),
+        title,
+        description: truncate(description || title, 1800),
         startDate,
         endDate: endDate && !Number.isNaN(endDate.getTime()) ? endDate : undefined,
         location: locationForEvent(event),

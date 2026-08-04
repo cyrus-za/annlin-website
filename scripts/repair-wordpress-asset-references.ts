@@ -8,13 +8,17 @@ import {
   extractWordPressAssetReferences,
   type WordPressAssetReference,
 } from '../lib/wordpress-assets'
-import { migratedPublicAssetUrlForWordPressUrl } from '../lib/wordpress-migration'
+import {
+  canonicalNewsArticleSlug,
+  migratedPublicAssetUrlForWordPressUrl,
+} from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
 type WpPage = {
   id: number
   slug: string
+  title: WpRendered
   content: WpRendered
 }
 
@@ -189,7 +193,7 @@ function appendMissingReferences(
 
 async function fetchPages() {
   const response = await fetch(
-    `${wordpressBaseUrl()}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,content`,
+    `${wordpressBaseUrl()}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,title,content`,
     {
       headers: {
         accept: 'application/json',
@@ -312,7 +316,12 @@ async function main() {
       const group = serviceGroupBySlug.get(slugify(page.slug))
       if (group) target = { type: 'serviceGroup', id: group.id, content: group.description }
     } else if (newsSlugs.has(page.slug)) {
-      const article = articleBySlug.get(slugify(page.slug))
+      const article = articleBySlug.get(
+        canonicalNewsArticleSlug(
+          page.slug,
+          decodeWordPressEntities(page.title.rendered || page.slug)
+        )
+      )
       if (article) target = { type: 'article', id: article.id, content: article.content }
     } else {
       const prefix = readingSlugs.has(page.slug) ? 'wp-page' : 'wp-archive-page'

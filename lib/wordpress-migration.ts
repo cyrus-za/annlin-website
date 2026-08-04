@@ -1,6 +1,7 @@
 type WordPressPageReference = {
   id: number
   slug: string
+  title?: { rendered?: string }
 }
 
 type WordPressRouteOptions = {
@@ -23,6 +24,16 @@ export function parseWordPressLocalDate(value: string) {
 
   // The Events Calendar API returns local Pretoria time without an offset.
   return new Date(hasExplicitTimezone ? normalized : `${normalized}+02:00`)
+}
+
+export function canonicalNewsArticleSlug(sourceSlug: string, title = '') {
+  const yearTitle = title.trim().match(/^Nuus\s+(\d{4})$/i)
+
+  if (/^nuus-\d{4}$/i.test(sourceSlug) && yearTitle) {
+    return `nuus-${yearTitle[1]}`
+  }
+
+  return sourceSlug
 }
 
 export function migratedPublicAssetUrlForWordPressUrl(value: string) {
@@ -57,7 +68,10 @@ export function buildWordPressPageRouteMap(
     } else if (options.serviceGroupSlugs.has(page.slug)) {
       routes.set(page.slug, `/diensgroepe/${page.slug}`)
     } else if (options.newsSlugs.has(page.slug)) {
-      routes.set(page.slug, `/nuus/${page.slug}`)
+      routes.set(
+        page.slug,
+        `/nuus/${canonicalNewsArticleSlug(page.slug, page.title?.rendered)}`
+      )
     } else if (options.readingSlugs.has(page.slug)) {
       routes.set(page.slug, `/leesstof/wp-page-${page.id}`)
     } else {

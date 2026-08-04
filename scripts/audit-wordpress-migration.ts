@@ -2,7 +2,7 @@
 
 import { prisma, disconnectDatabase } from '../lib/db'
 import { slugify } from '../lib/slug'
-import { parseWordPressLocalDate } from '../lib/wordpress-migration'
+import { canonicalNewsArticleSlug, parseWordPressLocalDate } from '../lib/wordpress-migration'
 
 type WpRendered = { rendered?: string }
 
@@ -352,7 +352,11 @@ async function main() {
     .filter((page) => newsSlugs.has(page.slug))
     .map((page) => {
       const source = htmlToText(page.content.rendered || page.excerpt?.rendered || '')
-      const target = articleBySlug.get(slugify(page.slug))?.content || ''
+      const articleSlug = canonicalNewsArticleSlug(
+        page.slug,
+        htmlToText(page.title.rendered || page.slug)
+      )
+      const target = articleBySlug.get(articleSlug)?.content || ''
       return {
         slug: page.slug,
         title: htmlToText(page.title.rendered || page.slug),

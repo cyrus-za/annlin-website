@@ -10,6 +10,7 @@ import {
   stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
 import {
+  canonicalNewsArticleSlug,
   parseWordPressLocalDate,
   replaceMigratedWordPressAssetLinks,
 } from '../lib/wordpress-migration'
@@ -19,6 +20,7 @@ import {
   extractTrailingMarkdownImageGallery,
   extractMarkdownAudioLinks,
   normalizeArticleContent,
+  normalizeEventTitle,
   stripMarkdownAudioLinks,
   stripMarkdown,
 } from '../lib/public-content'
@@ -41,6 +43,10 @@ assert.equal(
   parseWordPressLocalDate('2026-07-19T08:30:00Z').toISOString(),
   '2026-07-19T08:30:00.000Z'
 )
+assert.equal(canonicalNewsArticleSlug('nuus-2025', 'Nuus 2026'), 'nuus-2026')
+assert.equal(canonicalNewsArticleSlug('nuus-2024', 'Nuus 2024'), 'nuus-2024')
+assert.equal(normalizeEventTitle('Oggenderediens (Klik vir detail detail)'), 'Oggenderediens')
+assert.equal(normalizeEventTitle('Aanderediens (Klik vir detail)'), 'Aanderediens')
 
 assert.equal(decodeWordPressEntities('4.14.7&#8243;'), '4.14.7"')
 
@@ -121,7 +127,7 @@ assert.equal(createArticleExcerpt(preservedPdfImage), '')
 
 const malformedNestedImageLink =
   `[!DXF(${imageUrl})](${fileUrl}) Gemeentenuus vir hierdie week.`
-assert.equal(createArticleExcerpt(malformedNestedImageLink), 'DXF Gemeentenuus vir hierdie week.')
+assert.equal(createArticleExcerpt(malformedNestedImageLink), 'Gemeentenuus vir hierdie week.')
 
 const longGoogleMapsLink =
   '[Maak roete in Google Maps oop](https://www.google.com/maps/dir//143+Leonie+St,+Doringkloof,+Centurion,+0157/@-25.8518806,28.181,12z/data=!4m2!4m1!3e0?entry=ttu)'
@@ -161,6 +167,16 @@ const newsWithLeadingMedia = `
 assert.equal(
   createArticleExcerpt(newsWithLeadingMedia),
   "Aanbieding oor selfverdediging Die gemeente het 'n praktiese aanbieding bygewoon."
+)
+
+const newsWithInlineDownloads = `
+  Hier kan u op hoogte gehou word van hierdie jaar se gebeure.
+  [Die-Fontein-Weekblad-12-Julie-2026-WEB](${fileUrl})
+  Graad 1's 2026. Drie leerders het hul eerste Bybels ontvang.
+`
+assert.equal(
+  createArticleExcerpt(newsWithInlineDownloads),
+  "Hier kan u op hoogte gehou word van hierdie jaar se gebeure. Graad 1's 2026. Drie leerders het hul eerste Bybels ontvang."
 )
 
 const oldSummaryUrl =

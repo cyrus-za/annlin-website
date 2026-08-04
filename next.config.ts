@@ -146,6 +146,7 @@ const nextConfig: NextConfig = {
 
     return [
       { source: '/homepagenew', destination: '/', permanent: true },
+      { source: '/nuus/nuus-2025', destination: '/nuus/nuus-2026', permanent: true },
       ...unavailableAdminSlugs.map((slug) => ({
         source: `/admin/${slug}`,
         destination: '/admin',
