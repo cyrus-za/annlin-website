@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-source-sans",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Annlin Gemeente",
@@ -18,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="af">
-      <body className="antialiased">
+      <body className={`${sourceSans.variable} ${cormorant.variable} antialiased`}>
         {children}
         <Toaster />
       </body>

@@ -101,7 +101,7 @@ export function Navigation() {
                   priority
                 />
               </div>
-              <span className="hidden whitespace-nowrap text-lg font-bold text-amber-900 sm:block">
+              <span className="hidden whitespace-nowrap font-display text-xl font-bold text-amber-900 sm:block">
                 GK Pretoria-Annlin
               </span>
             </Link>

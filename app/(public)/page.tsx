@@ -13,8 +13,8 @@ import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: 'Annlin Gemeente | Welkom',
-  description: 'Welkom by die amptelike webwerf van Annlin Gemeente. Vind uit meer oor ons eredienste, diensgroepe, gebeure en hoe om betrokke te raak.',
+  title: 'GK Pretoria-Annlin | Gewortel in Christus',
+  description: 'Gereformeerde Kerk Pretoria-Annlin: saam geroep en gestuur om te dien. Vind eredienste, uitsendings, diensgroepe, gebeure en leesstof.',
 }
 
 export default async function Home() {
@@ -35,7 +35,7 @@ export default async function Home() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="mx-auto mb-6 max-w-5xl text-4xl font-bold leading-[0.98] md:text-6xl lg:text-7xl">
               {copy('hero.title')}
             </h1>
             <p className="text-xl md:text-2xl text-amber-100 mb-4 max-w-3xl mx-auto">

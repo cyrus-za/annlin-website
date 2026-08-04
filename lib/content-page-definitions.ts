@@ -58,7 +58,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
     description: 'Die hoofopskrifte en inleidende inhoud op die publieke tuisblad.',
     sections: {
       hero: {
-        title: 'Welkom by Annlin Gemeente',
+        title: 'Gewortel in Christus. Saam geroep. Gestuur om te dien.',
         subtitle: 'Gereformeerde Kerk Pretoria-Annlin',
         body: "Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik. H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom, Pretoria.",
       },
