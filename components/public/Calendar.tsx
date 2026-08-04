@@ -388,7 +388,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
-                  <span className="ml-3 text-muted-foreground">Laai kalender...</span>
+                  <span className="ml-3 text-muted-foreground">Laai kalender…</span>
                 </div>
               ) : (
                 <CalendarComponent
@@ -455,10 +455,16 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
           <Card>
             <CardHeader>
               <CardTitle>
-                {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: af }) : 'Kies \'n Datum'}
+                {loading
+                  ? 'Kalender laai…'
+                  : selectedDate
+                    ? format(selectedDate, 'dd MMMM yyyy', { locale: af })
+                    : 'Kies \'n Datum'}
               </CardTitle>
               <CardDescription>
-                {selectedDateEvents.length > 0 
+                {loading
+                  ? 'Gebeure word voorberei.'
+                  : selectedDateEvents.length > 0
                   ? `${selectedDateEvents.length} gebeurtenis${selectedDateEvents.length !== 1 ? 'se' : ''}`
                   : 'Geen gebeure vir hierdie datum nie'
                 }
@@ -466,7 +472,20 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
             </CardHeader>
             <CardContent>
               <AnimatePresence mode="wait">
-                {selectedDateEvents.length > 0 ? (
+                {loading ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="space-y-3 py-8"
+                    aria-label="Kalendergebeure laai"
+                  >
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-stone-200" />
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-stone-100" />
+                    <div className="h-4 w-3/5 animate-pulse rounded bg-stone-100" />
+                  </motion.div>
+                ) : selectedDateEvents.length > 0 ? (
                   <motion.div
                     key="events"
                     initial={{ opacity: 0, y: 20 }}
