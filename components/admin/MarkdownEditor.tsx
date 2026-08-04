@@ -443,7 +443,7 @@ export const MarkdownEditor = React.forwardRef<HTMLTextAreaElement, MarkdownEdit
               onKeyDown={handleKeyDown}
               disabled={disabled}
               rows={rows}
-              className="min-h-[28rem] resize-y rounded-none border-0 bg-white px-4 py-4 text-[15px] leading-7 shadow-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring focus-visible:ring-offset-0"
+              className="h-[28rem] resize-none overflow-y-auto rounded-none border-0 bg-white px-4 py-4 text-[15px] leading-7 shadow-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring focus-visible:ring-offset-0 md:h-[42rem]"
             />
           </div>
 
@@ -456,7 +456,7 @@ export const MarkdownEditor = React.forwardRef<HTMLTextAreaElement, MarkdownEdit
             <div className="border-b border-stone-200 bg-stone-50/50 px-4 py-2 text-xs font-semibold uppercase text-stone-600">
               Voorskou
             </div>
-            <div className="min-h-[28rem] overflow-y-auto p-5 md:max-h-[42rem]">
+            <div className="h-[28rem] overflow-y-auto p-5 md:h-[42rem]">
               {deferredValue.trim() ? (
                 <MarkdownContent markdown={deferredValue} />
               ) : (
