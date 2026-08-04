@@ -61,6 +61,18 @@ export function Footer() {
               >
                 <Radio className="h-5 w-5" />
               </a>
+              <a
+                href="https://www.facebook.com/p/Gereformeerde-Kerk-Pretoria-Annlin-100064804023820/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-11 w-11 items-center justify-center text-amber-300 transition-colors hover:text-white"
+                aria-label="Volg GK Pretoria-Annlin op Facebook"
+                title="Facebook"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
+                  <path d="M14 8h3V4h-3a6 6 0 0 0-6 6v2H5v4h3v8h4v-8h3l1-4h-4v-2a2 2 0 0 1 2-2Z" />
+                </svg>
+              </a>
             </div>
           </div>
 
