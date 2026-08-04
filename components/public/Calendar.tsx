@@ -33,6 +33,7 @@ import {
 } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
+import { eventCategoryColor, eventCategoryTint } from '@/lib/event-colors'
 
 function isInternalHref(href: string) {
   return href.startsWith('/')
@@ -71,7 +72,7 @@ function EventDetailDialog({
           <DialogTitle className="flex items-center space-x-2">
             <div
               className="h-4 w-4 rounded-full"
-              style={{ backgroundColor: event?.category.color }}
+              style={{ backgroundColor: eventCategoryColor(event?.category.color) }}
             />
             <span>{event?.title}</span>
           </DialogTitle>
@@ -119,7 +120,10 @@ function EventDetailDialog({
                   <Users className="h-4 w-4 text-muted-foreground/50" />
                   <span className="text-sm font-medium">Kategorie:</span>
                   <Badge
-                    style={{ backgroundColor: event.category.color + '20', color: event.category.color }}
+                    style={{
+                      backgroundColor: eventCategoryTint(event.category.color),
+                      color: eventCategoryColor(event.category.color),
+                    }}
                     className="border-0"
                   >
                     {event.category.name}
@@ -292,7 +296,11 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
           ) : upcomingEvents.length > 0 ? (
             <div className="space-y-4">
               {upcomingEvents.map((event) => (
-                <div key={event.id} className="border-l-4 pl-4" style={{ borderColor: event.category.color }}>
+                <div
+                  key={event.id}
+                  className="border-l-4 pl-4"
+                  style={{ borderColor: eventCategoryColor(event.category.color) }}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h4 className="font-medium text-foreground text-sm mb-1">
@@ -500,7 +508,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
                         className="border-l-4 pl-4 cursor-pointer hover:bg-gray-50 rounded-r-lg transition-colors p-2 -ml-2"
-                        style={{ borderColor: event.category.color }}
+                        style={{ borderColor: eventCategoryColor(event.category.color) }}
                         onClick={() => handleEventClick(event)}
                       >
                         <h4 className="font-medium text-foreground text-sm mb-1">
@@ -522,7 +530,10 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                         <Badge 
                           variant="outline"
                           className="text-xs"
-                          style={{ borderColor: event.category.color, color: event.category.color }}
+                          style={{
+                            borderColor: eventCategoryColor(event.category.color),
+                            color: eventCategoryColor(event.category.color),
+                          }}
                         >
                           {event.category.name}
                         </Badge>
@@ -672,7 +683,10 @@ export function UpcomingEvents({
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge 
-                      style={{ backgroundColor: event.category.color + '20', color: event.category.color }}
+                      style={{
+                        backgroundColor: eventCategoryTint(event.category.color),
+                        color: eventCategoryColor(event.category.color),
+                      }}
                       className="border-0"
                     >
                       {event.category.name}
