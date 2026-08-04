@@ -58,7 +58,7 @@ const navigationItems: NavigationItem[] = [
     icon: BookOpen,
   },
   {
-    name: 'Indienings',
+    name: 'Navraag',
     href: '/admin/indienings',
     icon: Inbox,
     adminOnly: true,

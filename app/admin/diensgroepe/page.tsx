@@ -172,7 +172,7 @@ export default function DiensgroepeListPage() {
     },
     {
       key: '_count' as keyof ServiceGroup,
-      label: 'Indienings',
+      label: 'Navrae',
       render: (value: any) => (
         <Badge variant="secondary">
           {value.contactSubmissions}
@@ -306,7 +306,8 @@ export default function DiensgroepeListPage() {
                     {selectedServiceGroup.category === 'DIAKONIE' ? 'Diakonie' : 'Ander'}
                   </Badge>
                   <Badge variant="outline">
-                    {selectedServiceGroup._count.contactSubmissions} Indienings
+                    {selectedServiceGroup._count.contactSubmissions}{' '}
+                    {selectedServiceGroup._count.contactSubmissions === 1 ? 'Navraag' : 'Navrae'}
                   </Badge>
                 </div>
                 

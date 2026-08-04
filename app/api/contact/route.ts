@@ -159,7 +159,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Contact submissions GET error:', error)
     return NextResponse.json(
-      { error: 'Kon nie kontakindienings laai nie' },
+      { error: 'Kon nie kontaknavrae laai nie' },
       { status: 500 }
     )
   }

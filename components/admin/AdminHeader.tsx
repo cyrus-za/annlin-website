@@ -56,8 +56,8 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }:
           </Button>
 
           {user.role === 'ADMIN' && (
-            <Button asChild variant="ghost" size="icon" className="relative" title="Kontakindienings">
-              <Link href="/admin/indienings" aria-label={`${notificationCount} nuwe kontakindienings`}>
+            <Button asChild variant="ghost" size="icon" className="relative" title="Kontaknavrae">
+              <Link href="/admin/indienings" aria-label={`${notificationCount} nuwe kontaknavrae`}>
                 <Bell className="h-5 w-5" />
                 {notificationCount > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">

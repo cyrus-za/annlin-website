@@ -105,7 +105,7 @@ export default async function AdminDashboard() {
           <Link href="/admin/indienings" className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700 focus-visible:ring-offset-2">
             <Card className="h-full transition-colors hover:border-amber-300 hover:bg-amber-50/30">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Hangende Indienings</CardTitle>
+                <CardTitle className="text-sm font-medium">Hangende Navrae</CardTitle>
                 <Mail className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>

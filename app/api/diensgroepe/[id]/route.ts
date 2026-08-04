@@ -213,7 +213,7 @@ export async function DELETE(
       })
       
       if (submissionCount > 0) {
-        throw new Error(`Kan nie diensgroep verwyder nie - ${submissionCount} kontak indienings is gekoppel`)
+        throw new Error(`Kan nie diensgroep verwyder nie - ${submissionCount} kontaknavrae is gekoppel`)
       }
       
       // Delete service group

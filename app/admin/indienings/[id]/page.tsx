@@ -53,7 +53,7 @@ export default async function SubmissionDetailPage({ params }: SubmissionDetailP
       <Button asChild variant="ghost" className="-ml-3">
         <Link href="/admin/indienings">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Terug na indienings
+          Terug na navrae
         </Link>
       </Button>
 

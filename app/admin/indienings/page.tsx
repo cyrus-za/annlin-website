@@ -76,11 +76,11 @@ export default async function ContactSubmissionsPage({ searchParams }: Submissio
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Kontakindienings</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Kontaknavrae</h1>
         <p className="mt-2 text-gray-600">Lees en verwerk boodskappe wat deur die publieke kontakvorm ontvang is.</p>
       </div>
 
-      <div className="flex flex-wrap gap-2" aria-label="Filtreer kontakindienings">
+      <div className="flex flex-wrap gap-2" aria-label="Filtreer kontaknavrae">
         {filters.map((filter) => {
           const isActive = activeStatus === filter.status || (!activeStatus && !filter.status)
           return (
@@ -96,9 +96,9 @@ export default async function ContactSubmissionsPage({ searchParams }: Submissio
 
       <Card>
         <CardHeader>
-          <CardTitle>{activeStatus ? statusLabels[activeStatus] : 'Alle indienings'}</CardTitle>
+          <CardTitle>{activeStatus ? statusLabels[activeStatus] : 'Alle navrae'}</CardTitle>
           <CardDescription>
-            {submissions.length} van hoogstens 100 indiening{submissions.length === 1 ? '' : 's'} word gewys.
+            {submissions.length} van hoogstens 100 {submissions.length === 1 ? 'navraag' : 'navrae'} word gewys.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -146,7 +146,7 @@ export default async function ContactSubmissionsPage({ searchParams }: Submissio
           {submissions.length === 0 && (
             <div className="py-12 text-center">
               <Inbox className="mx-auto h-10 w-10 text-gray-400" />
-              <p className="mt-3 font-medium text-gray-900">Geen indienings in hierdie afdeling nie</p>
+              <p className="mt-3 font-medium text-gray-900">Geen navrae in hierdie afdeling nie</p>
               <p className="mt-1 text-sm text-gray-600">Nuwe kontakvorms sal hier verskyn.</p>
             </div>
           )}

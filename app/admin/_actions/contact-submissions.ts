@@ -16,11 +16,11 @@ export async function updateContactSubmissionStatus(formData: FormData) {
   const requestedStatus = formText(formData, 'status')
 
   if (!id) {
-    throw new Error('Indiening-ID is verplig')
+    throw new Error('Navraag-ID is verplig')
   }
 
   if (!Object.values(ContactSubmissionStatus).includes(requestedStatus as ContactSubmissionStatus)) {
-    throw new Error('Ongeldige indieningstatus')
+    throw new Error('Ongeldige navraagstatus')
   }
 
   const status = requestedStatus as ContactSubmissionStatus
