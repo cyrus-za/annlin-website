@@ -3,7 +3,6 @@
 import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { ArrowRight, Mail, Phone, Users } from 'lucide-react'
 
 import { createServiceGroupExcerpt } from '@/lib/public-content'
@@ -168,12 +167,9 @@ function ServiceGroupGridSection({
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {groups.map((group, index) => (
-          <motion.div
+        {groups.map((group) => (
+          <div
             key={group.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: index * 0.04 }}
           >
             <Card className="h-full overflow-hidden border-stone-200 bg-white shadow-sm">
               <Link
@@ -235,7 +231,7 @@ function ServiceGroupGridSection({
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -266,12 +262,9 @@ function ServiceGroupRail({
 
       <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
         <div className="flex min-w-full gap-4">
-          {groups.map((group, index) => (
-            <motion.article
+          {groups.map((group) => (
+            <article
               key={group.id}
-              initial={{ opacity: 0, x: 18 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.03 }}
               className="flex w-[18rem] shrink-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm"
             >
               <Link
@@ -311,7 +304,7 @@ function ServiceGroupRail({
                   </Button>
                 </div>
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>
