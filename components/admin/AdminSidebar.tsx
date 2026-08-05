@@ -53,7 +53,7 @@ const navigationItems: NavigationItem[] = [
     icon: Newspaper,
   },
   {
-    name: 'Hulpbronne',
+    name: 'Leesstof & Publikasies',
     href: '/admin/leesstof',
     icon: BookOpen,
   },

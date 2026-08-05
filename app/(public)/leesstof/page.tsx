@@ -9,7 +9,7 @@ import { Suspense } from 'react'
 import { ResourceLibrary } from '@/components/public/ResourceLibrary'
 
 export const metadata: Metadata = {
-  title: 'Hulpbronne | Annlin Gemeente',
+  title: 'Leesstof en publikasies | Annlin Gemeente',
   description: 'Publikasies, leesstof, preeksamevattings en geloofsmateriaal van Annlin Gemeente.',
 }
 
@@ -101,17 +101,13 @@ export default async function ReadingPage() {
             <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-white/15 backdrop-blur-sm">
               <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="text-4xl font-bold sm:text-5xl">Hulpbronne</h1>
+            <h1 className="text-4xl font-bold sm:text-5xl">Leesstof en publikasies</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-100 sm:text-xl">
               Publikasies, leesstof en toerustingsmateriaal vir die gemeente.
             </p>
           </div>
         </div>
       </section>
-
-      <Suspense fallback={<div className="min-h-80 bg-white" />}>
-        <ResourceLibrary items={libraryItems} />
-      </Suspense>
 
       <section className="bg-white py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -152,6 +148,10 @@ export default async function ReadingPage() {
         </div>
       </section>
 
+      <Suspense fallback={<div className="min-h-80 bg-white" />}>
+        <ResourceLibrary items={libraryItems} />
+      </Suspense>
+
       <section className="py-14">
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-foreground">Gratis! Gratis! Gratis!</h2>
@@ -184,24 +184,24 @@ export default async function ReadingPage() {
               </span>
             </a>
 
-            <div
-              className="inline-flex min-h-16 w-60 items-center gap-4 rounded-xl border border-stone-300 bg-stone-100 px-5 py-3 text-left text-stone-500"
-              aria-label="Apple App Store-weergawe is tans nie beskikbaar nie"
+            <a
+              href="https://apps.apple.com/za/app/heidelberg-catechism-rcus/id1443296306"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-16 w-60 items-center gap-4 rounded-xl bg-stone-950 px-5 py-3 text-left text-white shadow-sm transition-colors hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label="Laai Heidelberg Catechism gratis op die App Store af"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8 shrink-0 fill-current">
                 <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
               </svg>
               <span>
-                <span className="block text-[10px] font-medium uppercase tracking-[0.16em]">
-                  Tans nie beskikbaar nie
+                <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-stone-300">
+                  Laai gratis af op
                 </span>
                 <span className="block text-xl font-semibold leading-tight">App Store</span>
               </span>
-            </div>
+            </a>
           </div>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Die oorspronklike iPhone- en iPad-weergawe word tans nie meer deur Apple versprei nie.
-          </p>
         </div>
       </section>
 

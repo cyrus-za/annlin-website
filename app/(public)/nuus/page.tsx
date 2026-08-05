@@ -66,7 +66,7 @@ export default async function NewsPage() {
                 <h2 className="text-2xl font-bold text-foreground">Jongste publikasies</h2>
                 <p className="mt-2 text-muted-foreground">Die jongste Weekblad, Maandblad en liturgie op een plek.</p>
               </div>
-              <Button asChild variant="outline"><Link href="/leesstof">Besoek Hulpbronne</Link></Button>
+              <Button asChild variant="outline"><Link href="/leesstof">Besoek Leesstof</Link></Button>
             </div>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {latestPublications.filter((item) => item !== null).map((item) => (

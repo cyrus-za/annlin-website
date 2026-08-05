@@ -28,12 +28,12 @@ export async function generateMetadata({ params }: ReadingMaterialDetailPageProp
 
   if (!material) {
     return {
-      title: 'Hulpbron nie gevind nie | Annlin Gemeente',
+      title: 'Leesstof nie gevind nie | Annlin Gemeente',
     }
   }
 
   return {
-    title: `${material.title} | Hulpbronne | Annlin Gemeente`,
+    title: `${material.title} | Leesstof en publikasies | Annlin Gemeente`,
     description: material.description?.slice(0, 160) || 'Publikasies en hulpbronne van Annlin Gemeente.',
   }
 }
@@ -67,7 +67,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
           <Button asChild variant="ghost" className="mb-6 -ml-3 text-amber-900 hover:text-amber-950">
             <Link href="/leesstof">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Terug na hulpbronne
+              Terug na leesstof
             </Link>
           </Button>
 

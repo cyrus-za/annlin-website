@@ -21,14 +21,14 @@ type SearchResult = {
   href: string
   title: string
   description: string
-  type: 'Bladsy' | 'Diensgroep' | 'Nuus' | 'Hulpbron'
+  type: 'Bladsy' | 'Diensgroep' | 'Nuus' | 'Leesstof'
 }
 
 const resultIcons = {
   Bladsy: FileText,
   Diensgroep: Users,
   Nuus: CalendarDays,
-  Hulpbron: BookOpen,
+  Leesstof: BookOpen,
 }
 
 function searchableDefinitionText(definition: (typeof CONTENT_PAGE_DEFINITIONS)[number]) {
@@ -93,7 +93,7 @@ async function searchSite(query: string): Promise<SearchResult[]> {
       href: `/leesstof/${material.id}`,
       title: material.title,
       description: createExcerpt(material.description || 'Publikasies en hulpbronne.', 180),
-      type: 'Hulpbron',
+      type: 'Leesstof',
     })),
   ]
 }

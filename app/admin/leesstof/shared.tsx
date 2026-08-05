@@ -23,12 +23,12 @@ export function ReadingMaterialForm({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{material ? 'Redigeer Hulpbron' : 'Nuwe Hulpbron'}</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{material ? 'Redigeer Item' : 'Nuwe Item'}</h1>
         <p className="mt-2 text-gray-600">Bestuur dokumente, publikasies en ander gemeentehulpbronne.</p>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Hulpbronbesonderhede</CardTitle>
+          <CardTitle>Leesstof- of publikasiebesonderhede</CardTitle>
           <CardDescription>Titel, datum, lêer, status en kategorie.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -107,7 +107,7 @@ export function ReadingMaterialForm({
               </div>
             </div>
             <div className="flex gap-3">
-              <Button type="submit">Stoor Hulpbron</Button>
+              <Button type="submit">Stoor Item</Button>
               <Button type="button" variant="outline" asChild>
                 <Link href="/admin/leesstof">Kanselleer</Link>
               </Button>

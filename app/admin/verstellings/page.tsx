@@ -23,7 +23,7 @@ const adjustmentLinks = [
     icon: Newspaper,
   },
   {
-    title: 'Hulpbronne',
+    title: 'Leesstof & Publikasies',
     description: 'Bestuur dokumente, argiefmateriaal en skakels.',
     href: '/admin/leesstof',
     icon: BookOpen,

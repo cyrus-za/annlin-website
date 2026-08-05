@@ -19,20 +19,20 @@ export default async function AdminReadingPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Hulpbronne Bestuur</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Leesstof & Publikasies</h1>
           <p className="mt-2 text-gray-600">Skep en wysig publikasies, dokumente, klank en argiefinhoud.</p>
         </div>
         <Button asChild>
           <Link href="/admin/leesstof/new">
             <Plus className="mr-2 h-4 w-4" />
-            Voeg Hulpbron By
+            Voeg Item By
           </Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Hulpbronne</CardTitle>
+          <CardTitle>Leesstof & Publikasies</CardTitle>
           <CardDescription>{materials.length} item{materials.length === 1 ? '' : 's'}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -63,7 +63,7 @@ export default async function AdminReadingPage() {
             </div>
           ))}
           {materials.length === 0 && (
-            <p className="py-8 text-center text-gray-600">Geen hulpbronne gevind nie.</p>
+            <p className="py-8 text-center text-gray-600">Geen leesstof of publikasies gevind nie.</p>
           )}
         </CardContent>
       </Card>

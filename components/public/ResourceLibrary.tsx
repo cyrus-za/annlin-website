@@ -114,7 +114,7 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <h2 id="resource-library-heading" className="text-3xl font-bold text-foreground sm:text-4xl">
-            Hulpbronbiblioteek
+            Publikasiebiblioteek
           </h2>
           <p className="mt-3 text-lg text-muted-foreground">
             Vind Die Fontein, liturgieë, preeksamevattings, kinderwerk en ander dokumente.
@@ -125,7 +125,7 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
           <form onSubmit={submitSearch} className="flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input name="soek" defaultValue={query} className="pl-9" placeholder="Soek volgens titel of onderwerp" aria-label="Soek hulpbronne" />
+              <Input name="soek" defaultValue={query} className="pl-9" placeholder="Soek volgens titel of onderwerp" aria-label="Soek leesstof en publikasies" />
             </div>
             <Button type="submit">Soek</Button>
           </form>
@@ -192,13 +192,13 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
           </div>
         ) : (
           <div className="mt-8 rounded-xl border border-dashed border-stone-300 p-10 text-center">
-            <h3 className="text-lg font-semibold text-foreground">Geen hulpbronne pas by hierdie filters nie</h3>
+            <h3 className="text-lg font-semibold text-foreground">Geen leesstof of publikasies pas by hierdie filters nie</h3>
             <Button type="button" variant="outline" className="mt-4" onClick={clearFilters}>Maak filters skoon</Button>
           </div>
         )}
 
         {pageCount > 1 ? (
-          <nav aria-label="Hulpbronbladsye" className="mt-10 flex items-center justify-center gap-3">
+          <nav aria-label="Leesstof- en publikasiebladsye" className="mt-10 flex items-center justify-center gap-3">
             <Button variant="outline" disabled={page === 1} onClick={() => updateParams({ bladsy: String(page - 1) })}>
               <ChevronLeft className="mr-1 h-4 w-4" /> Vorige
             </Button>
