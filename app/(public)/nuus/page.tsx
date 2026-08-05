@@ -39,15 +39,16 @@ export default async function NewsPage() {
       include: { category: true },
       orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
     }),
-    Promise.all(
-      latestCategoryNames.map((name) =>
-        prisma.readingMaterial.findFirst({
-          where: { status: 'PUBLISHED', isArchived: false, category: { name } },
-          include: { category: true },
-          orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
-        })
-      )
-    ),
+    prisma.readingMaterial.findMany({
+      where: {
+        status: 'PUBLISHED',
+        isArchived: false,
+        category: { name: { in: latestCategoryNames } },
+      },
+      include: { category: true },
+      orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
+      take: 3,
+    }),
   ])
 
   return (
@@ -59,18 +60,15 @@ export default async function NewsPage() {
         icon={<Newspaper className="h-8 w-8" />}
       />
 
-      {latestPublications.some(Boolean) ? (
+      {latestPublications.length > 0 ? (
         <section className="border-b bg-white py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Nuutste publikasies</h2>
-                <p className="mt-2 text-muted-foreground">Die nuutste Weekblad, Maandblad en liturgie op een plek.</p>
-              </div>
-              <Button asChild variant="outline"><Link href="/leesstof">Besoek Leesstof</Link></Button>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Nuutste publikasies</h2>
+              <p className="mt-2 text-muted-foreground">Die drie nuutste gemeentepublikasies op een plek.</p>
             </div>
             <div className="mt-6 grid items-start gap-5 md:grid-cols-3">
-              {latestPublications.filter((item) => item !== null).map((item) => (
+              {latestPublications.map((item) => (
                 <article key={item.id} className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
                   {item.fileType === 'PDF' && item.fileUrl ? (
                     <div className="relative aspect-[210/297] overflow-hidden border-b border-stone-200 bg-stone-100">
@@ -104,6 +102,14 @@ export default async function NewsPage() {
                   </div>
                 </article>
               ))}
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Button asChild size="lg" className="w-full px-8 sm:w-auto">
+                <Link href="/leesstof">
+                  Sien alle publikasies
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
