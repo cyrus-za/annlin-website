@@ -310,8 +310,8 @@ function locationForEvent(event: TribeEvent) {
 async function main() {
   console.log('Fetching WordPress content...')
   const wordpressBaseUrl = getWordPressBaseUrl()
-  const defaultContactEmail = getDefaultContactEmail()
   const pageSlugFilter = getPageSlugFilter()
+  const defaultContactEmail = pageSlugFilter ? null : getDefaultContactEmail()
 
   const [pageMetadata, pageContents, eventResponse] = await Promise.all([
     fetchJson<WpPage[]>(
@@ -412,7 +412,25 @@ async function main() {
       const serviceGroupContent = normalizeServiceGroupContent(content, serviceGroupTitle)
       const displayOrder = serviceGroupDisplayOrder.get(page.slug) ?? 100 + serviceGroups
       const category = categoryForServiceGroup(page)
-      const contactDetails = contactDetailsForServiceGroup(page.slug, category, defaultContactEmail)
+
+      if (pageSlugFilter) {
+        await prisma.serviceGroup.update({
+          where: { slug: slugify(page.slug) },
+          data: {
+            name: serviceGroupTitle,
+            description: serviceGroupContent,
+            category,
+          },
+        })
+        serviceGroups++
+        continue
+      }
+
+      const contactDetails = contactDetailsForServiceGroup(
+        page.slug,
+        category,
+        defaultContactEmail ?? getDefaultContactEmail()
+      )
 
       await prisma.serviceGroup.upsert({
         where: { slug: slugify(page.slug) },
