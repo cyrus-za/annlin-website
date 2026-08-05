@@ -78,7 +78,6 @@ export default async function ReadingPage() {
       title: item.title,
       description: item.description,
       fileType: item.fileType,
-      fileSize: item.fileSize,
       contentDate: item.contentDate.toISOString().slice(0, 10),
       showDate: item.showDate,
       category: item.category.name,

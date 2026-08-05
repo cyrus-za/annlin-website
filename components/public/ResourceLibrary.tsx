@@ -3,13 +3,14 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CalendarDays, ChevronLeft, ChevronRight, FileAudio, FileText, Search } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   PublicationCategoryBadge,
   publicationCategoryPresentation,
 } from '@/components/public/PublicationCategoryBadge'
+import { createExcerpt } from '@/lib/public-content'
 import { cn } from '@/lib/utils'
 
 type ResourceItem = {
@@ -17,7 +18,6 @@ type ResourceItem = {
   title: string
   description: string | null
   fileType: string | null
-  fileSize: number | null
   contentDate: string
   showDate: boolean
   category: string
@@ -25,12 +25,6 @@ type ResourceItem = {
 
 const PAGE_SIZE = 12
 const STORAGE_KEY = 'annlin-resource-filters'
-
-function formatBytes(bytes: number | null) {
-  if (!bytes) return null
-  if (bytes < 1_000_000) return `${Math.round(bytes / 1000)} KB`
-  return `${(bytes / 1_000_000).toFixed(1)} MB`
-}
 
 function formatDate(value: string, category: string) {
   const date = new Date(`${value.slice(0, 10)}T12:00:00Z`)
@@ -40,6 +34,12 @@ function formatDate(value: string, category: string) {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(date)
+}
+
+function actionLabel(fileType: string | null) {
+  if (fileType === 'AUDIO') return 'Luister'
+  if (fileType === 'PDF') return 'Lees'
+  return 'Bekyk'
 }
 
 export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
@@ -181,13 +181,9 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
                     {formatDate(item.contentDate, item.category)}
                   </p>
                 ) : null}
-                {item.description ? <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{item.description}</p> : null}
-                <div className="mt-auto flex items-center justify-between gap-4 border-t border-stone-100 pt-5">
-                  <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                    {item.fileType === 'AUDIO' ? <FileAudio className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-                    {[item.fileType, formatBytes(item.fileSize)].filter(Boolean).join(' · ')}
-                  </span>
-                  <Button asChild size="sm"><Link href={`/leesstof/${item.id}`}>{item.fileType === 'AUDIO' ? 'Luister' : 'Lees'}</Link></Button>
+                {item.description ? <p className="mt-3 text-sm leading-6 text-muted-foreground">{createExcerpt(item.description, 180)}</p> : null}
+                <div className="mt-auto flex justify-end border-t border-stone-100 pt-5">
+                  <Button asChild size="sm"><Link href={`/leesstof/${item.id}`}>{actionLabel(item.fileType)}</Link></Button>
                 </div>
               </article>
             ))}
