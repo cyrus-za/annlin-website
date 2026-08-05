@@ -302,6 +302,10 @@ assert.equal(
   'Kinderwerkkaart: Markus 8 verse 1 - 9'
 )
 assert.equal(publicationTitle(999, 'Jaarprogramme', '2026 - Jaarprogram-8'), 'Jaarprogram 2026')
+assert.equal(
+  publicationTitle(999, 'Algemene dokumente', '2024-10-26 - Potjiekos-dag Reëls'),
+  'Potjiekos-dag Reëls'
+)
 assert.doesNotMatch(publicationDescription('Liturgie'), /voormalige|WordPress|webwerf/i)
 
 const classifiedWeekblad = classifyWordPressDocument({

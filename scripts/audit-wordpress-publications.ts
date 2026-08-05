@@ -56,6 +56,8 @@ async function main() {
     const record = recordBySourceId.get(document.id)
     if (!record) return []
     const problems = [
+      record.title !== classification.title ? 'title' : null,
+      record.description !== classification.description ? 'description' : null,
       record.category.name !== classification.category ? 'category' : null,
       record.contentDate.toISOString().slice(0, 10) !== classification.contentDate.toISOString().slice(0, 10) ? 'contentDate' : null,
       record.status !== 'PUBLISHED' ? 'status' : null,
@@ -87,7 +89,32 @@ async function main() {
     select: { slug: true, status: true },
   })
   const publicAnnualNews = annualNews.filter((article) => article.status !== 'ARCHIVED')
-  const ready = missingRecords.length === 0 && invalidRecords.length === 0 && failedUrls.length === 0 && publicAnnualNews.length === 0
+  const [allMaterials, publicArticles] = await Promise.all([
+    prisma.readingMaterial.findMany({ select: { id: true, title: true, description: true } }),
+    prisma.article.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { id: true, title: true, excerpt: true, content: true },
+    }),
+  ])
+  const migrationContextPattern = /\bvoormalige\b|uit WordPress|WordPress-webwerf/i
+  const migrationContextRecords = [
+    ...allMaterials.flatMap((record) =>
+      migrationContextPattern.test(`${record.title} ${record.description || ''}`)
+        ? [{ entity: 'ReadingMaterial', id: record.id }]
+        : []
+    ),
+    ...publicArticles.flatMap((article) =>
+      migrationContextPattern.test(`${article.title} ${article.excerpt || ''} ${article.content}`)
+        ? [{ entity: 'Article', id: article.id }]
+        : []
+    ),
+  ]
+  const ready =
+    missingRecords.length === 0 &&
+    invalidRecords.length === 0 &&
+    failedUrls.length === 0 &&
+    publicAnnualNews.length === 0 &&
+    migrationContextRecords.length === 0
 
   console.log(JSON.stringify({
     summary: {
@@ -98,12 +125,14 @@ async function main() {
       successfulR2Urls: urlChecks.length - failedUrls.length,
       failedR2Urls: failedUrls.length,
       archivedAnnualNews: annualNews.length - publicAnnualNews.length,
+      migrationContextRecords: migrationContextRecords.length,
       semanticMigrationReady: ready,
     },
     missingSourceMediaIds: missingRecords.map(({ document }) => document.id),
     invalidRecords,
     failedUrls: failedUrls.slice(0, 25),
     publicAnnualNews,
+    migrationContextRecords,
   }, null, 2))
 
   if (!ready) process.exitCode = 1

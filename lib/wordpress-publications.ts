@@ -63,6 +63,7 @@ const KNOWN_PUBLICATION_TITLES = new Map<number, string>([
   [12071, 'Jesus gee ruimte om te lewe'],
   [12054, 'Jesus is Koning in liefde'],
   [12052, 'Jesus is my geliefde Seun'],
+  [11901, 'Advertensie vir terreinwerker'],
   [11941, 'Ons Here Jesus is ...'],
   [11939, 'Moenie bang wees nie, maar glo, want God is by jou!'],
   [11922, "Die Here sorg vir 'n tuin-toekoms!"],
@@ -112,7 +113,6 @@ function cleanDateWorkarounds(value: string) {
       /\b(?:Sondag\s+)?(?:0?[1-9]|[12]\d|3[01])\s+(?:Januarie|Februarie|Maart|April|Mei|Junie|Julie|Augustus|September|Oktober|November|Desember)(?:\s+20\d{2})?\b/gi,
       ' '
     )
-    .replace(/\s*[-–—]+\s*/g, ' - ')
     .replace(/^\s*[-–—:()]+|[-–—:()]+\s*$/g, '')
     .replace(/\s+/g, ' ')
     .trim()
