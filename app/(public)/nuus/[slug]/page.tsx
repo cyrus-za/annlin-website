@@ -72,10 +72,10 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               {article.title}
             </h1>
-            {formatDate(article.publishedAt) ? (
+            {article.showDate ? (
               <div className="flex items-center gap-2 text-base text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(article.publishedAt)}</span>
+                <span>{formatDate(article.contentDate)}</span>
               </div>
             ) : null}
             {articleExcerpt ? (

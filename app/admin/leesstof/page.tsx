@@ -12,27 +12,27 @@ export default async function AdminReadingPage() {
   await requireAuth()
   const materials = await prisma.readingMaterial.findMany({
     include: { category: true },
-    orderBy: [{ updatedAt: 'desc' }, { title: 'asc' }],
+    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
   })
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Leesstof Bestuur</h1>
-          <p className="mt-2 text-gray-600">Skep en wysig publieke leesstof en argiefinhoud.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Hulpbronne Bestuur</h1>
+          <p className="mt-2 text-gray-600">Skep en wysig publikasies, dokumente, klank en argiefinhoud.</p>
         </div>
         <Button asChild>
           <Link href="/admin/leesstof/new">
             <Plus className="mr-2 h-4 w-4" />
-            Voeg Leesstof By
+            Voeg Hulpbron By
           </Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Leesstof</CardTitle>
+          <CardTitle>Hulpbronne</CardTitle>
           <CardDescription>{materials.length} item{materials.length === 1 ? '' : 's'}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -43,7 +43,10 @@ export default async function AdminReadingPage() {
                   <h2 className="font-semibold text-gray-900">{item.title}</h2>
                   <Badge variant="outline">{item.category.name}</Badge>
                   {item.fileType && <Badge variant="secondary">{item.fileType}</Badge>}
+                  <Badge variant={item.status === 'PUBLISHED' ? 'default' : 'outline'}>{item.status === 'PUBLISHED' ? 'Gepubliseer' : item.status === 'DRAFT' ? 'Konsep' : 'Argief'}</Badge>
+                  {item.isArchived && <Badge variant="outline">Histories</Badge>}
                 </div>
+                <p className="text-xs text-gray-500">{item.contentDate.toISOString().slice(0, 10)}</p>
                 <p className="line-clamp-2 text-sm text-gray-600">
                   {item.description ? createExcerpt(item.description, 220) : 'Geen beskrywing nie.'}
                 </p>
@@ -60,7 +63,7 @@ export default async function AdminReadingPage() {
             </div>
           ))}
           {materials.length === 0 && (
-            <p className="py-8 text-center text-gray-600">Geen leesstof gevind nie.</p>
+            <p className="py-8 text-center text-gray-600">Geen hulpbronne gevind nie.</p>
           )}
         </CardContent>
       </Card>

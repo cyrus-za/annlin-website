@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink, FileText, Link as LinkIcon } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Download, ExternalLink, FileText, Link as LinkIcon } from 'lucide-react'
 
 import { prisma } from '@/lib/db'
 import { Badge } from '@/components/ui/badge'
@@ -16,8 +16,8 @@ interface ReadingMaterialDetailPageProps {
 }
 
 async function getReadingMaterial(id: string) {
-  return prisma.readingMaterial.findUnique({
-    where: { id },
+  return prisma.readingMaterial.findFirst({
+    where: { id, status: 'PUBLISHED' },
     include: { category: true },
   })
 }
@@ -28,13 +28,13 @@ export async function generateMetadata({ params }: ReadingMaterialDetailPageProp
 
   if (!material) {
     return {
-      title: 'Leesstof nie gevind nie | Annlin Gemeente',
+      title: 'Hulpbron nie gevind nie | Annlin Gemeente',
     }
   }
 
   return {
-    title: `${material.title} | Leesstof | Annlin Gemeente`,
-    description: material.description?.slice(0, 160) || 'Leesstof en toerusting van Annlin Gemeente.',
+    title: `${material.title} | Hulpbronne | Annlin Gemeente`,
+    description: material.description?.slice(0, 160) || 'Publikasies en hulpbronne van Annlin Gemeente.',
   }
 }
 
@@ -51,6 +51,14 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
     ? stripMarkdownAudioLinks(material.description)
     : null
   const hasInlineLinks = Boolean(description?.match(/\[[^\]]+\]\([^)]+\)/))
+  const isPdf = material.fileType === 'PDF' && Boolean(material.fileUrl)
+  const isAudio = material.fileType === 'AUDIO' && Boolean(material.fileUrl)
+  const formattedDate = new Intl.DateTimeFormat('af-ZA', {
+    day: material.category.name.includes('Maandblad') ? undefined : 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(material.contentDate)
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -59,7 +67,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
           <Button asChild variant="ghost" className="mb-6 -ml-3 text-amber-900 hover:text-amber-950">
             <Link href="/leesstof">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Terug na leesstof
+              Terug na hulpbronne
             </Link>
           </Button>
 
@@ -68,9 +76,12 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
               {material.category.name}
             </Badge>
             <h1 className="text-4xl font-bold text-foreground sm:text-5xl">{material.title}</h1>
-            <p className="max-w-3xl text-lg text-muted-foreground">
-              Verdere inligting, skakels en beskrywing vir hierdie leesstof-item.
-            </p>
+            {material.showDate ? (
+              <p className="flex items-center gap-2 text-base text-muted-foreground">
+                <CalendarDays className="h-5 w-5" />
+                {formattedDate}
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
@@ -78,8 +89,37 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
       <section className="py-12">
         <div className="mx-auto grid max-w-4xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+            {isPdf ? (
+              <section aria-labelledby="pdf-heading">
+                <h2 id="pdf-heading" className="text-2xl font-semibold text-foreground">Lees dokument</h2>
+                <p className="mt-2 text-sm text-muted-foreground md:hidden">
+                  Maak die PDF in jou toestel se dokumentleser oop vir die beste selfoonervaring.
+                </p>
+                <object
+                  data={material.fileUrl || undefined}
+                  type="application/pdf"
+                  title={material.title}
+                  className="mt-5 hidden h-[75vh] min-h-[42rem] w-full rounded-md border border-stone-200 md:block"
+                >
+                  <p>Hierdie blaaier kan nie die PDF binne die blad wys nie.</p>
+                </object>
+              </section>
+            ) : null}
+
+            {isAudio ? (
+              <section aria-labelledby="resource-audio-heading">
+                <h2 id="resource-audio-heading" className="text-2xl font-semibold text-foreground">Luister</h2>
+                <audio controls preload="metadata" className="mt-5 w-full" aria-label={material.title}>
+                  <source src={material.fileUrl || undefined} type="audio/mpeg" />
+                  <a href={material.fileUrl || '#'}>Maak die klankopname oop</a>
+                </audio>
+              </section>
+            ) : null}
+
             {description ? (
-              <MarkdownContent markdown={description} />
+              <div className={isPdf || isAudio ? 'mt-8 border-t border-stone-200 pt-8' : ''}>
+                <MarkdownContent markdown={description} />
+              </div>
             ) : (
               <p className="text-muted-foreground">
                 Geen verdere beskrywing is tans vir hierdie leesstof-item beskikbaar nie.
@@ -126,10 +166,19 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
             ) : null}
 
             {material.fileUrl ? (
-              <Button asChild variant="outline" className="w-full justify-between">
+              <Button asChild className="w-full justify-between">
                 <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
-                  Lêer oopmaak
+                  {isPdf ? 'Maak PDF oop' : isAudio ? 'Maak klank oop' : 'Maak lêer oop'}
                   <FileText className="h-4 w-4" />
+                </a>
+              </Button>
+            ) : null}
+
+            {isPdf ? (
+              <Button asChild variant="outline" className="w-full justify-between">
+                <a href={material.fileUrl || '#'} download>
+                  Laai PDF af
+                  <Download className="h-4 w-4" />
                 </a>
               </Button>
             ) : null}

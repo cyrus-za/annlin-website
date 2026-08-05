@@ -26,6 +26,11 @@ function optionalText(formData: FormData, key: string) {
   return value || null
 }
 
+function optionalPositiveInt(formData: FormData, key: string) {
+  const value = Number(text(formData, key))
+  return Number.isSafeInteger(value) && value > 0 ? value : null
+}
+
 async function ensureArticleCategory() {
   return prisma.articleCategory.upsert({
     where: { slug: 'nuus' },
@@ -57,7 +62,9 @@ export async function saveArticle(formData: FormData) {
   const content = text(formData, 'content')
   const slug = slugify(text(formData, 'slug') || title)
   const statusValue = text(formData, 'status')
-  const status = statusValue === ArticleStatus.DRAFT ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED
+  const status = Object.values(ArticleStatus).includes(statusValue as ArticleStatus)
+    ? statusValue as ArticleStatus
+    : ArticleStatus.DRAFT
   const categoryId = text(formData, 'categoryId') || (await ensureArticleCategory()).id
   const contentDate = text(formData, 'contentDate')
 
@@ -65,6 +72,9 @@ export async function saveArticle(formData: FormData) {
     throw new Error('Titel, inhoud en datum van berig is verplig')
   }
 
+  const existingArticle = id
+    ? await prisma.article.findUnique({ where: { id }, select: { publishedAt: true } })
+    : null
   const data = {
     title,
     slug,
@@ -75,7 +85,10 @@ export async function saveArticle(formData: FormData) {
     status,
     contentDate: new Date(`${contentDate}T00:00:00.000Z`),
     showDate: formData.get('showDate') === 'true',
-    publishedAt: status === ArticleStatus.PUBLISHED ? new Date() : null,
+    publishedAt:
+      status === ArticleStatus.PUBLISHED
+        ? existingArticle?.publishedAt || new Date()
+        : existingArticle?.publishedAt || null,
     authorId: user.id,
   }
 
@@ -136,6 +149,11 @@ export async function saveReadingMaterial(formData: FormData) {
   const status = ['DRAFT', 'PUBLISHED', 'ARCHIVED'].includes(statusValue)
     ? statusValue as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
     : 'DRAFT'
+  const uploadedPathname = optionalText(formData, 'uploadedPathname')
+  const uploadedFilename = optionalText(formData, 'uploadedFilename')
+  const uploadedMimeType = optionalText(formData, 'uploadedMimeType')
+  const uploadedSize = optionalPositiveInt(formData, 'uploadedSize')
+  const fileUrl = optionalText(formData, 'fileUrl')
 
   if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(contentDate)) {
     throw new Error('Titel en datum van dokument is verplig')
@@ -144,10 +162,11 @@ export async function saveReadingMaterial(formData: FormData) {
   const data = {
     title,
     description: optionalText(formData, 'description'),
-    fileUrl: optionalText(formData, 'fileUrl'),
+    fileUrl,
     externalUrl: optionalText(formData, 'externalUrl'),
     categoryId,
     fileType,
+    fileSize: uploadedSize || undefined,
     contentDate: new Date(`${contentDate}T00:00:00.000Z`),
     showDate: formData.get('showDate') === 'true',
     status,
@@ -157,6 +176,31 @@ export async function saveReadingMaterial(formData: FormData) {
   const material = id
     ? await prisma.readingMaterial.update({ where: { id }, data })
     : await prisma.readingMaterial.create({ data })
+
+  const r2BaseUrl = process.env.R2_PUBLIC_BASE_URL?.replace(/\/+$/, '')
+  if (
+    uploadedPathname &&
+    uploadedFilename &&
+    uploadedMimeType &&
+    uploadedSize &&
+    fileUrl &&
+    r2BaseUrl &&
+    fileUrl.startsWith(`${r2BaseUrl}/`)
+  ) {
+    const existingAsset = await prisma.uploadedAsset.findFirst({ where: { pathname: uploadedPathname } })
+    if (!existingAsset) {
+      await prisma.uploadedAsset.create({
+        data: {
+          url: fileUrl,
+          pathname: uploadedPathname,
+          filename: uploadedFilename,
+          mimeType: uploadedMimeType,
+          size: uploadedSize,
+          purpose: 'admin-resource',
+        },
+      })
+    }
+  }
 
   await createContentRevision({
     entityType: 'ReadingMaterial',

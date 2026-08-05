@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MarkdownEditor } from '@/components/admin/MarkdownEditor'
 import { saveReadingMaterial } from '../_actions/content'
+import { ResourceFileUpload } from '@/components/admin/ResourceFileUpload'
 
 function dateInputValue(date?: Date) {
   const value = date || new Date()
@@ -51,10 +52,7 @@ export function ReadingMaterialForm({
                 <Label htmlFor="externalUrl">Eksterne URL</Label>
                 <Input id="externalUrl" name="externalUrl" defaultValue={material?.externalUrl || ''} />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="fileUrl">Lêer URL</Label>
-                <Input id="fileUrl" name="fileUrl" defaultValue={material?.fileUrl || ''} />
-              </div>
+              <ResourceFileUpload defaultUrl={material?.fileUrl || ''} />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
@@ -84,6 +82,7 @@ export function ReadingMaterialForm({
                   <option value="LINK">Skakel</option>
                   <option value="PDF">PDF</option>
                   <option value="DOC">Dokument</option>
+                  <option value="AUDIO">Klank</option>
                 </select>
               </div>
             </div>

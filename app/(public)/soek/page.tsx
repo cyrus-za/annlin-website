@@ -10,7 +10,7 @@ import { createArticleExcerpt, createExcerpt, createServiceGroupExcerpt } from '
 
 export const metadata: Metadata = {
   title: 'Soek | Annlin Gemeente',
-  description: 'Soek deur Annlin Gemeente se nuus, diensgroepe, leesstof en webbladsye.',
+  description: 'Soek deur Annlin Gemeente se nuus, diensgroepe, hulpbronne en webbladsye.',
 }
 
 type SearchPageProps = {
@@ -21,14 +21,14 @@ type SearchResult = {
   href: string
   title: string
   description: string
-  type: 'Bladsy' | 'Diensgroep' | 'Nuus' | 'Leesstof'
+  type: 'Bladsy' | 'Diensgroep' | 'Nuus' | 'Hulpbron'
 }
 
 const resultIcons = {
   Bladsy: FileText,
   Diensgroep: Users,
   Nuus: CalendarDays,
-  Leesstof: BookOpen,
+  Hulpbron: BookOpen,
 }
 
 function searchableDefinitionText(definition: (typeof CONTENT_PAGE_DEFINITIONS)[number]) {
@@ -51,18 +51,16 @@ async function searchSite(query: string): Promise<SearchResult[]> {
         status: 'PUBLISHED',
         OR: [{ title: contains }, { excerpt: contains }, { content: contains }],
       },
-      orderBy: { publishedAt: 'desc' },
+      orderBy: { contentDate: 'desc' },
       take: 20,
     }),
     prisma.readingMaterial.findMany({
       where: {
-        AND: [
-          { NOT: { id: { startsWith: 'wp-archive-' } } },
-          { NOT: { id: { startsWith: 'wp-media-' } } },
-          { OR: [{ title: contains }, { description: contains }] },
-        ],
+        status: 'PUBLISHED',
+        isArchived: false,
+        OR: [{ title: contains }, { description: contains }],
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { contentDate: 'desc' },
       take: 20,
     }),
   ])
@@ -94,8 +92,8 @@ async function searchSite(query: string): Promise<SearchResult[]> {
     ...readingMaterials.map((material): SearchResult => ({
       href: `/leesstof/${material.id}`,
       title: material.title,
-      description: createExcerpt(material.description || 'Leesstof en toerusting.', 180),
-      type: 'Leesstof',
+      description: createExcerpt(material.description || 'Publikasies en hulpbronne.', 180),
+      type: 'Hulpbron',
     })),
   ]
 }

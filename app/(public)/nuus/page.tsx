@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Calendar, Newspaper } from 'lucide-react'
+import { ArrowRight, BookOpen, Calendar, Newspaper } from 'lucide-react'
 import { prisma } from '@/lib/db'
 import { createArticleExcerpt } from '@/lib/public-content'
 import Link from 'next/link'
@@ -23,20 +23,24 @@ function formatDate(date: Date | null) {
   }).format(date)
 }
 
-function getArchiveYear(title: string, publishedAt: Date | null) {
-  const match = /^Nuus\s+(\d{4})$/i.exec(title.trim())
-  if (!match || !publishedAt) return null
-
-  const archiveYear = Number(match[1])
-  return archiveYear === publishedAt.getFullYear() ? null : archiveYear
-}
-
 export default async function NewsPage() {
-  const articles = await prisma.article.findMany({
-    where: { status: 'PUBLISHED' },
-    include: { category: true },
-    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
-  })
+  const latestCategoryNames = ['Die Fontein - Weekblad', 'Die Fontein - Maandblad', 'Liturgie']
+  const [articles, latestPublications] = await Promise.all([
+    prisma.article.findMany({
+      where: { status: 'PUBLISHED' },
+      include: { category: true },
+      orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
+    }),
+    Promise.all(
+      latestCategoryNames.map((name) =>
+        prisma.readingMaterial.findFirst({
+          where: { status: 'PUBLISHED', isArchived: false, category: { name } },
+          include: { category: true },
+          orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
+        })
+      )
+    ),
+  ])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,26 +58,42 @@ export default async function NewsPage() {
         </div>
       </section>
 
+      {latestPublications.some(Boolean) ? (
+        <section className="border-b bg-white py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Jongste publikasies</h2>
+                <p className="mt-2 text-muted-foreground">Die jongste Weekblad, Maandblad en liturgie op een plek.</p>
+              </div>
+              <Button asChild variant="outline"><Link href="/leesstof">Besoek Hulpbronne</Link></Button>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {latestPublications.filter((item) => item !== null).map((item) => (
+                <article key={item.id} className="rounded-xl border border-stone-200 bg-stone-50 p-5">
+                  <p className="text-sm font-semibold text-amber-800">{item.category.name}</p>
+                  <h3 className="mt-2 text-lg font-semibold text-foreground">{item.title}</h3>
+                  {item.showDate ? <p className="mt-2 text-sm text-muted-foreground">{formatDate(item.contentDate)}</p> : null}
+                  <Button asChild className="mt-5 w-full"><Link href={`/leesstof/${item.id}`}>Lees publikasie <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {articles.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {articles.map((article) => {
-                const archiveYear = getArchiveYear(article.title, article.publishedAt)
-
-                return (
+              {articles.map((article) => (
                   <Card key={article.id}>
                     <CardHeader>
                       <CardTitle className="text-amber-900">{article.title}</CardTitle>
-                      {archiveYear ? (
-                        <div className="flex items-center gap-2 text-sm font-semibold text-amber-800">
-                          <Calendar className="h-4 w-4" />
-                          Argief: {archiveYear}
-                        </div>
-                      ) : formatDate(article.publishedAt) ? (
+                      {article.showDate ? (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Calendar className="h-4 w-4" />
-                          {formatDate(article.publishedAt)}
+                          {formatDate(article.contentDate)}
                         </div>
                       ) : null}
                     </CardHeader>
@@ -89,8 +109,7 @@ export default async function NewsPage() {
                       </Button>
                     </CardContent>
                   </Card>
-                )
-              })}
+              ))}
             </div>
           ) : (
             <div className="rounded-lg border bg-white p-6">

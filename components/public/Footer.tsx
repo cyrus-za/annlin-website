@@ -164,7 +164,7 @@ export function Footer() {
                 href="/leesstof"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Preke & Leesstof
+                Hulpbronne
               </Link>
               <Link 
                 href="/uitsendings"

@@ -11,7 +11,7 @@ export default async function AdminNewsPage() {
   await requireAuth()
   const articles = await prisma.article.findMany({
     include: { category: true },
-    orderBy: [{ publishedAt: 'desc' }, { updatedAt: 'desc' }],
+    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
   })
 
   return (
@@ -41,11 +41,12 @@ export default async function AdminNewsPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="font-semibold text-gray-900">{article.title}</h2>
                   <Badge variant={article.status === 'PUBLISHED' ? 'default' : 'secondary'}>
-                    {article.status === 'PUBLISHED' ? 'Gepubliseer' : 'Konsep'}
+                    {article.status === 'PUBLISHED' ? 'Gepubliseer' : article.status === 'DRAFT' ? 'Konsep' : 'Argief'}
                   </Badge>
                   <Badge variant="outline">{article.category.name}</Badge>
                 </div>
                 <p className="text-sm text-gray-600">{article.slug}</p>
+                <p className="text-xs text-gray-500">Datum van berig: {article.contentDate.toISOString().slice(0, 10)}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" asChild>

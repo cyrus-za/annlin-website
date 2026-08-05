@@ -43,7 +43,7 @@ const navigationItems: NavigationItem[] = [
     href: '/diensgroepe',
   },
   {
-    name: 'Leesstof',
+    name: 'Hulpbronne',
     href: '/leesstof',
   },
 ]

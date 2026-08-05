@@ -2,14 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookOpen, ExternalLink, FileText, LibraryBig } from 'lucide-react'
 import { prisma } from '@/lib/db'
-import { createExcerpt } from '@/lib/public-content'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
+import { ResourceLibrary } from '@/components/public/ResourceLibrary'
 
 export const metadata: Metadata = {
-  title: 'Leesstof | Annlin Gemeente',
-  description: 'Leesstof, preeksamevattings en geloofsmateriaal van Annlin Gemeente.',
+  title: 'Hulpbronne | Annlin Gemeente',
+  description: 'Publikasies, leesstof, preeksamevattings en geloofsmateriaal van Annlin Gemeente.',
 }
 
 export const revalidate = 300
@@ -61,13 +62,24 @@ const resourceLinks = [
 
 export default async function ReadingPage() {
   const materials = await prisma.readingMaterial.findMany({
+    where: { status: 'PUBLISHED' },
     include: { category: true },
-    orderBy: { createdAt: 'asc' },
+    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
   })
 
-  const additionalMaterials = materials.filter(
-    (item) => item.title !== 'Leesstof' && item.category.name !== 'Argief uit WordPress'
-  )
+  const libraryItems = materials
+    .filter((item) => item.title !== 'Leesstof')
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      fileType: item.fileType,
+      fileSize: item.fileSize,
+      contentDate: item.contentDate.toISOString().slice(0, 10),
+      showDate: item.showDate,
+      isArchived: item.isArchived || item.category.name === 'Argief uit WordPress',
+      category: item.category.name,
+    }))
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -89,13 +101,17 @@ export default async function ReadingPage() {
             <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-white/15 backdrop-blur-sm">
               <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="text-4xl font-bold sm:text-5xl">Leesstof</h1>
+            <h1 className="text-4xl font-bold sm:text-5xl">Hulpbronne</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-100 sm:text-xl">
-              Boeke, preeksamevattings en toerustingsmateriaal vir die gemeente.
+              Publikasies, leesstof en toerustingsmateriaal vir die gemeente.
             </p>
           </div>
         </div>
       </section>
+
+      <Suspense fallback={<div className="min-h-80 bg-white" />}>
+        <ResourceLibrary items={libraryItems} />
+      </Suspense>
 
       <section className="bg-white py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -229,43 +245,6 @@ export default async function ReadingPage() {
         </div>
       </section>
 
-      {additionalMaterials.length > 0 ? (
-        <section className="bg-white py-14">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-foreground">Meer Leesstof</h2>
-            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {additionalMaterials.map((item) => (
-                <Card key={item.id}>
-                  <CardHeader>
-                    <CardTitle className="text-amber-900">{item.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {item.description && (
-                      <p className="line-clamp-5 text-muted-foreground">
-                        {createExcerpt(item.description, 260)}
-                      </p>
-                    )}
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                      <Button asChild>
-                        <Link href={`/leesstof/${item.id}`}>
-                          Lees meer
-                        </Link>
-                      </Button>
-                      {(item.externalUrl || item.fileUrl) && (
-                        <Button asChild variant="outline">
-                          <a href={item.externalUrl || item.fileUrl || '#'} target="_blank" rel="noopener noreferrer">
-                            Maak bron oop
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
     </div>
   )
 }

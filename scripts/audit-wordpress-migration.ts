@@ -285,7 +285,7 @@ async function main() {
 
   const [serviceGroups, articles, readingMaterials, events, uploadedAssets] = await Promise.all([
     prisma.serviceGroup.findMany({ where: { isActive: true }, orderBy: { displayOrder: 'asc' } }),
-    prisma.article.findMany({ where: { status: 'PUBLISHED' } }),
+    prisma.article.findMany(),
     prisma.readingMaterial.findMany(),
     prisma.event.findMany(),
     prisma.uploadedAsset.findMany({ where: { id: { startsWith: 'wp-media-' } } }),

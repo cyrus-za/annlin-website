@@ -131,6 +131,7 @@ const newsSlugs = new Set([
   'pinksterfeesvieringe-4-5-junie-2022',
   'uitnodiging-diensteblad',
 ])
+const annualNewsSlugs = new Set(['nuus-2025', 'nuus-2024', 'nuus-2023', 'nuus-2022', 'nuus-2021'])
 
 const singletonPageRoutes = new Map([
   ['homepagenew', '/'],
@@ -437,6 +438,8 @@ async function main() {
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
+          contentDate: new Date(page.date || page.modified || Date.now()),
+          showDate: false,
         },
         create: {
           id: `wp-page-${page.id}`,
@@ -445,6 +448,8 @@ async function main() {
           externalUrl: null,
           categoryId: readingCategory.id,
           fileType: ReadingMaterialFileType.LINK,
+          contentDate: new Date(page.date || page.modified || Date.now()),
+          showDate: false,
         },
       })
       readingMaterials++
@@ -452,7 +457,8 @@ async function main() {
     }
 
     if (newsSlugs.has(page.slug)) {
-      const publishedAt = new Date(page.modified || page.date || Date.now())
+      const publishedAt = new Date(page.date || page.modified || Date.now())
+      const status = annualNewsSlugs.has(page.slug) ? ArticleStatus.ARCHIVED : ArticleStatus.PUBLISHED
       const articleContent = normalizeArticleContent(content)
       const articleSlug = canonicalNewsArticleSlug(page.slug, title)
       await prisma.article.upsert({
@@ -462,7 +468,9 @@ async function main() {
           content: articleContent,
           excerpt: createArticleExcerpt(articleContent, 240),
           categoryId: articleCategory.id,
-          status: ArticleStatus.PUBLISHED,
+          status,
+          contentDate: publishedAt,
+          showDate: true,
           publishedAt,
           authorId: admin.id,
         },
@@ -472,7 +480,9 @@ async function main() {
           content: articleContent,
           excerpt: createArticleExcerpt(articleContent, 240),
           categoryId: articleCategory.id,
-          status: ArticleStatus.PUBLISHED,
+          status,
+          contentDate: publishedAt,
+          showDate: true,
           publishedAt,
           authorId: admin.id,
         },
@@ -491,6 +501,9 @@ async function main() {
           externalUrl: null,
           categoryId: archiveCategory.id,
           fileType: ReadingMaterialFileType.LINK,
+          contentDate: new Date(page.date || page.modified || Date.now()),
+          showDate: false,
+          isArchived: true,
         },
         create: {
           id: `wp-archive-page-${page.id}`,
@@ -499,6 +512,9 @@ async function main() {
           externalUrl: null,
           categoryId: archiveCategory.id,
           fileType: ReadingMaterialFileType.LINK,
+          contentDate: new Date(page.date || page.modified || Date.now()),
+          showDate: false,
+          isArchived: true,
         },
       })
       readingMaterials++

@@ -315,6 +315,7 @@ model ReadingMaterialCategory {
 enum ReadingMaterialFileType {
   PDF
   DOC
+  AUDIO
   LINK
 }
 

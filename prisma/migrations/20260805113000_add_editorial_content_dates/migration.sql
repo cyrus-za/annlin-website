@@ -1,4 +1,5 @@
 ALTER TYPE "ArticleStatus" ADD VALUE IF NOT EXISTS 'ARCHIVED';
+ALTER TYPE "ReadingMaterialFileType" ADD VALUE IF NOT EXISTS 'AUDIO';
 
 ALTER TABLE "articles"
 ADD COLUMN "contentDate" DATE,

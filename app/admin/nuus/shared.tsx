@@ -84,9 +84,10 @@ export function ArticleForm({
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="status">Status</Label>
-                <select id="status" name="status" defaultValue={article?.status || 'PUBLISHED'} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-                  <option value="PUBLISHED">Gepubliseer</option>
+                <select id="status" name="status" defaultValue={article?.status || 'DRAFT'} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
                   <option value="DRAFT">Konsep</option>
+                  <option value="PUBLISHED">Gepubliseer</option>
+                  <option value="ARCHIVED">Argief</option>
                 </select>
               </div>
             </div>
