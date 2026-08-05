@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, BookOpen, Calendar, Newspaper } from 'lucide-react'
+import { PublicationCategoryBadge } from '@/components/public/PublicationCategoryBadge'
 import { prisma } from '@/lib/db'
 import { createArticleExcerpt } from '@/lib/public-content'
 import Link from 'next/link'
@@ -21,6 +22,10 @@ function formatDate(date: Date | null) {
     month: 'long',
     year: 'numeric',
   }).format(date)
+}
+
+function publicationPreviewUrl(fileUrl: string) {
+  return `${fileUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`
 }
 
 export default async function NewsPage() {
@@ -63,18 +68,44 @@ export default async function NewsPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Jongste publikasies</h2>
-                <p className="mt-2 text-muted-foreground">Die jongste Weekblad, Maandblad en liturgie op een plek.</p>
+                <h2 className="text-2xl font-bold text-foreground">Nuutste publikasies</h2>
+                <p className="mt-2 text-muted-foreground">Die nuutste Weekblad, Maandblad en liturgie op een plek.</p>
               </div>
               <Button asChild variant="outline"><Link href="/leesstof">Besoek Leesstof</Link></Button>
             </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid items-start gap-5 md:grid-cols-3">
               {latestPublications.filter((item) => item !== null).map((item) => (
-                <article key={item.id} className="rounded-xl border border-stone-200 bg-stone-50 p-5">
-                  <p className="text-sm font-semibold text-amber-800">{item.category.name}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-foreground">{item.title}</h3>
-                  {item.showDate ? <p className="mt-2 text-sm text-muted-foreground">{formatDate(item.contentDate)}</p> : null}
-                  <Button asChild className="mt-5 w-full"><Link href={`/leesstof/${item.id}`}>Lees publikasie <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
+                <article key={item.id} className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
+                  {item.fileType === 'PDF' && item.fileUrl ? (
+                    <div className="relative aspect-[210/297] overflow-hidden border-b border-stone-200 bg-stone-100">
+                      <iframe
+                        src={publicationPreviewUrl(item.fileUrl)}
+                        title={`Eerste bladsy van ${item.title}`}
+                        loading="lazy"
+                        scrolling="no"
+                        tabIndex={-1}
+                        className="pointer-events-none absolute inset-0 h-full w-full border-0"
+                      />
+                      <Link
+                        href={`/leesstof/${item.id}`}
+                        aria-label={`Lees ${item.title}`}
+                        className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                      />
+                    </div>
+                  ) : item.description ? (
+                    <div className="border-b border-stone-200 bg-white p-5">
+                      <p className="line-clamp-8 min-h-44 whitespace-pre-line text-sm leading-6 text-muted-foreground">
+                        {createArticleExcerpt(item.description, 520)}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <div className="p-5">
+                    <PublicationCategoryBadge category={item.category.name} />
+                    <h3 className="mt-3 text-lg font-semibold leading-snug text-foreground">{item.title}</h3>
+                    {item.showDate ? <p className="mt-2 text-sm text-muted-foreground">{formatDate(item.contentDate)}</p> : null}
+                    <Button asChild className="mt-5 w-full"><Link href={`/leesstof/${item.id}`}>Lees publikasie <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
+                  </div>
                 </article>
               ))}
             </div>
