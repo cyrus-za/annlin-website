@@ -9,7 +9,7 @@ import { APP_CONFIG } from '@/lib/constants'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
-import Image from 'next/image'
+import Image, { getImageProps } from 'next/image'
 
 export const revalidate = 300
 
@@ -18,8 +18,27 @@ export const metadata: Metadata = {
   description: 'Gereformeerde Kerk Pretoria-Annlin: saam geroep en gestuur om te dien. Vind eredienste, uitsendings, diensgroepe, gebeure en leesstof.',
 }
 
-const homeHeroImage =
-  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/12931-gebou-1.jpeg'
+const { props: desktopHeroProps } = getImageProps({
+  src: '/images/home-hero-desktop.webp',
+  alt: '',
+  width: 1915,
+  height: 821,
+  sizes: '100vw',
+  quality: 85,
+  loading: 'eager',
+  fetchPriority: 'high',
+})
+
+const { props: mobileHeroProps } = getImageProps({
+  src: '/images/home-hero-mobile.webp',
+  alt: '',
+  width: 1000,
+  height: 1563,
+  sizes: '100vw',
+  quality: 85,
+  loading: 'eager',
+  fetchPriority: 'high',
+})
 
 export default async function Home() {
   const [{ sections }, serviceGroups] = await Promise.all([
@@ -34,15 +53,18 @@ export default async function Home() {
       <section 
         className="relative overflow-hidden py-16 text-white sm:py-20"
       >
-        <Image
-          src={homeHeroImage}
-          alt=""
-          fill
-          preload
-          sizes="100vw"
-          quality={80}
-          className="object-cover object-center"
-        />
+        <picture className="absolute inset-0 block">
+          <source
+            media="(max-width: 639px)"
+            sizes={mobileHeroProps.sizes}
+            srcSet={mobileHeroProps.srcSet}
+          />
+          <img
+            {...desktopHeroProps}
+            alt=""
+            className="h-full w-full object-cover object-center"
+          />
+        </picture>
         <div
           className="absolute inset-0"
           style={{
