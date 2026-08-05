@@ -177,13 +177,21 @@ function withoutFiles(value: string, filenames: string[] = []) {
     } catch {
       return match
     }
-    return excluded.has(filename) ? '' : match
+    const isExcluded = [...excluded].some(
+      (excludedFilename) => filename === excludedFilename || filename.endsWith(`-${excludedFilename}`)
+    )
+    return isExcluded ? '' : match
   })
 }
 
 function firstImageUrl(value: string) {
   markdownImagePattern.lastIndex = 0
   return markdownImagePattern.exec(value)?.[2] || null
+}
+
+function imageCount(value: string) {
+  markdownImagePattern.lastIndex = 0
+  return [...value.matchAll(markdownImagePattern)].length
 }
 
 function storyContent(
@@ -258,6 +266,10 @@ async function main() {
     if (!source) throw new Error(`Missing source ${story.sourceSlug}.`)
     const sourceStories = storySpecs.filter((candidate) => candidate.sourceSlug === story.sourceSlug)
     const content = storyContent(source.content, story, sourceStories, assetUrlByFilename)
+    const retainedExclusions = (story.excludeFiles || []).filter((filename) => content.includes(filename))
+    if (retainedExclusions.length > 0) {
+      throw new Error(`Excluded assets remain in ${story.slug}: ${retainedExclusions.join(', ')}`)
+    }
     const excerpt = story.excerpt || createArticleExcerpt(content, 240)
     return {
       ...story,
@@ -320,7 +332,7 @@ async function main() {
       contentDate: story.contentDate,
       showDate: story.showDate ?? true,
       contentLength: story.content.length,
-      hasImage: Boolean(story.featuredImageUrl),
+      images: imageCount(story.content),
       exists: existingSlugs.has(story.slug),
     })),
   }, null, 2))
