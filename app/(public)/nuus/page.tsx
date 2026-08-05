@@ -8,8 +8,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 
-const newsHeroImage =
-  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/12811-Fontein-Redaksie-2.png'
+const newsHeroImage = '/images/news-hero-die-fontein.png'
 
 export const metadata: Metadata = {
   title: 'Nuus | Annlin Gemeente',
