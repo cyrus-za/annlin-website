@@ -56,11 +56,13 @@ export async function saveArticle(formData: FormData) {
   const title = text(formData, 'title')
   const content = text(formData, 'content')
   const slug = slugify(text(formData, 'slug') || title)
-  const status = text(formData, 'status') === ArticleStatus.DRAFT ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED
+  const statusValue = text(formData, 'status')
+  const status = statusValue === ArticleStatus.DRAFT ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED
   const categoryId = text(formData, 'categoryId') || (await ensureArticleCategory()).id
+  const contentDate = text(formData, 'contentDate')
 
-  if (!title || !content) {
-    throw new Error('Titel en inhoud is verplig')
+  if (!title || !content || !/^\d{4}-\d{2}-\d{2}$/.test(contentDate)) {
+    throw new Error('Titel, inhoud en datum van berig is verplig')
   }
 
   const data = {
@@ -71,6 +73,8 @@ export async function saveArticle(formData: FormData) {
     featuredImageUrl: optionalText(formData, 'featuredImageUrl'),
     categoryId,
     status,
+    contentDate: new Date(`${contentDate}T00:00:00.000Z`),
+    showDate: formData.get('showDate') === 'true',
     publishedAt: status === ArticleStatus.PUBLISHED ? new Date() : null,
     authorId: user.id,
   }
@@ -127,9 +131,14 @@ export async function saveReadingMaterial(formData: FormData) {
   const categoryId = text(formData, 'categoryId') || (await ensureReadingCategory()).id
   const fileTypeValue = text(formData, 'fileType')
   const fileType = fileTypeValue in ReadingMaterialFileType ? fileTypeValue as ReadingMaterialFileType : ReadingMaterialFileType.LINK
+  const contentDate = text(formData, 'contentDate')
+  const statusValue = text(formData, 'status')
+  const status = ['DRAFT', 'PUBLISHED', 'ARCHIVED'].includes(statusValue)
+    ? statusValue as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+    : 'DRAFT'
 
-  if (!title) {
-    throw new Error('Titel is verplig')
+  if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(contentDate)) {
+    throw new Error('Titel en datum van dokument is verplig')
   }
 
   const data = {
@@ -139,6 +148,10 @@ export async function saveReadingMaterial(formData: FormData) {
     externalUrl: optionalText(formData, 'externalUrl'),
     categoryId,
     fileType,
+    contentDate: new Date(`${contentDate}T00:00:00.000Z`),
+    showDate: formData.get('showDate') === 'true',
+    status,
+    isArchived: formData.get('isArchived') === 'true',
   }
 
   const material = id

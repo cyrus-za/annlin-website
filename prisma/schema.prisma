@@ -13,22 +13,22 @@ datasource db {
 
 // User model for admin authentication (better-auth compatible)
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified Boolean   @default(true)
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(true)
   name          String
   image         String?
-  role          UserRole  @default(ADMIN)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          UserRole @default(ADMIN)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
-  articles     Article[]
-  auditLogs    AuditLog[]
-  accounts     Account[]
-  sessions     Session[]
-  invitations  UserInvitation[]
-  revisions    ContentRevision[]
+  articles    Article[]
+  auditLogs   AuditLog[]
+  accounts    Account[]
+  sessions    Session[]
+  invitations UserInvitation[]
+  revisions   ContentRevision[]
 
   @@map("users")
 }
@@ -88,17 +88,17 @@ model Verification {
 }
 
 model UserInvitation {
-  id          String                @id @default(cuid())
-  email       String
-  name        String
-  role        UserRole              @default(ADMIN)
-  token       String                @unique @default(cuid())
-  status      UserInvitationStatus  @default(PENDING)
-  invitedBy   String
-  expiresAt   DateTime
-  acceptedAt  DateTime?
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  id         String               @id @default(cuid())
+  email      String
+  name       String
+  role       UserRole             @default(ADMIN)
+  token      String               @unique @default(cuid())
+  status     UserInvitationStatus @default(PENDING)
+  invitedBy  String
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
 
   // Relations
   inviter User @relation(fields: [invitedBy], references: [id], onDelete: Cascade)
@@ -115,20 +115,20 @@ enum UserInvitationStatus {
 
 // Service Groups (Diensgroepe)
 model ServiceGroup {
-  id              String   @id @default(cuid())
-  name            String
-  slug            String   @unique
-  description     String
-  category        ServiceGroupCategory @default(OTHER)
-  contactPerson   String
-  contactEmail    String
-  contactPhone    String?
-  thumbnailUrl    String?
-  bannerUrl       String?
-  displayOrder    Int      @default(0)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String               @id @default(cuid())
+  name          String
+  slug          String               @unique
+  description   String
+  category      ServiceGroupCategory @default(OTHER)
+  contactPerson String
+  contactEmail  String
+  contactPhone  String?
+  thumbnailUrl  String?
+  bannerUrl     String?
+  displayOrder  Int                  @default(0)
+  isActive      Boolean              @default(true)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   // Relations
   contactSubmissions ContactSubmission[]
@@ -143,18 +143,18 @@ enum ServiceGroupCategory {
 
 // Events and Calendar
 model Event {
-  id               String             @id @default(cuid())
+  id               String            @id @default(cuid())
   title            String
   description      String
   startDate        DateTime
   endDate          DateTime?
   location         String?
   categoryId       String
-  isRecurring      Boolean            @default(false)
+  isRecurring      Boolean           @default(false)
   recurringPattern RecurringPattern?
   sermonUrl        String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   // Relations
   category EventCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -184,17 +184,19 @@ enum RecurringPattern {
 
 // News Articles
 model Article {
-  id               String         @id @default(cuid())
+  id               String        @id @default(cuid())
   title            String
-  slug             String         @unique
+  slug             String        @unique
   content          String // Markdown content
   excerpt          String?
   featuredImageUrl String?
   categoryId       String
-  status           ArticleStatus  @default(DRAFT)
+  status           ArticleStatus @default(DRAFT)
+  contentDate      DateTime      @default(now()) @db.Date
+  showDate         Boolean       @default(true)
   publishedAt      DateTime?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   authorId         String
 
   // Relations
@@ -222,20 +224,26 @@ model ArticleCategory {
 enum ArticleStatus {
   DRAFT
   PUBLISHED
+  ARCHIVED
 }
 
 // Reading Materials
 model ReadingMaterial {
-  id           String                     @id @default(cuid())
-  title        String
-  description  String?
-  fileUrl      String?
-  externalUrl  String?
-  categoryId   String
-  fileType     ReadingMaterialFileType?
-  fileSize     Int?
-  createdAt    DateTime                   @default(now())
-  updatedAt    DateTime                   @updatedAt
+  id            String                   @id @default(cuid())
+  title         String
+  description   String?
+  fileUrl       String?
+  externalUrl   String?
+  categoryId    String
+  fileType      ReadingMaterialFileType?
+  fileSize      Int?
+  contentDate   DateTime                 @default(now()) @db.Date
+  showDate      Boolean                  @default(true)
+  status        ContentStatus            @default(PUBLISHED)
+  isArchived    Boolean                  @default(false)
+  sourceMediaId Int?                     @unique
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
 
   // Relations
   category ReadingMaterialCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -312,7 +320,7 @@ enum ReadingMaterialFileType {
 
 // Contact Forms
 model ContactSubmission {
-  id             String                    @id @default(cuid())
+  id             String                  @id @default(cuid())
   name           String
   email          String
   phone          String?
@@ -320,9 +328,9 @@ model ContactSubmission {
   message        String
   type           ContactSubmissionType
   serviceGroupId String?
-  status         ContactSubmissionStatus  @default(NEW)
-  createdAt      DateTime                 @default(now())
-  updatedAt      DateTime                 @updatedAt
+  status         ContactSubmissionStatus @default(NEW)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
 
   // Relations
   serviceGroup ServiceGroup? @relation(fields: [serviceGroupId], references: [id], onDelete: SetNull)
@@ -344,13 +352,13 @@ enum ContactSubmissionStatus {
 
 // Audit Log
 model AuditLog {
-  id         String                 @id @default(cuid())
+  id         String   @id @default(cuid())
   userId     String
   action     String
   entityType String
   entityId   String
   changes    Json
-  createdAt  DateTime               @default(now())
+  createdAt  DateTime @default(now())
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

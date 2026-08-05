@@ -8,6 +8,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { MarkdownEditor } from '@/components/admin/MarkdownEditor'
 import { saveArticle } from '../_actions/content'
 
+function dateInputValue(date?: Date) {
+  const value = date || new Date()
+  return value.toISOString().slice(0, 10)
+}
+
 export function ArticleForm({
   article,
   categories,
@@ -57,6 +62,19 @@ export function ArticleForm({
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
+                <Label htmlFor="contentDate">Datum van berig</Label>
+                <Input
+                  id="contentDate"
+                  name="contentDate"
+                  type="date"
+                  defaultValue={dateInputValue(article?.contentDate)}
+                  required
+                />
+                <p className="text-sm text-muted-foreground">
+                  Hierdie datum bepaal waar die berig in lyste en filters verskyn.
+                </p>
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="categoryId">Kategorie</Label>
                 <select id="categoryId" name="categoryId" defaultValue={article?.categoryId || categories[0]?.id || ''} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
                   {categories.map((category) => (
@@ -72,6 +90,16 @@ export function ArticleForm({
                 </select>
               </div>
             </div>
+            <label className="flex items-center gap-3 text-sm font-medium text-foreground">
+              <input
+                type="checkbox"
+                name="showDate"
+                value="true"
+                defaultChecked={article?.showDate ?? true}
+                className="h-4 w-4 rounded border-input"
+              />
+              Wys datum op die webwerf
+            </label>
             <div className="flex gap-3">
               <Button type="submit">Stoor Artikel</Button>
               <Button type="button" variant="outline" asChild>
