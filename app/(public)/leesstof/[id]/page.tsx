@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { ArrowLeft, CalendarDays, Download, ExternalLink, FileText, Link as LinkIcon } from 'lucide-react'
 
 import { prisma } from '@/lib/db'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MarkdownContent } from '@/components/content/MarkdownContent'
+import { PublicationCategoryBadge } from '@/components/public/PublicationCategoryBadge'
 import { extractMarkdownAudioLinks, stripMarkdownAudioLinks } from '@/lib/public-content'
 
 interface ReadingMaterialDetailPageProps {
@@ -53,6 +53,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
   const hasInlineLinks = Boolean(description?.match(/\[[^\]]+\]\([^)]+\)/))
   const isPdf = material.fileType === 'PDF' && Boolean(material.fileUrl)
   const isAudio = material.fileType === 'AUDIO' && Boolean(material.fileUrl)
+  const pdfViewerUrl = isPdf ? `${material.fileUrl}#page=1&view=FitH&toolbar=1&navpanes=0` : null
   const formattedDate = new Intl.DateTimeFormat('af-ZA', {
     day: material.category.name.includes('Maandblad') ? undefined : 'numeric',
     month: 'long',
@@ -63,7 +64,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
   return (
     <div className="min-h-screen bg-stone-50">
       <section className="border-b bg-white py-14">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${isPdf ? 'max-w-7xl' : 'max-w-4xl'}`}>
           <Button asChild variant="ghost" className="mb-6 -ml-3 text-amber-900 hover:text-amber-950">
             <Link href="/leesstof">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -72,9 +73,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
           </Button>
 
           <div className="space-y-4">
-            <Badge variant="outline" className="rounded-full">
-              {material.category.name}
-            </Badge>
+            <PublicationCategoryBadge category={material.category.name} />
             <h1 className="text-4xl font-bold text-foreground sm:text-5xl">{material.title}</h1>
             {material.showDate ? (
               <p className="flex items-center gap-2 text-base text-muted-foreground">
@@ -87,7 +86,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
       </section>
 
       <section className="py-12">
-        <div className="mx-auto grid max-w-4xl gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className={`mx-auto grid gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem] ${isPdf ? 'max-w-7xl' : 'max-w-4xl'}`}>
           <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
             {isPdf ? (
               <section aria-labelledby="pdf-heading">
@@ -95,14 +94,20 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
                 <p className="mt-2 text-sm text-muted-foreground md:hidden">
                   Maak die PDF in jou toestel se dokumentleser oop vir die beste selfoonervaring.
                 </p>
-                <object
-                  data={material.fileUrl || undefined}
-                  type="application/pdf"
+                <p className="mt-2 hidden text-sm text-muted-foreground md:block">
+                  Gebruik die pyltjies of bladsynommer in die PDF-balk om tussen bladsye te beweeg.
+                </p>
+                <iframe
+                  src={pdfViewerUrl || undefined}
                   title={material.title}
-                  className="mt-5 hidden h-[75vh] min-h-[42rem] w-full rounded-md border border-stone-200 md:block"
-                >
-                  <p>Hierdie blaaier kan nie die PDF binne die blad wys nie.</p>
-                </object>
+                  className="mt-5 hidden h-[82vh] min-h-[52rem] w-full rounded-md border border-stone-200 bg-stone-100 md:block"
+                />
+                <Button asChild className="mt-5 w-full md:hidden">
+                  <a href={material.fileUrl || '#'} target="_blank" rel="noopener noreferrer">
+                    Maak PDF-leser oop
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
               </section>
             ) : null}
 

@@ -7,6 +7,11 @@ import { Archive, CalendarDays, ChevronLeft, ChevronRight, FileAudio, FileText, 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  PublicationCategoryBadge,
+  publicationCategoryPresentation,
+} from '@/components/public/PublicationCategoryBadge'
+import { cn } from '@/lib/utils'
 
 type ResourceItem = {
   id: string
@@ -167,9 +172,15 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
         {visibleItems.length > 0 ? (
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {visibleItems.map((item) => (
-              <article key={item.id} className="flex min-w-0 h-full flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+              <article
+                key={item.id}
+                className={cn(
+                  'flex min-w-0 h-full flex-col rounded-xl border border-t-4 border-stone-200 bg-white p-5 shadow-sm',
+                  publicationCategoryPresentation(item.category).accent
+                )}
+              >
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline">{item.category}</Badge>
+                  <PublicationCategoryBadge category={item.category} />
                   {item.isArchived ? <Badge variant="secondary"><Archive className="mr-1 h-3 w-3" /> Argief</Badge> : null}
                 </div>
                 <h3 className="mt-4 text-xl font-semibold leading-snug text-foreground">{item.title}</h3>

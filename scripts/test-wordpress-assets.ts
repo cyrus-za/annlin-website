@@ -15,6 +15,11 @@ import {
   parseWordPressLocalDate,
   replaceMigratedWordPressAssetLinks,
 } from '../lib/wordpress-migration'
+import {
+  classifyWordPressDocument,
+  publicationDescription,
+  publicationTitle,
+} from '../lib/wordpress-publications'
 import { markdownToHtml } from '../lib/markdown'
 import { auditContentMarkdown, normalizeContentMarkdown } from '../lib/content-integrity'
 import {
@@ -283,5 +288,30 @@ assert.equal(
   ),
   '[Werkkaart](https://legacy.example/uploads/KINDERWERKKAART.pdf)'
 )
+
+assert.equal(
+  publicationTitle(13119, 'Liturgie', '2026-07-26 - Liturgie'),
+  'Wanneer die Here besig is, gebeur dinge!'
+)
+assert.equal(
+  publicationTitle(999, 'Die Fontein - Weekblad', 'Die Fontein Weekblad - 2 Augustus 2026'),
+  'Die Fontein Weekblad'
+)
+assert.equal(
+  publicationTitle(999, 'Kinderwerk', 'KINDERWERKKAART Sondag 26 JULIE 2020 Markus 8 verse 1 - 9'),
+  'Kinderwerkkaart: Markus 8 verse 1 - 9'
+)
+assert.equal(publicationTitle(999, 'Jaarprogramme', '2026 - Jaarprogram-8'), 'Jaarprogram 2026')
+assert.doesNotMatch(publicationDescription('Liturgie'), /voormalige|WordPress|webwerf/i)
+
+const classifiedWeekblad = classifyWordPressDocument({
+  id: 13202,
+  date: '2026-08-02T10:00:00',
+  source_url: 'https://example.com/Die-Fontein-Weekblad-2-Augustus-2026-WEB.pdf',
+  mime_type: 'application/pdf',
+  title: { rendered: 'Die Fontein Weekblad - 2 Augustus 2026' },
+})
+assert.equal(classifiedWeekblad?.title, 'Die Fontein Weekblad')
+assert.equal(classifiedWeekblad?.description, 'Die Fontein, die gemeente se weeklikse nuuspublikasie.')
 
 console.log('WordPress asset preservation checks passed.')
