@@ -202,6 +202,15 @@ function getDefaultContactEmail() {
   return contactEmail
 }
 
+function getPageSlugFilter() {
+  const argument = process.argv.find((value) => value.startsWith('--slug='))
+  if (!argument) return null
+
+  const slug = argument.slice('--slug='.length).trim()
+  if (!slug) throw new Error('--slug requires a WordPress page slug.')
+  return slug
+}
+
 function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
   const responsiveContent = stripDuplicateResponsiveDiviModules(html)
   const preparedHtml = options.preserveAssets
@@ -302,6 +311,7 @@ async function main() {
   console.log('Fetching WordPress content...')
   const wordpressBaseUrl = getWordPressBaseUrl()
   const defaultContactEmail = getDefaultContactEmail()
+  const pageSlugFilter = getPageSlugFilter()
 
   const [pageMetadata, pageContents, eventResponse] = await Promise.all([
     fetchJson<WpPage[]>(
@@ -379,11 +389,19 @@ async function main() {
   let readingMaterials = 0
   let events = 0
 
-  const sortedPages = [...pages].sort((a, b) => a.id - b.id)
+  const sortedPages = pages
+    .filter((page) => !pageSlugFilter || page.slug === pageSlugFilter)
+    .sort((a, b) => a.id - b.id)
 
-  await prisma.serviceGroup.deleteMany({
-    where: { slug: { in: placeholderServiceGroupSlugs } },
-  })
+  if (pageSlugFilter && sortedPages.length === 0) {
+    throw new Error(`WordPress page not found for --slug=${pageSlugFilter}`)
+  }
+
+  if (!pageSlugFilter) {
+    await prisma.serviceGroup.deleteMany({
+      where: { slug: { in: placeholderServiceGroupSlugs } },
+    })
+  }
 
   for (const page of sortedPages) {
     const title = titleOf(page)
@@ -521,7 +539,7 @@ async function main() {
     }
   }
 
-  for (const event of eventResponse.events || []) {
+  for (const event of pageSlugFilter ? [] : eventResponse.events || []) {
     const startDate = parseWordPressLocalDate(event.start_date)
     if (Number.isNaN(startDate.getTime())) continue
 
