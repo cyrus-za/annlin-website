@@ -110,8 +110,11 @@ Semantic import result on `2026-08-05`:
 - Publication records with successful, size-consistent R2 responses: `239 / 239`
 - Missing publication records: `0`
 - Invalid publication records: `0`
+- Publication/article records containing temporary migration-context wording: `0`
 
 The public information architecture treats `Nuus` as dated articles plus the latest Weekblad, Maandblad and liturgy. The expanded `Leesstof en publikasies` library provides search, collection/year filters, editorial-date sorting, pagination and an opt-in historical archive.
+
+The imported catalogue now uses stable publication names instead of WordPress filename workarounds. Week- and month dates live only in `contentDate`; Liturgie and preeksamevatting records use subject headings recovered from their PDFs; and category badges use distinct icons and colours. PDF detail pages provide a larger embedded reader with the browser's page controls, plus prominent open/download actions for mobile users.
 
 All news and resource ordering uses the required editorial `contentDate`. Technical `createdAt`, `updatedAt` and workflow `publishedAt` values are not used as public dates.
 
@@ -179,6 +182,7 @@ Verification on `2026-08-05`:
 - Caveat:
   - The text comparison still reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
   - The first-class publication library is deployed and production-crawled, with `239 / 239` canonical records and successful R2 responses.
+  - The publication semantic audit reports `invalidRecords: 0` and `migrationContextRecords: 0` after title and description cleanup.
   - The inline-asset audit's remaining `9` migrated-content differences are the documented historical, source-404 or deliberately retired files above; there are no current Jeug gallery differences.
   - Direct future R2 uploads from admin require deployment of the signed upload Worker. The existing Cloudflare token can manage R2 objects but currently lacks `Workers Scripts: Edit`.
 
