@@ -176,7 +176,7 @@ Verification on `2026-08-05`:
   - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 597`, `missingMedia: 0`, and `oldDomainRows: 0`
   - The route/media audit against production reports `missingContent: 0`, `missingEvents: 0`, `badRoutes: 0`, `badRedirects: 0`, and `wordpressOfflineReady: true`; its aggregate result is not sufficient semantic shutdown evidence on its own.
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
-  - The deployed crawl visited `51` pages without hitting its page limit
+  - The deployed crawl visited `53` pages without hitting its page limit
   - All `597` current WordPress media items are independently inventoried in R2
   - gstack browser QA confirmed the deployed `Leesstof en publikasies` library and active Google Play and Apple App Store links. A mobile publication-card overflow found during QA was fixed; the final `375px` viewport measures `375px` document width with no console errors.
 - Caveat:
