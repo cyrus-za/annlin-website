@@ -17,7 +17,12 @@ interface ReadingMaterialDetailPageProps {
 
 async function getReadingMaterial(id: string) {
   return prisma.readingMaterial.findFirst({
-    where: { id, status: 'PUBLISHED' },
+    where: {
+      id,
+      status: 'PUBLISHED',
+      isArchived: false,
+      category: { name: { not: 'Argief uit WordPress' } },
+    },
     include: { category: true },
   })
 }

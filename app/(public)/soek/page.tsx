@@ -58,6 +58,7 @@ async function searchSite(query: string): Promise<SearchResult[]> {
       where: {
         status: 'PUBLISHED',
         isArchived: false,
+        category: { name: { not: 'Argief uit WordPress' } },
         OR: [{ title: contains }, { description: contains }],
       },
       orderBy: { contentDate: 'desc' },

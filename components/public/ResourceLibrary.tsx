@@ -3,8 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Archive, CalendarDays, ChevronLeft, ChevronRight, FileAudio, FileText, Search } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { CalendarDays, ChevronLeft, ChevronRight, FileAudio, FileText, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -21,7 +20,6 @@ type ResourceItem = {
   fileSize: number | null
   contentDate: string
   showDate: boolean
-  isArchived: boolean
   category: string
 }
 
@@ -52,7 +50,6 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
   const year = searchParams.get('jaar') || 'all'
   const sort = searchParams.get('sorteer') === 'oudste' ? 'oudste' : 'nuutste'
   const query = (searchParams.get('soek') || '').trim()
-  const showArchive = searchParams.get('argief') === '1'
   const requestedPage = Math.max(1, Number(searchParams.get('bladsy') || 1) || 1)
   const categories = [...new Set(items.map((item) => item.category))].sort((a, b) => a.localeCompare(b, 'af'))
   const years = [...new Set(items.map((item) => item.contentDate.slice(0, 4)))].sort().reverse()
@@ -79,7 +76,6 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
 
   const normalizedQuery = query.toLocaleLowerCase('af')
   const filtered = items
-    .filter((item) => showArchive || !item.isArchived)
     .filter((item) => category === 'all' || item.category === category)
     .filter((item) => year === 'all' || item.contentDate.startsWith(year))
     .filter((item) =>
@@ -135,7 +131,7 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
             <Button type="submit">Soek</Button>
           </form>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <label className="grid gap-1.5 text-sm font-medium">
               Versameling
               <select value={category} onChange={(event) => updateParams({ versameling: event.target.value })} className="h-10 rounded-md border border-input bg-background px-3 font-normal">
@@ -157,10 +153,6 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
                 <option value="oudste">Oudste eerste</option>
               </select>
             </label>
-            <label className="flex min-h-10 items-center gap-3 self-end rounded-md border border-input bg-background px-3 text-sm font-medium">
-              <input type="checkbox" checked={showArchive} onChange={(event) => updateParams({ argief: event.target.checked ? '1' : null })} className="h-4 w-4 rounded border-input" />
-              Wys historiese argief
-            </label>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
@@ -181,7 +173,6 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <PublicationCategoryBadge category={item.category} />
-                  {item.isArchived ? <Badge variant="secondary"><Archive className="mr-1 h-3 w-3" /> Argief</Badge> : null}
                 </div>
                 <h3 className="mt-4 text-xl font-semibold leading-snug text-foreground">{item.title}</h3>
                 {item.showDate ? (

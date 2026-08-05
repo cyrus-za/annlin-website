@@ -62,7 +62,11 @@ const resourceLinks = [
 
 export default async function ReadingPage() {
   const materials = await prisma.readingMaterial.findMany({
-    where: { status: 'PUBLISHED' },
+    where: {
+      status: 'PUBLISHED',
+      isArchived: false,
+      category: { name: { not: 'Argief uit WordPress' } },
+    },
     include: { category: true },
     orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
   })
@@ -77,7 +81,6 @@ export default async function ReadingPage() {
       fileSize: item.fileSize,
       contentDate: item.contentDate.toISOString().slice(0, 10),
       showDate: item.showDate,
-      isArchived: item.isArchived || item.category.name === 'Argief uit WordPress',
       category: item.category.name,
     }))
 
