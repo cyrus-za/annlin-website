@@ -69,7 +69,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
   return (
     <div className="min-h-screen bg-stone-50">
       <section className="border-b bg-white py-14">
-        <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${isPdf ? 'max-w-7xl' : 'max-w-4xl'}`}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Button asChild variant="ghost" className="mb-6 -ml-3 text-amber-900 hover:text-amber-950">
             <Link href="/leesstof">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -91,7 +91,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
       </section>
 
       <section className="py-12">
-        <div className={`mx-auto grid gap-8 px-4 sm:px-6 lg:px-8 lg:grid-cols-[minmax(0,1fr)_20rem] ${isPdf ? 'max-w-7xl' : 'max-w-4xl'}`}>
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
           <article className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
             {isPdf ? (
               <section aria-labelledby="pdf-heading">
