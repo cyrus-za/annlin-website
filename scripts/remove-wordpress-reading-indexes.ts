@@ -38,7 +38,9 @@ async function main() {
   )
   const audit = pages.map((page) => {
     const mediaUrls = new Set(
-      [...(page.description || '').matchAll(mediaLinkPattern)].map((match) => match[1])
+      [...(page.description || '').matchAll(mediaLinkPattern)]
+        .map((match) => match[1])
+        .filter((url): url is string => Boolean(url))
     )
     const matched = [...mediaUrls].filter((url) => publicationUrls.has(url)).length
     const expected = indexPages.get(page.id) || 0
