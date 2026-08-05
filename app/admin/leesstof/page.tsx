@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { requireAuth } from '@/lib/auth-config'
+import { requireAdmin } from '@/lib/auth-config'
 import { prisma } from '@/lib/db'
 import { createExcerpt } from '@/lib/public-content'
 
@@ -51,7 +51,7 @@ export default async function AdminReadingPage({
 }: {
   searchParams: Promise<AdminReadingSearchParams>
 }) {
-  await requireAuth()
+  await requireAdmin()
 
   const requested = await searchParams
   const query = first(requested.soek).trim()
