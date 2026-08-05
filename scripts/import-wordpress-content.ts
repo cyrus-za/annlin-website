@@ -101,13 +101,19 @@ const serviceGroupDisplayOrder = new Map(
   [...diakonieServiceGroups, ...otherServiceGroups].map((slug, index) => [slug, index + 1])
 )
 
-const readingSlugs = new Set([
+const readingIndexSlugs = new Set([
   'leesstof-2',
   'preke-op-skrif',
   'oordenkings-ons-gesels-oor-jesus',
   'kinderwerkkaarte',
-  'ek-wil-weet',
 ])
+const readingSlugs = new Set(['ek-wil-weet'])
+const obsoleteReadingIndexIds = [
+  'wp-page-1805',
+  'wp-page-12110',
+  'wp-page-3199',
+  'wp-page-3520',
+]
 
 const newsSlugs = new Set([
   'nuus-2025',
@@ -127,6 +133,7 @@ const singletonPageRoutes = new Map([
   ['jaarprogram', '/jaarprogram'],
   ['kontakbesonderhede', '/kontakbesonderhede'],
   ['onlangse-video-uitsendings-van-preke', '/uitsendings'],
+  ...[...readingIndexSlugs].map((slug) => [slug, '/leesstof'] as const),
 ])
 const singletonPageSlugs = new Set(singletonPageRoutes.keys())
 
@@ -411,6 +418,10 @@ async function main() {
   }
 
   if (!pageSlugFilter) {
+    await prisma.readingMaterial.deleteMany({
+      where: { id: { in: obsoleteReadingIndexIds } },
+    })
+
     await prisma.serviceGroup.deleteMany({
       where: { slug: { in: placeholderServiceGroupSlugs } },
     })
