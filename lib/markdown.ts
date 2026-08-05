@@ -30,6 +30,21 @@ function safeUrl(value: string, image = false) {
   return isSafeMarkdownUrl(normalized, image) ? normalized : '#'
 }
 
+function optimizedMarkdownImageUrl(value: string) {
+  const url = safeUrl(value, true)
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname.endsWith('.r2.dev') && parsed.pathname.startsWith('/wordpress-media/')) {
+      return `/_next/image?url=${encodeURIComponent(url)}&w=1080&q=75`
+    }
+  } catch {
+    // Relative and rejected URLs should remain unchanged.
+  }
+
+  return url
+}
+
 function renderInline(value: string) {
   const replacements: string[] = []
   const token = (html: string) => {
@@ -43,7 +58,7 @@ function renderInline(value: string) {
       /!\[([^\]]*)\]\(([^)]+)\)/g,
       (_match, alt: string, url: string) =>
         token(
-          `<img src="${escapeHtml(safeUrl(url, true))}" alt="${escapeHtml(alt)}" loading="lazy" />`
+          `<img src="${escapeHtml(optimizedMarkdownImageUrl(url))}" alt="${escapeHtml(alt)}" loading="lazy" />`
         )
     )
     .replace(

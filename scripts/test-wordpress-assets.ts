@@ -133,6 +133,12 @@ assert.match(renderedMarkdown, /<em>skuins teks<\/em>/)
 assert.match(renderedMarkdown, /<ol><li>Eerste item<\/li><li>Tweede item<\/li><\/ol>/)
 assert.match(renderedMarkdown, /<a href="https:\/\/example\.com"/)
 assert.match(renderedMarkdown, /<img src="https:\/\/example\.com\/image\.jpg"/)
+assert.match(
+  markdownToHtml(
+    '![R2](https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/12324-3.jpeg)'
+  ),
+  /src="\/_next\/image\?url=https%3A%2F%2Fpub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8\.r2\.dev%2Fwordpress-media%2F12324-3\.jpeg&amp;w=1080&amp;q=75"/
+)
 assert.match(markdownToHtml('[Onveilig](javascript:alert(1))'), /href="#"/)
 assert.doesNotMatch(markdownToHtml('<script>alert(1)<\/script>'), /<script>/)
 
