@@ -1,6 +1,11 @@
 import { PublicCalendar } from '@/components/public/Calendar'
+import { CalendarDays } from 'lucide-react'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
+
+const calendarHeroImage =
+  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/10451-gemeentekamp-img.jpg'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,16 +17,26 @@ export const metadata: Metadata = {
 export default function JaarprogramPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-amber-50 to-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
-              Jaarprogram
-            </h1>
-            <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
-              Bly op hoogte met al ons vergaderings, spesiale gebeure en belangrike datums. 
-              Ons nooi jou uit om deel te wees van ons gemeente aktiwiteite.
+      <section className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 sm:min-h-[30rem]">
+        <Image
+          src={calendarHeroImage}
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          quality={80}
+          className="object-cover object-[center_48%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/50 to-stone-950/15" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-6 sm:pb-16 lg:px-8">
+          <div className="max-w-3xl text-white">
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-sm">
+              <CalendarDays className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold sm:text-5xl">Jaarprogram</h1>
+            <p className="mt-6 text-xl leading-relaxed text-stone-100">
+              Bly op hoogte met al ons vergaderings, spesiale gebeure en belangrike datums. Ons nooi jou uit om
+              deel te wees van ons gemeenteaktiwiteite.
             </p>
           </div>
         </div>
