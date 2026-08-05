@@ -167,7 +167,7 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
         {visibleItems.length > 0 ? (
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {visibleItems.map((item) => (
-              <article key={item.id} className="flex h-full flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+              <article key={item.id} className="flex min-w-0 h-full flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant="outline">{item.category}</Badge>
                   {item.isArchived ? <Badge variant="secondary"><Archive className="mr-1 h-3 w-3" /> Argief</Badge> : null}
