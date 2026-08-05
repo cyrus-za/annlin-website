@@ -173,12 +173,14 @@ export function canonicalWordPressDocuments(documents: WordPressDocument[]) {
     grouped.set(classification.dedupeKey, group)
   }
 
-  return [...grouped.values()].map((variants) =>
-    [...variants].sort((left, right) => {
+  return [...grouped.values()].map((variants) => {
+    const canonical = [...variants].sort((left, right) => {
       if (left.classification.preferForWeb !== right.classification.preferForWeb) {
         return left.classification.preferForWeb ? -1 : 1
       }
       return right.document.id - left.document.id
     })[0]
-  )
+    if (!canonical) throw new Error('A publication variant group was unexpectedly empty.')
+    return canonical
+  })
 }

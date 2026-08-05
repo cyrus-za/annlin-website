@@ -33,7 +33,9 @@ async function mapWithConcurrency<T, R>(items: T[], concurrency: number, mapper:
     Array.from({ length: Math.min(concurrency, items.length) }, async () => {
       while (cursor < items.length) {
         const index = cursor++
-        results[index] = await mapper(items[index])
+        const item = items[index]
+        if (item === undefined) throw new Error(`Missing item at audit index ${index}.`)
+        results[index] = await mapper(item)
       }
     })
   )
