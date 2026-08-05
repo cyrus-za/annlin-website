@@ -59,9 +59,9 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') as Record<string, string>
       const params = new URLSearchParams()
-      if (saved.category && saved.category !== 'all') params.set('versameling', saved.category)
-      if (saved.year && saved.year !== 'all') params.set('jaar', saved.year)
-      if (saved.sort === 'oudste') params.set('sorteer', 'oudste')
+      if (saved['category'] && saved['category'] !== 'all') params.set('versameling', saved['category'])
+      if (saved['year'] && saved['year'] !== 'all') params.set('jaar', saved['year'])
+      if (saved['sort'] === 'oudste') params.set('sorteer', 'oudste')
       if (params.size > 0) router.replace(`/leesstof?${params.toString()}`, { scroll: false })
     } catch {
       localStorage.removeItem(STORAGE_KEY)

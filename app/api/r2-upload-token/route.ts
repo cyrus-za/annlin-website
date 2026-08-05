@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
   const { user } = await requireAuth()
   if (user.role !== 'ADMIN') return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
 
-  const workerUrl = process.env.R2_UPLOAD_WORKER_URL
-  const secret = process.env.R2_UPLOAD_SECRET
+  const workerUrl = process.env['R2_UPLOAD_WORKER_URL']
+  const secret = process.env['R2_UPLOAD_SECRET']
   if (!workerUrl || !secret) return NextResponse.json({ error: 'R2-oplaai is nie opgestel nie' }, { status: 503 })
 
   const body = await request.json() as { filename?: string; mimeType?: string; size?: number }

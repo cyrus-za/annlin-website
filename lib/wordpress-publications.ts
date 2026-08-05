@@ -73,7 +73,7 @@ function extractContentDate(document: WordPressDocument, value: string) {
   if (afrikaansDate) {
     return utcDate(
       Number(afrikaansDate[3]),
-      MONTHS.get(afrikaansDate[2].toLowerCase()) || 0,
+      MONTHS.get(afrikaansDate[2]?.toLowerCase() || '') || 0,
       Number(afrikaansDate[1])
     )
   }
@@ -84,7 +84,7 @@ function extractContentDate(document: WordPressDocument, value: string) {
   if (afrikaansMonth) {
     return utcDate(
       Number(afrikaansMonth[2]),
-      MONTHS.get(afrikaansMonth[1].toLowerCase()) || 0,
+      MONTHS.get(afrikaansMonth[1]?.toLowerCase() || '') || 0,
       1
     )
   }

@@ -177,7 +177,7 @@ export async function saveReadingMaterial(formData: FormData) {
     ? await prisma.readingMaterial.update({ where: { id }, data })
     : await prisma.readingMaterial.create({ data })
 
-  const r2BaseUrl = process.env.R2_PUBLIC_BASE_URL?.replace(/\/+$/, '')
+  const r2BaseUrl = process.env['R2_PUBLIC_BASE_URL']?.replace(/\/+$/, '')
   if (
     uploadedPathname &&
     uploadedFilename &&
