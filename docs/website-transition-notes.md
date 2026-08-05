@@ -145,13 +145,14 @@ Source fix added on `2026-07-06`:
 Verification on `2026-08-05`:
 
 - WordPress pages with inline images or linked files: `31`
-- Migrated pages with missing rendered asset references in the comparison audit: `7`
-- Missing migrated asset references in the comparison audit: `33`
+- Migrated pages with missing rendered asset references in the comparison audit: `6`
+- Missing migrated asset references in the comparison audit: `9`
 - Redesigned singleton pages with expected source differences: `3`
   - These are intentionally custom implementations rather than copied WordPress bodies.
 - WordPress page-level asset references not yet present in the independent media archive: `25`
-- One current-content difference still needs migration before WordPress shutdown:
-  - The updated `Jeug` WordPress page contains `24` gallery images which are present in R2 but are not yet rendered in the new service-group content.
+- The updated `Jeug` WordPress page contained `24` images referenced only through Divi gallery media IDs. The importer now resolves those IDs through the WordPress media API and preserves the gallery as markdown images.
+  - The targeted Jeug sync and resumable R2 rewrite finished with `597 / 597` inventoried, `597` existing objects skipped, `failed: 0`, and one record rewritten.
+  - Production renders all `24` gallery images from R2 with successful responses and no console errors.
 - The remaining historical inline-asset mismatches are not live broken links on the new site:
   - `susters-saamtrek-2024`, `nuus-2023`, `nuus-2022`, `nuus-2021`, and `preke-op-skrif` still reference source-only WordPress files that now return `404` on WordPress and were therefore removed from migrated public content.
   - `kinderwerkkaarte` still differs by one historical PDF link that is not in the independent archive, but the page no longer publishes old-domain URLs.
@@ -178,11 +179,11 @@ Verification on `2026-08-05`:
 - Caveat:
   - The text comparison still reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
   - The first-class publication library is deployed and production-crawled, with `239 / 239` canonical records and successful R2 responses.
-  - The current `Jeug` gallery difference must be resolved and the inline-asset audit rerun.
+  - The inline-asset audit's remaining `9` migrated-content differences are the documented historical, source-404 or deliberately retired files above; there are no current Jeug gallery differences.
   - Direct future R2 uploads from admin require deployment of the signed upload Worker. The existing Cloudflare token can manage R2 objects but currently lacks `Workers Scripts: Edit`.
 
 ## Practical implication
 
 - The structured pages, service groups, events, binary media archive and first-class publication records are migrated in the database.
-- Do not switch WordPress off yet. The current Jeug gallery must be migrated and the direct admin R2 upload path must be operational.
+- Do not switch WordPress off yet. The direct admin R2 upload path must be operational so future publications can be maintained without WordPress.
 - Pieter retains the final shutdown decision after the updated evidence has been reviewed.
