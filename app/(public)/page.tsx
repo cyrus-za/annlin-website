@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description: 'Gereformeerde Kerk Pretoria-Annlin: saam geroep en gestuur om te dien. Vind eredienste, uitsendings, diensgroepe, gebeure en leesstof.',
 }
 
+const homeHeroImage =
+  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/12931-gebou-1.jpeg'
+
 export default async function Home() {
   const [{ sections }, serviceGroups] = await Promise.all([
     getPublicContentPage('tuis'),
@@ -32,18 +35,18 @@ export default async function Home() {
         className="relative overflow-hidden py-16 text-white sm:py-20"
       >
         <Image
-          src="/church-building-main.jpg"
+          src={homeHeroImage}
           alt=""
           fill
           preload
           sizes="100vw"
           quality={80}
-          className="object-cover"
+          className="object-cover object-center"
         />
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85))',
+            backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.55), hsl(var(--hero-overlay-end) / 0.40))',
           }}
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
