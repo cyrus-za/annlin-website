@@ -17,11 +17,11 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-function formatDate(date: Date | null) {
+function formatDate(date: Date | null, category?: string) {
   if (!date) return null
 
   return new Intl.DateTimeFormat('af-ZA', {
-    day: '2-digit',
+    day: category?.includes('Maandblad') ? undefined : '2-digit',
     month: 'long',
     year: 'numeric',
   }).format(date)
@@ -97,7 +97,11 @@ export default async function NewsPage() {
                   <div className="p-5">
                     <PublicationCategoryBadge category={item.category.name} />
                     <h3 className="mt-3 text-lg font-semibold leading-snug text-foreground">{item.title}</h3>
-                    {item.showDate ? <p className="mt-2 text-sm text-muted-foreground">{formatDate(item.contentDate)}</p> : null}
+                    {item.showDate ? (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {formatDate(item.contentDate, item.category.name)}
+                      </p>
+                    ) : null}
                     <Button asChild className="mt-5 w-full"><Link href={`/leesstof/${item.id}`}>Lees publikasie <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
                   </div>
                 </article>
