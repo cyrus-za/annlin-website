@@ -10,6 +10,7 @@ import {
   normalizeServiceGroupContent,
 } from '../lib/public-content'
 import { contactDetailsForServiceGroup } from '../lib/service-group-contact-details'
+import { getServiceGroupImages } from '../lib/service-group-images'
 import { slugify } from '../lib/slug'
 import {
   decodeWordPressEntities,
@@ -99,28 +100,6 @@ const serviceGroupSlugs = new Set([...diakonieServiceGroups, ...otherServiceGrou
 const serviceGroupDisplayOrder = new Map(
   [...diakonieServiceGroups, ...otherServiceGroups].map((slug, index) => [slug, index + 1])
 )
-
-const serviceGroupThumbnailUrls = new Map<string, string>([
-  ['hospitaalbesoeke', '/migrated/diensgroepe/siekebesoeke.png'],
-  ['seniors-2', '/migrated/diensgroepe/seniors.png'],
-  ['jeugbediening', '/migrated/diensgroepe/jeug.png'],
-  ['sosiale-dienste', '/migrated/diensgroepe/sosiale-dienste.png'],
-  ['tradisionele-dienste', '/migrated/diensgroepe/tradisionele-dienste.png'],
-  [
-    'versorging-en-barmhartigheid-2',
-    '/migrated/diensgroepe/versorging-en-barmhartigheid.png',
-  ],
-  ['vervoer-2', '/migrated/diensgroepe/vervoer.png'],
-  ['verwelkoming-en-gasvryheid', '/migrated/diensgroepe/verwelkoming-en-gasvryheid.png'],
-  ['gebedsgroepe', '/migrated/diensgroepe/gebedsgroep.png'],
-  ['evangelisasie-blad', '/migrated/diensgroepe/evangelisasie.png'],
-  ['tweedehandse-goedere-verkopings', '/migrated/diensgroepe/tweedehandse-goedere.png'],
-  ['terebinte', '/migrated/diensgroepe/terebinte.jpg'],
-  ['susters', '/migrated/diensgroepe/susters.png'],
-  ['sekuriteit', '/migrated/diensgroepe/sekuriteit.png'],
-  ['fontein-redaksie', '/migrated/diensgroepe/fontein-redaksie.png'],
-  ['vroue-bedieningsgroep', '/migrated/diensgroepe/vroue-bedieningsgroep.png'],
-])
 
 const readingSlugs = new Set([
   'leesstof-2',
@@ -465,6 +444,7 @@ async function main() {
         category,
         defaultContactEmail ?? getDefaultContactEmail()
       )
+      const serviceGroupImages = getServiceGroupImages(page.slug)
 
       await prisma.serviceGroup.upsert({
         where: { slug: slugify(page.slug) },
@@ -475,8 +455,8 @@ async function main() {
           contactPerson: contactDetails.contactPerson,
           contactEmail: contactDetails.contactEmail,
           contactPhone: contactDetails.contactPhone,
-          thumbnailUrl: serviceGroupThumbnailUrls.get(page.slug),
-          bannerUrl: serviceGroupThumbnailUrls.get(page.slug),
+          thumbnailUrl: serviceGroupImages?.thumbnailUrl,
+          bannerUrl: serviceGroupImages?.bannerUrl,
           displayOrder,
           isActive: true,
         },
@@ -488,8 +468,8 @@ async function main() {
           contactPerson: contactDetails.contactPerson,
           contactEmail: contactDetails.contactEmail,
           contactPhone: contactDetails.contactPhone,
-          thumbnailUrl: serviceGroupThumbnailUrls.get(page.slug),
-          bannerUrl: serviceGroupThumbnailUrls.get(page.slug),
+          thumbnailUrl: serviceGroupImages?.thumbnailUrl,
+          bannerUrl: serviceGroupImages?.bannerUrl,
           displayOrder,
           isActive: true,
         },
