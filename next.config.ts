@@ -126,6 +126,15 @@ const nextConfig: NextConfig = {
       'uitnodiging-diensteblad',
     ]
 
+    const annualNewsArticleSlugs = [
+      'nuus-2021',
+      'nuus-2022',
+      'nuus-2023',
+      'nuus-2024',
+      'nuus-2025',
+      'nuus-2026',
+    ]
+
     const archiveSlugs = [
       'mosambiek-whatsappgroep',
       'manne-bedieningsgroep-4',
@@ -154,7 +163,11 @@ const nextConfig: NextConfig = {
     return [
       { source: '/homepagenew', destination: '/', permanent: true },
       { source: '/kontakbesonderhede', destination: '/kontak', permanent: true },
-      { source: '/nuus/nuus-2025', destination: '/nuus/nuus-2026', permanent: true },
+      ...annualNewsArticleSlugs.map((slug) => ({
+        source: `/nuus/${slug}`,
+        destination: '/nuus',
+        permanent: true,
+      })),
       ...unavailableAdminSlugs.map((slug) => ({
         source: `/admin/${slug}`,
         destination: '/admin',

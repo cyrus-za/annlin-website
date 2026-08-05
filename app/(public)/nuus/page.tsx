@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BookOpen, Calendar, Newspaper } from 'lucide-react'
+import { ArrowRight, BookOpen, Calendar, ChevronLeft, ChevronRight, Newspaper } from 'lucide-react'
 import { PublicationCategoryBadge } from '@/components/public/PublicationCategoryBadge'
 import { prisma } from '@/lib/db'
 import { createArticleExcerpt } from '@/lib/public-content'
@@ -31,14 +31,18 @@ function publicationPreviewUrl(fileUrl: string) {
   return `${fileUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`
 }
 
-export default async function NewsPage() {
+const ARTICLES_PER_PAGE = 12
+
+type NewsPageProps = {
+  searchParams: Promise<{ bladsy?: string }>
+}
+
+export default async function NewsPage({ searchParams }: NewsPageProps) {
+  const { bladsy } = await searchParams
+  const requestedPage = Math.max(1, Number.parseInt(bladsy || '1', 10) || 1)
   const latestCategoryNames = ['Die Fontein - Weekblad', 'Die Fontein - Maandblad', 'Liturgie']
-  const [articles, latestPublications] = await Promise.all([
-    prisma.article.findMany({
-      where: { status: 'PUBLISHED' },
-      include: { category: true },
-      orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
-    }),
+  const [articleCount, latestPublications] = await Promise.all([
+    prisma.article.count({ where: { status: 'PUBLISHED' } }),
     prisma.readingMaterial.findMany({
       where: {
         status: 'PUBLISHED',
@@ -50,6 +54,15 @@ export default async function NewsPage() {
       take: 3,
     }),
   ])
+  const pageCount = Math.max(1, Math.ceil(articleCount / ARTICLES_PER_PAGE))
+  const page = Math.min(requestedPage, pageCount)
+  const articles = await prisma.article.findMany({
+    where: { status: 'PUBLISHED' },
+    include: { category: true },
+    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
+    skip: (page - 1) * ARTICLES_PER_PAGE,
+    take: ARTICLES_PER_PAGE,
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,8 +135,15 @@ export default async function NewsPage() {
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {articles.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {articles.map((article) => (
+            <>
+              <div className="mb-8 max-w-3xl">
+                <h2 className="text-3xl font-bold text-foreground">Gemeentenuus</h2>
+                <p className="mt-2 text-muted-foreground">
+                  Berigte en hoogtepunte uit die lewe van die gemeente.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {articles.map((article) => (
                   <Card key={article.id}>
                     <CardHeader>
                       <CardTitle className="text-amber-900">{article.title}</CardTitle>
@@ -146,8 +166,24 @@ export default async function NewsPage() {
                       </Button>
                     </CardContent>
                   </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+              {pageCount > 1 ? (
+                <nav aria-label="Nuusbladsye" className="mt-10 flex items-center justify-center gap-3">
+                  <Button asChild variant="outline" className={page === 1 ? 'pointer-events-none opacity-50' : ''}>
+                    <Link href={page === 2 ? '/nuus' : `/nuus?bladsy=${page - 1}`} aria-disabled={page === 1}>
+                      <ChevronLeft className="mr-1 h-4 w-4" /> Vorige
+                    </Link>
+                  </Button>
+                  <span className="text-sm text-muted-foreground">Bladsy {page} van {pageCount}</span>
+                  <Button asChild variant="outline" className={page === pageCount ? 'pointer-events-none opacity-50' : ''}>
+                    <Link href={`/nuus?bladsy=${page + 1}`} aria-disabled={page === pageCount}>
+                      Volgende <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </nav>
+              ) : null}
+            </>
           ) : (
             <div className="rounded-lg border bg-white p-6">
               <h2 className="text-xl font-semibold text-foreground">Geen nuus beskikbaar nie</h2>
