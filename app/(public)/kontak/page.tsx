@@ -25,6 +25,7 @@ import Link from 'next/link'
 import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
 import { usePublicContentPage } from '@/hooks/use-public-content-page'
 import { readContentText } from '@/lib/content-page-definitions'
+import { PageHero } from '@/components/public/PageHero'
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -167,17 +168,12 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <section className="bg-white border-b border-gray-200 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground">{copy('hero.title')}</h1>
-            <p className="mt-4 text-xl text-muted-foreground">
-              {copy('hero.body')}
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={copy('hero.title')}
+        description={copy('hero.body')}
+        image="/church-building-main.jpg"
+        icon={<MapPin className="h-8 w-8" />}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

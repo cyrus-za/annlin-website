@@ -1,7 +1,10 @@
 import { ServiceGroups } from '@/components/public/ServiceGroups'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
+import { HandHeart } from 'lucide-react'
+import { PageHero } from '@/components/public/PageHero'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,28 +18,29 @@ export default async function DiensgroepePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-amber-50 to-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
-              Diensgroepe
-            </h1>
-            <p className="mt-6 text-xl text-muted-foreground max-w-3xl mx-auto">
-              By Annlin Gemeente glo ons dat elke lidmaat 'n belangrike rol het om te speel. 
-              Ons diensgroepe bied geleenthede vir jou om jou talente te gebruik en 'n verskil 
-              te maak in ons gemeente en gemeenskap.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Diensgroepe"
+        description="By Annlin Gemeente het elke lidmaat ’n belangrike rol. Gebruik jou talente en maak saam ’n verskil in ons gemeente en gemeenskap."
+        image="/images/diensgroepe-hero.webp"
+        imageClassName="object-[center_42%]"
+        icon={<HandHeart className="h-8 w-8" />}
+      />
 
       {/* Service Groups Grid */}
       <ServiceGroups initialGroups={serviceGroups} showAll={true} />
 
       {/* Call to Action */}
-      <section className="bg-primary py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-primary py-16">
+        <Image
+          src="/images/diensgroepe-cta.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={80}
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-primary/70" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
               Gereed om betrokke te raak?

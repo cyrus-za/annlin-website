@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Calendar, Users, Heart, BookOpen } from 'lucide-react'
+import { Calendar, Church, Users, Heart, BookOpen } from 'lucide-react'
 import { Metadata } from 'next'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
 import { CONTACT_DETAILS } from '@/lib/constants'
 import Image from 'next/image'
+import { PageHero } from '@/components/public/PageHero'
 
 export const revalidate = 300
 
@@ -21,39 +22,17 @@ export default async function AboutPage() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section 
-        className="relative overflow-hidden py-20 text-white"
-      >
-        <Image
-          src="/church-building-main.jpg"
-          alt=""
-          fill
-          preload
-          sizes="100vw"
-          quality={80}
-          className="object-cover"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.85), hsl(var(--hero-overlay-end) / 0.85))',
-          }}
-        />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              {copy('hero.title')}
-            </h1>
-            <p className="text-xl text-amber-100 mb-4 max-w-3xl mx-auto">
-              {copy('hero.subtitle')}
-            </p>
-            <p className="text-lg text-amber-200 max-w-4xl mx-auto">
-              {copy('hero.body')}
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={copy('hero.title')}
+        description={
+          <>
+            <p className="font-medium">{copy('hero.subtitle')}</p>
+            <p className="mt-3 text-base text-stone-200 sm:text-lg">{copy('hero.body')}</p>
+          </>
+        }
+        image="/images/home-hero-desktop.webp"
+        icon={<Church className="h-8 w-8" />}
+      />
 
       <nav aria-label="Op hierdie bladsy" className="border-b border-amber-100 bg-white">
         <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">

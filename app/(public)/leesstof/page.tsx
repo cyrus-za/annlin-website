@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { ResourceLibrary } from '@/components/public/ResourceLibrary'
+import { PageHero } from '@/components/public/PageHero'
 
 export const metadata: Metadata = {
   title: 'Leesstof en publikasies | Annlin Gemeente',
@@ -85,31 +86,12 @@ export default async function ReadingPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <section
-        className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 sm:min-h-[30rem]"
-      >
-        <Image
-          src={readingHeroImage}
-          alt=""
-          fill
-          preload
-          sizes="100vw"
-          quality={80}
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/45 to-stone-950/10" />
-        <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-6 sm:pb-16 lg:px-8">
-          <div className="max-w-3xl text-white">
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-white/15 backdrop-blur-sm">
-              <BookOpen className="h-6 w-6" />
-            </div>
-            <h1 className="text-4xl font-bold sm:text-5xl">Leesstof en publikasies</h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-stone-100 sm:text-xl">
-              Publikasies, leesstof en toerustingsmateriaal vir die gemeente.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Leesstof en publikasies"
+        description="Publikasies, leesstof en toerustingsmateriaal vir die gemeente."
+        image={readingHeroImage}
+        icon={<BookOpen className="h-8 w-8" />}
+      />
 
       <section className="bg-white py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

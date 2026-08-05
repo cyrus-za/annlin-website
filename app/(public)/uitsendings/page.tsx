@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { YouTubeEmbed } from '@/components/public/YouTubeEmbed'
-import { Calendar, ExternalLink, User } from 'lucide-react'
+import { Calendar, ExternalLink, Radio, User } from 'lucide-react'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
+import { PageHero } from '@/components/public/PageHero'
 
 export const metadata: Metadata = {
   title: 'Uitsendings | Annlin Gemeente',
@@ -484,16 +485,13 @@ async function KerkdienstgemistSection() {
 export default function UitsendingsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-12 max-w-3xl">
-          <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
-            Onlangse video uitsendings
-          </h1>
-          <p className="mt-6 text-xl text-muted-foreground">
-            Kyk na onlangse eredienste en verwante uitsendings. Indien u na 'n spesifieke uitsending soek wat nie hier verskyn nie, kontak gerus die kerkkantoor.
-          </p>
-        </div>
-
+      <PageHero
+        title="Uitsendings"
+        description="Kyk of luister na onlangse eredienste en vind vorige uitsendings."
+        image="/images/diensgroepe/tradisionele-dienste-banner-v3.webp"
+        icon={<Radio className="h-8 w-8" />}
+      />
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <Suspense fallback={<BroadcastSectionSkeleton title="YouTube uitsendings" video />}>
           <YouTubeSection />
         </Suspense>

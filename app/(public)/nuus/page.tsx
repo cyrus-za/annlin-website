@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db'
 import { createArticleExcerpt } from '@/lib/public-content'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import Image from 'next/image'
+import { PageHero } from '@/components/public/PageHero'
 
 const newsHeroImage = '/images/news-hero-die-fontein.png'
 
@@ -52,27 +52,12 @@ export default async function NewsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <section className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 sm:min-h-[30rem]">
-        <Image
-          src={newsHeroImage}
-          alt=""
-          fill
-          preload
-          sizes="100vw"
-          quality={80}
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/50 to-stone-950/15" />
-        <div className="relative mx-auto w-full max-w-7xl px-4 pb-12 pt-28 sm:px-6 sm:pb-16 lg:px-8">
-          <div className="max-w-3xl text-white">
-            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/15 backdrop-blur-sm">
-              <Newspaper className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold sm:text-5xl">Nuus</h1>
-            <p className="mt-6 text-xl text-stone-100">Gemeentenuus en aankondigings.</p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title="Nuus"
+        description="Gemeentenuus en aankondigings."
+        image={newsHeroImage}
+        icon={<Newspaper className="h-8 w-8" />}
+      />
 
       {latestPublications.some(Boolean) ? (
         <section className="border-b bg-white py-10">
