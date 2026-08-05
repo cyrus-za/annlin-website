@@ -14,6 +14,8 @@ import { slugify } from '../lib/slug'
 import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
+  expandWordPressGalleryMarkup,
+  extractWordPressGalleryMediaIds,
   preserveWordPressAssetMarkup,
   stripDuplicateResponsiveDiviModules,
 } from '../lib/wordpress-assets'
@@ -36,6 +38,13 @@ type WpPage = {
   excerpt?: WpRendered
   modified?: string
   date?: string
+}
+
+type WpMedia = {
+  id: number
+  source_url: string
+  alt_text?: string
+  title?: WpRendered
 }
 
 type TribeEvent = {
@@ -240,9 +249,13 @@ function titleOf(page: WpPage) {
 function contentOf(
   page: WpPage,
   wordpressBaseUrl: string,
-  legacyPageRoutes: ReadonlyMap<string, string>
+  legacyPageRoutes: ReadonlyMap<string, string>,
+  galleryMediaById: ReadonlyMap<number, { url: string; alt: string }>
 ) {
-  const rawContent = page.content.rendered || ''
+  const rawContent = expandWordPressGalleryMarkup(
+    page.content.rendered || '',
+    galleryMediaById
+  )
   const rawExcerpt = page.excerpt?.rendered || ''
   const content = ensureWordPressAssetsPreserved(
     rawContent,
@@ -279,6 +292,27 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 
   return response.json() as Promise<T>
+}
+
+async function fetchGalleryMedia(wordpressBaseUrl: string, pages: WpPage[]) {
+  const ids = [...new Set(pages.flatMap((page) => extractWordPressGalleryMediaIds(page.content.rendered || '')))]
+  const mediaById = new Map<number, { url: string; alt: string }>()
+
+  for (let index = 0; index < ids.length; index += 100) {
+    const chunk = ids.slice(index, index + 100)
+    const media = await fetchJson<WpMedia[]>(
+      `${wordpressBaseUrl}/wp-json/wp/v2/media?per_page=100&include=${chunk.join(',')}&_fields=id,source_url,alt_text,title`
+    )
+
+    for (const item of media) {
+      mediaById.set(item.id, {
+        url: item.source_url,
+        alt: htmlToText(item.alt_text || item.title?.rendered || ''),
+      })
+    }
+  }
+
+  return mediaById
 }
 
 function categoryForServiceGroup(page: WpPage): ServiceGroupCategory {
@@ -329,6 +363,8 @@ async function main() {
     ...page,
     content: contentByPageId.get(page.id) || { rendered: '' },
   }))
+  const pagesToImport = pages.filter((page) => !pageSlugFilter || page.slug === pageSlugFilter)
+  const galleryMediaById = await fetchGalleryMedia(wordpressBaseUrl, pagesToImport)
   const legacyPageRoutes = buildWordPressPageRouteMap(pages, {
     serviceGroupSlugs,
     newsSlugs,
@@ -389,9 +425,7 @@ async function main() {
   let readingMaterials = 0
   let events = 0
 
-  const sortedPages = pages
-    .filter((page) => !pageSlugFilter || page.slug === pageSlugFilter)
-    .sort((a, b) => a.id - b.id)
+  const sortedPages = pagesToImport.sort((a, b) => a.id - b.id)
 
   if (pageSlugFilter && sortedPages.length === 0) {
     throw new Error(`WordPress page not found for --slug=${pageSlugFilter}`)
@@ -405,7 +439,7 @@ async function main() {
 
   for (const page of sortedPages) {
     const title = titleOf(page)
-    const content = contentOf(page, wordpressBaseUrl, legacyPageRoutes)
+    const content = contentOf(page, wordpressBaseUrl, legacyPageRoutes, galleryMediaById)
 
     if (serviceGroupSlugs.has(page.slug)) {
       const serviceGroupTitle = titleForServiceGroup(page)

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import {
   decodeWordPressEntities,
   ensureWordPressAssetsPreserved,
+  expandWordPressGalleryMarkup,
   extractWordPressGalleryMediaIds,
   extractWordPressAssetReferences,
   preserveWordPressAssetMarkup,
@@ -71,6 +72,16 @@ const diviGalleryAndDownload = `
   [et_pb_blurb url=&#8221;${fileUrl}&#8221; admin_label=&#8221;Registrasievorm&#8221;]
 `
 assert.deepEqual(extractWordPressGalleryMediaIds(diviGalleryAndDownload), [12324, 12323, 12322])
+assert.equal(
+  expandWordPressGalleryMarkup(
+    diviGalleryAndDownload,
+    new Map([
+      [12324, { url: 'https://example.com/12324.jpg', alt: 'Jeugkamp' }],
+      [12323, { url: 'https://example.com/12323.jpg', alt: '' }],
+    ])
+  ).trim(),
+  `![Jeugkamp](https://example.com/12324.jpg)\n\n![](https://example.com/12323.jpg)\n  [et_pb_blurb url="${fileUrl}" admin_label="Registrasievorm"]`
+)
 assert.deepEqual(
   extractWordPressAssetReferences(diviGalleryAndDownload).map(({ kind, url, label }) => ({
     kind,

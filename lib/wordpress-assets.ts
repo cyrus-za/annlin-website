@@ -271,6 +271,22 @@ export function extractWordPressGalleryMediaIds(html: string) {
   return [...new Set(mediaIds)]
 }
 
+export function expandWordPressGalleryMarkup(
+  html: string,
+  mediaById: ReadonlyMap<number, { url: string; alt: string }>
+) {
+  return decodeWordPressEntities(html).replace(/\[et_pb_gallery\b[^\]]*]/gi, (shortcode) => {
+    const galleryIds = attributeValue(shortcode, 'gallery_ids')
+
+    return galleryIds
+      .split(',')
+      .map((value) => mediaById.get(Number.parseInt(value.trim(), 10)))
+      .filter((media): media is { url: string; alt: string } => Boolean(media?.url))
+      .map((media) => imageMarkdown(media.url, media.alt))
+      .join('\n\n')
+  })
+}
+
 function contentContainsReference(content: string, reference: WordPressAssetReference) {
   const normalizedContent = content.toLowerCase()
 
