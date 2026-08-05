@@ -94,7 +94,7 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
       if (!value || value === 'all' || (key === 'sorteer' && value === 'nuutste')) params.delete(key)
       else params.set(key, value)
     }
-    if (!Object.hasOwn(changes, 'bladsy')) params.delete('bladsy')
+    if (!('bladsy' in changes)) params.delete('bladsy')
     React.startTransition(() => router.replace(`/leesstof${params.size ? `?${params}` : ''}`, { scroll: false }))
   }
 

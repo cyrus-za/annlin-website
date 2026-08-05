@@ -1,5 +1,13 @@
+type MediaBucket = {
+  put(
+    key: string,
+    value: ReadableStream | null,
+    options: { httpMetadata: { contentType: string; contentDisposition: string } }
+  ): Promise<unknown>
+}
+
 interface Env {
-  MEDIA: R2Bucket
+  MEDIA: MediaBucket
   ALLOWED_ORIGINS: string
   PUBLIC_BASE_URL: string
   UPLOAD_SECRET: string
@@ -43,7 +51,7 @@ function safeEqual(left: string, right: string) {
   return difference === 0
 }
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const cors = corsHeaders(request, env)
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors })
@@ -85,4 +93,6 @@ export default {
       { headers: { ...cors, 'cache-control': 'no-store' } }
     )
   },
-} satisfies ExportedHandler<Env>
+}
+
+export default worker
