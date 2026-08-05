@@ -121,7 +121,7 @@ export default function JaarprogramPage() {
                 href="/kontak"
                 className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-6 py-3 text-center text-base font-medium text-amber-800 transition-colors duration-200 hover:bg-amber-50 sm:w-auto"
               >
-                Kontak Ons vir Meer Info
+                Kontak Ons vir Meer Inligting
               </Link>
               <Link
                 href="/diensgroepe"
