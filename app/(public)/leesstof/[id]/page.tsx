@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, CalendarDays, Download, ExternalLink, FileText, Link as LinkIcon } from 'lucide-react'
 
@@ -14,6 +14,13 @@ interface ReadingMaterialDetailPageProps {
     id: string
   }>
 }
+
+const removedWordPressIndexIds = new Set([
+  'wp-page-1805',
+  'wp-page-12110',
+  'wp-page-3199',
+  'wp-page-3520',
+])
 
 async function getReadingMaterial(id: string) {
   return prisma.readingMaterial.findFirst({
@@ -45,6 +52,11 @@ export async function generateMetadata({ params }: ReadingMaterialDetailPageProp
 
 export default async function ReadingMaterialDetailPage({ params }: ReadingMaterialDetailPageProps) {
   const { id } = await params
+
+  if (removedWordPressIndexIds.has(id)) {
+    permanentRedirect('/leesstof')
+  }
+
   const material = await getReadingMaterial(id)
 
   if (!material) {
