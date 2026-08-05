@@ -1,6 +1,6 @@
 # Website Transition Notes
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 ## Confirmed from the live WordPress site
 
@@ -64,7 +64,9 @@ Results on `2026-08-04`:
 
 - WordPress pages checked: `48`
 - Active service groups migrated: `16 / 16`
-- News pages migrated: `8 / 8`
+- WordPress news-container pages accounted for: `8 / 8`
+  - The annual `Nuus 2021` through `Nuus 2026` pages were mutable containers, not individual news articles.
+  - Five annual containers are retained internally as `ARCHIVED` and no longer appear as public articles.
 - Events retained in the new database: `72`
   - The current WordPress events API returned `50`; all `50` are present. The other `22` are retained historical events.
 - WordPress media items independently archived to Cloudflare R2: `597 / 597`
@@ -82,7 +84,36 @@ Results on `2026-08-04`:
 - Remaining old-domain data references in migrated records: `0`
 - The final resumable run copied the five newly discovered objects, skipped the `592` already completed objects, and ended with `failed: 0`.
 - Independent archive accounting: `597 / 597` WordPress media items have matching `UploadedAsset` rows and R2 object keys.
-- Final migration audit result: `wordpressOfflineReady: true`
+- The original route/media audit result was `wordpressOfflineReady: true`, but this did not test whether documents embedded in mutable WordPress pages had first-class public records. The shutdown conclusion was reopened on `2026-08-05` for a semantic publication audit.
+
+## Publication-library migration
+
+The WordPress media library contained `249` document or audio objects in addition to images. Archiving the objects to R2 did not by itself make those publications discoverable on the new site.
+
+Semantic import result on `2026-08-05`:
+
+- Source document/audio objects: `249`
+- Canonical public or historical records: `239`
+- Duplicate Maandblad variants omitted from the public catalogue: `10`
+  - Each duplicated issue keeps one public record, preferring its web-optimized PDF.
+  - The alternate binary remains safely retained in the independent R2 inventory.
+- Die Fontein Weekblaaie: `87`
+- Die Fontein Maandblaaie: `21` canonical issues
+- Liturgie: `31`
+- Preeksamevattings: `11`
+- Kinderwerk: `33`
+- Oordenkingsklank: `5`
+- Jaarprogramdokumente: `12`
+- Uitreikmateriaal: `15`
+- Algemene dokumente: `24`
+- Publication records with valid metadata: `239 / 239`
+- Publication records with successful, size-consistent R2 responses: `239 / 239`
+- Missing publication records: `0`
+- Invalid publication records: `0`
+
+The public information architecture treats `Nuus` as dated articles plus the latest Weekblad, Maandblad and liturgy. The expanded `Leesstof en publikasies` library provides search, collection/year filters, editorial-date sorting, pagination and an opt-in historical archive.
+
+All news and resource ordering uses the required editorial `contentDate`. Technical `createdAt`, `updatedAt` and workflow `publishedAt` values are not used as public dates.
 
 ## Inline WordPress assets audit
 
@@ -111,15 +142,17 @@ Source fix added on `2026-07-06`:
 - The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
   dynamically.
 
-Verification on `2026-08-04`:
+Verification on `2026-08-05`:
 
 - WordPress pages with inline images or linked files: `31`
-- Migrated pages with missing rendered asset references in the comparison audit: `2`
-- Missing migrated asset references in the comparison audit: `25`
+- Migrated pages with missing rendered asset references in the comparison audit: `7`
+- Missing migrated asset references in the comparison audit: `33`
 - Redesigned singleton pages with expected source differences: `3`
   - These are intentionally custom implementations rather than copied WordPress bodies.
 - WordPress page-level asset references not yet present in the independent media archive: `25`
-- The remaining inline-asset mismatches are not live broken links on the new site:
+- One current-content difference still needs migration before WordPress shutdown:
+  - The updated `Jeug` WordPress page contains `24` gallery images which are present in R2 but are not yet rendered in the new service-group content.
+- The remaining historical inline-asset mismatches are not live broken links on the new site:
   - `susters-saamtrek-2024`, `nuus-2023`, `nuus-2022`, `nuus-2021`, and `preke-op-skrif` still reference source-only WordPress files that now return `404` on WordPress and were therefore removed from migrated public content.
   - `kinderwerkkaarte` still differs by one historical PDF link that is not in the independent archive, but the page no longer publishes old-domain URLs.
   - The singleton pages `homepagenew`, `oor-annlin-gemeente`, and `jaarprogram` are deliberate custom builds rather than mirrored WordPress bodies.
@@ -129,24 +162,27 @@ Verification on `2026-08-04`:
   - `Fontein Redaksie` preserves the source's substantive status text, `Webblad onder konstruksie`.
 - `npm run content:test` passes.
 
-## WordPress media shutdown status
+## WordPress shutdown status
 
-- The WordPress media archive blocker is cleared.
-- Technical evidence on `2026-08-04`:
+- The WordPress binary-media archive blocker is cleared.
+- Technical evidence through `2026-08-05`:
   - `scripts/import-wordpress-media.ts` completed with `failed: 0`
   - `inventoried: 597`
   - `copiedToStorage + skippedExistingStorage = 597`
   - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 597`, `missingMedia: 0`, and `oldDomainRows: 0`
-  - The same audit reports `missingContent: 0`, `missingEvents: 0`, and `wordpressOfflineReady: true`
+  - The route/media audit against production reports `missingContent: 0`, `missingEvents: 0`, `badRoutes: 0`, `badRedirects: 0`, and `wordpressOfflineReady: true`; its aggregate result is not sufficient semantic shutdown evidence on its own.
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
-  - The deployed crawl visited `49` pages without hitting its page limit
+  - The deployed crawl visited `51` pages without hitting its page limit
   - All `597` current WordPress media items are independently inventoried in R2
-  - gstack browser QA found no console errors, failed requests, broken images, or horizontal overflow on representative desktop and mobile pages
+  - gstack browser QA confirmed the deployed `Leesstof en publikasies` library and active Google Play and Apple App Store links. A mobile publication-card overflow found during QA was fixed; the final `375px` viewport measures `375px` document width with no console errors.
 - Caveat:
   - The text comparison still reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
+  - The first-class publication library is deployed and production-crawled, with `239 / 239` canonical records and successful R2 responses.
+  - The current `Jeug` gallery difference must be resolved and the inline-asset audit rerun.
+  - Direct future R2 uploads from admin require deployment of the signed upload Worker. The existing Cloudflare token can manage R2 objects but currently lacks `Workers Scripts: Edit`.
 
 ## Practical implication
 
-- The new structured pages, service groups, news items, events, and WordPress media archive are migrated.
-- It is technically safe to switch WordPress off: the final audit, independent object verification, public crawl, and browser QA found no remaining runtime dependency.
-- Pieter should still make the final shutdown decision after reviewing the audit evidence above.
+- The structured pages, service groups, events, binary media archive and first-class publication records are migrated in the database.
+- Do not switch WordPress off yet. The current Jeug gallery must be migrated and the direct admin R2 upload path must be operational.
+- Pieter retains the final shutdown decision after the updated evidence has been reviewed.
