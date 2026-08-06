@@ -610,7 +610,7 @@ export function UpcomingEvents({
           }
         }
       } catch (error) {
-        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        if (isActive && !(error instanceof DOMException && error.name === 'AbortError')) {
           console.error('Error fetching upcoming events:', error)
         }
       } finally {
