@@ -610,7 +610,12 @@ export function UpcomingEvents({
           }
         }
       } catch (error) {
-        if (isActive && !(error instanceof DOMException && error.name === 'AbortError')) {
+        const requestWasCancelled =
+          !isActive ||
+          controller.signal.aborted ||
+          (error instanceof DOMException && error.name === 'AbortError') ||
+          (error instanceof TypeError && error.message === 'Failed to fetch')
+        if (!requestWasCancelled) {
           console.error('Error fetching upcoming events:', error)
         }
       } finally {
