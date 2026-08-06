@@ -61,11 +61,14 @@ const otherServiceGroups = [
 
 const serviceGroupSlugs = new Set([...diakonieServiceGroups, ...otherServiceGroups])
 
+const retiredReadingIndexSlugs = new Map([
+  ['leesstof-2', 2],
+  ['preke-op-skrif', 11],
+  ['oordenkings-ons-gesels-oor-jesus', 5],
+  ['kinderwerkkaarte', 28],
+])
+
 const readingSlugs = new Set([
-  'leesstof-2',
-  'preke-op-skrif',
-  'oordenkings-ons-gesels-oor-jesus',
-  'kinderwerkkaarte',
   'ek-wil-weet',
 ])
 
@@ -79,6 +82,15 @@ const newsSlugs = new Set([
   'pinksterfeesvieringe-4-5-junie-2022',
   'uitnodiging-diensteblad',
 ])
+
+const annualNewsArticleSlugs = [
+  'nuus-2021',
+  'nuus-2022',
+  'nuus-2023',
+  'nuus-2024',
+  'nuus-2025',
+  'nuus-2026',
+]
 
 const singletonPageSlugs = new Set([
   'homepagenew',
@@ -172,37 +184,65 @@ function coverage(source: string, target: string) {
   return hits / sourceWords.size
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/json',
-      'user-agent': 'Annlin migration audit',
-    },
-  })
+function filenameFromUrl(value: string) {
+  try {
+    return decodeURIComponent(new URL(value).pathname.split('/').filter(Boolean).pop() || '')
+  } catch {
+    return ''
+  }
+}
 
-  if (!response.ok) {
-    throw new Error(`Fetch failed ${response.status}: ${url}`)
+function linkedDocuments(html: string) {
+  return new Map(
+    [...decodeEntities(html).matchAll(/\bhref=["'](https?:\/\/[^"']+\.(?:pdf|mp3|docx?)(?:[?#][^"']*)?)["']/gi)]
+      .map((match) => {
+        const url = match[1] || ''
+        return [filenameFromUrl(url), url] as const
+      })
+      .filter(([filename]) => Boolean(filename))
+  )
+}
+
+async function fetchJsonResponse<T>(url: string) {
+  let lastError: unknown
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          accept: 'application/json',
+          'user-agent': 'Annlin migration audit',
+        },
+      })
+      if (!response.ok) throw new Error(`Fetch failed ${response.status}: ${url}`)
+
+      const body = await response.text()
+      try {
+        return { data: JSON.parse(body) as T, headers: response.headers }
+      } catch {
+        const contentType = response.headers.get('content-type') || 'unknown content type'
+        throw new Error(`Expected JSON but received ${contentType}: ${url}`)
+      }
+    } catch (error) {
+      lastError = error
+      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 500))
+    }
   }
 
-  return response.json() as Promise<T>
+  throw lastError
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  return (await fetchJsonResponse<T>(url)).data
 }
 
 async function fetchJsonWithHeaders<T>(
   url: string
 ): Promise<{ data: T; totalPages: number; total: number }> {
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/json',
-      'user-agent': 'Annlin migration audit',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Fetch failed ${response.status}: ${url}`)
-  }
+  const response = await fetchJsonResponse<T>(url)
 
   return {
-    data: (await response.json()) as T,
+    data: response.data,
     total: Number(response.headers.get('x-wp-total') || 0),
     totalPages: Number(response.headers.get('x-wp-totalpages') || 1),
   }
@@ -273,7 +313,7 @@ function normalizeLocation(location: string | null) {
 
 async function main() {
   const wordpressBaseUrl = env('WORDPRESS_BASE_URL')
-  const appBaseUrl = env('NEXT_PUBLIC_APP_URL')
+  const appBaseUrl = (process.env['SITE_URL'] || env('NEXT_PUBLIC_APP_URL')).replace(/\/+$/, '')
 
   const pages = await fetchJson<WpPage[]>(
     `${wordpressBaseUrl}/wp-json/wp/v2/pages?per_page=100&_fields=id,slug,link,title,content,excerpt,modified,date`
@@ -327,11 +367,57 @@ async function main() {
       }
     })
 
+  const publicationFilenames = readingMaterials
+    .flatMap((item) => [item.fileUrl, item.externalUrl])
+    .filter((url): url is string => Boolean(url))
+    .map(filenameFromUrl)
+  const retiredReadingIndexAudit = await Promise.all(
+    pages
+      .filter((page) => retiredReadingIndexSlugs.has(page.slug))
+      .map(async (page) => {
+        const documents = linkedDocuments(page.content.rendered || '')
+        const matchedFilenames = [...documents.keys()].filter((filename) =>
+          publicationFilenames.some(
+            (publicationFilename) =>
+              publicationFilename === filename || publicationFilename.endsWith(`-${filename}`)
+          )
+        )
+        const unmatchedDocuments = [...documents].filter(
+          ([filename]) => !matchedFilenames.includes(filename)
+        )
+        const unavailableAtSource: string[] = []
+        const stillAvailable: string[] = []
+        for (const [filename, sourceUrl] of unmatchedDocuments) {
+          const response = await fetch(sourceUrl.replace(/^http:/i, 'https:'), {
+            redirect: 'follow',
+            headers: { 'user-agent': 'Annlin migration audit' },
+          })
+          if ([404, 410].includes(response.status)) unavailableAtSource.push(filename)
+          else stillAvailable.push(filename)
+        }
+        const expectedDocuments = retiredReadingIndexSlugs.get(page.slug) || 0
+
+        return {
+          slug: page.slug,
+          title: htmlToText(page.title.rendered || page.slug),
+          linkedDocuments: documents.size,
+          matchingPublications: matchedFilenames.length,
+          unavailableAtSource,
+          stillAvailable,
+          expectedDocuments,
+          replaced:
+            documents.size >= expectedDocuments &&
+            matchedFilenames.length + unavailableAtSource.length === documents.size,
+        }
+      })
+  )
+
   const archiveAudit = pages
     .filter(
       (page) =>
         !serviceGroupSlugs.has(page.slug) &&
         !readingSlugs.has(page.slug) &&
+        !retiredReadingIndexSlugs.has(page.slug) &&
         !newsSlugs.has(page.slug) &&
         !singletonPageSlugs.has(page.slug)
     )
@@ -423,7 +509,9 @@ async function main() {
   const expectedRedirects = [
     ...[...serviceGroupSlugs].map((slug) => ({ path: `/${slug}`, destination: '/diensgroepe' })),
     ...[...readingSlugs].map((slug) => ({ path: `/${slug}`, destination: '/leesstof' })),
+    ...[...retiredReadingIndexSlugs.keys()].map((slug) => ({ path: `/${slug}`, destination: '/leesstof' })),
     ...[...newsSlugs].map((slug) => ({ path: `/${slug}`, destination: '/nuus' })),
+    ...annualNewsArticleSlugs.map((slug) => ({ path: `/nuus/${slug}`, destination: '/nuus' })),
     ...archiveSlugs.map((slug) => ({ path: `/${slug}`, destination: '/leesstof' })),
   ]
   const redirectAudit = await routeStatuses(
@@ -438,6 +526,7 @@ async function main() {
     (item) => !item.present || item.coverage < 0.92
   )
   const missingContent = lowCoverage.filter((item) => !item.present)
+  const missingRetiredReadingIndexes = retiredReadingIndexAudit.filter((item) => !item.replaced)
   const missingEvents = eventAudit.filter((item) => !item.present || !item.startDateMatches)
   const missingMedia = mediaAudit.filter((item) => !item.present)
   const mediaStillOnWordPress = mediaAudit.filter((item) => item.present && !item.copiedOffWordPress)
@@ -455,10 +544,18 @@ async function main() {
           expectedServiceGroups: serviceGroupSlugs.size,
           migratedServiceGroups: serviceGroups.length,
           expectedReadingMaterials: readingSlugs.size,
+          retiredReadingIndexes: retiredReadingIndexAudit.length,
+          missingRetiredReadingIndexes: missingRetiredReadingIndexes.length,
+          unavailableSourceDocuments: retiredReadingIndexAudit.reduce(
+            (total, item) => total + item.unavailableAtSource.length,
+            0
+          ),
           migratedReadingMaterials: readingMaterials.length,
           archivedWordPressPages: archiveAudit.length,
-          expectedNewsArticles: newsSlugs.size,
+          expectedWordPressNewsPages: newsSlugs.size,
           migratedNewsArticles: articles.length,
+          publishedNewsStories: articles.filter((article) => article.status === 'PUBLISHED').length,
+          archivedNewsContainers: articles.filter((article) => article.status === 'ARCHIVED').length,
           wordpressEvents: eventResponse.events?.length || 0,
           migratedEvents: events.length,
           wordpressMedia: mediaResponse.total,
@@ -479,6 +576,7 @@ async function main() {
           badRedirects: badRedirects.length,
           wordpressOfflineReady:
             missingContent.length === 0 &&
+            missingRetiredReadingIndexes.length === 0 &&
             missingEvents.length === 0 &&
             missingMedia.length === 0 &&
             mediaStillOnWordPress.length === 0 &&
@@ -488,6 +586,8 @@ async function main() {
         },
         lowCoverage,
         missingContent,
+        retiredReadingIndexAudit,
+        missingRetiredReadingIndexes,
         missingEvents,
         missingMediaSample: missingMedia.slice(0, 25),
         mediaStillOnWordPressSample: mediaStillOnWordPress.slice(0, 25),

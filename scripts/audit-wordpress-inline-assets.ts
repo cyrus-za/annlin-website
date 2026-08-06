@@ -66,11 +66,14 @@ const otherServiceGroups = [
 
 const serviceGroupSlugs = new Set([...diakonieServiceGroups, ...otherServiceGroups])
 
-const readingSlugs = new Set([
+const retiredReadingIndexSlugs = new Set([
   'leesstof-2',
   'preke-op-skrif',
   'oordenkings-ons-gesels-oor-jesus',
   'kinderwerkkaarte',
+])
+
+const readingSlugs = new Set([
   'ek-wil-weet',
 ])
 
@@ -193,6 +196,7 @@ function collectPublicAssetFilenames(root: string) {
 
 function pageTypeForSlug(slug: string) {
   if (serviceGroupSlugs.has(slug)) return 'serviceGroup'
+  if (retiredReadingIndexSlugs.has(slug)) return 'retiredReadingIndex'
   if (readingSlugs.has(slug)) return 'readingMaterial'
   if (newsSlugs.has(slug)) return 'newsArticle'
   if (singletonPageSlugs.has(slug)) return 'singleton'
@@ -200,22 +204,36 @@ function pageTypeForSlug(slug: string) {
 }
 
 async function fetchJson<T>(url: string): Promise<{ data: T; totalPages: number; total: number }> {
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/json',
-      'user-agent': 'Annlin WordPress inline asset audit',
-    },
-  })
+  let lastError: unknown
 
-  if (!response.ok) {
-    throw new Error(`Fetch failed ${response.status}: ${url}`)
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          accept: 'application/json',
+          'user-agent': 'Annlin WordPress inline asset audit',
+        },
+      })
+      if (!response.ok) throw new Error(`Fetch failed ${response.status}: ${url}`)
+
+      const body = await response.text()
+      try {
+        return {
+          data: JSON.parse(body) as T,
+          total: Number(response.headers.get('x-wp-total') || 0),
+          totalPages: Number(response.headers.get('x-wp-totalpages') || 1),
+        }
+      } catch {
+        const contentType = response.headers.get('content-type') || 'unknown content type'
+        throw new Error(`Expected JSON but received ${contentType}: ${url}`)
+      }
+    } catch (error) {
+      lastError = error
+      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 500))
+    }
   }
 
-  return {
-    data: (await response.json()) as T,
-    total: Number(response.headers.get('x-wp-total') || 0),
-    totalPages: Number(response.headers.get('x-wp-totalpages') || 1),
-  }
+  throw lastError
 }
 
 async function fetchAllPages(wordpressBaseUrl: string) {
@@ -254,12 +272,23 @@ async function fetchAllMedia(wordpressBaseUrl: string) {
   return media
 }
 
-function assetIsReferencedInText(asset: ExtractedAsset, content: string) {
+function assetIsReferencedInText(
+  asset: ExtractedAsset,
+  content: string,
+  publicAssetFilenames: ReadonlySet<string>
+) {
   const normalizedContent = content.replace(/http:\/\//gi, 'https://').toLowerCase()
   const migratedUrl = migratedPublicAssetUrlForWordPressUrl(asset.url)
 
-  if (migratedUrl && normalizedContent.includes(migratedUrl.toLowerCase())) {
-    return true
+  if (migratedUrl) {
+    if (normalizedContent.includes(migratedUrl.toLowerCase())) return true
+    const migratedFilename = filenameFromUrl(migratedUrl).toLowerCase()
+    if (
+      publicAssetFilenames.has(migratedFilename) &&
+      normalizedContent.includes(migratedFilename)
+    ) {
+      return true
+    }
   }
 
   if (asset.kind === 'image') {
@@ -276,6 +305,19 @@ function assetIsReferencedInText(asset: ExtractedAsset, content: string) {
     normalizedContent.includes(asset.url.toLowerCase()) ||
     (asset.filename.length > 0 && normalizedContent.includes(asset.filename.toLowerCase()))
   )
+}
+
+async function sourceAssetStatus(asset: ExtractedAsset) {
+  try {
+    const response = await fetch(asset.url, {
+      method: 'HEAD',
+      redirect: 'follow',
+      headers: { 'user-agent': 'Annlin WordPress inline asset audit' },
+    })
+    return response.status
+  } catch {
+    return 0
+  }
 }
 
 async function main() {
@@ -298,68 +340,102 @@ async function main() {
 
   const mediaByUrl = new Map(media.map((item) => [normalizeUrl(item.source_url), item]))
   const mediaById = new Map(media.map((item) => [item.id, item]))
+  const readingLibraryContent = readingMaterials
+    .flatMap((item) => [item.description, item.fileUrl, item.externalUrl])
+    .filter(Boolean)
+    .join('\n')
 
-  const pageAudits = pages
-    .map((page) => {
-      const pageType = pageTypeForSlug(page.slug)
-      const assets = extractAssets(page.content.rendered || '', mediaById)
+  const pageAudits = (
+    await Promise.all(
+      pages.map(async (page) => {
+        const pageType = pageTypeForSlug(page.slug)
+        const assets = extractAssets(page.content.rendered || '', mediaById)
 
-      let migratedContent = ''
-      if (pageType === 'serviceGroup') {
-        const group = serviceGroupBySlug.get(slugify(page.slug))
-        migratedContent = [group?.description, group?.thumbnailUrl, group?.bannerUrl]
-          .filter(Boolean)
-          .join('\n')
-      } else if (pageType === 'newsArticle') {
-        const article = articleBySlug.get(
-          canonicalNewsArticleSlug(
-            page.slug,
-            decodeWordPressEntities(page.title.rendered || page.slug)
+        let migratedContent = ''
+        if (pageType === 'serviceGroup') {
+          const group = serviceGroupBySlug.get(slugify(page.slug))
+          migratedContent = [group?.description, group?.thumbnailUrl, group?.bannerUrl]
+            .filter(Boolean)
+            .join('\n')
+        } else if (pageType === 'newsArticle') {
+          const article = articleBySlug.get(
+            canonicalNewsArticleSlug(
+              page.slug,
+              decodeWordPressEntities(page.title.rendered || page.slug)
+            )
           )
+          migratedContent = [article?.content, article?.excerpt, article?.featuredImageUrl]
+            .filter(Boolean)
+            .join('\n')
+        } else if (pageType === 'readingMaterial') {
+          const material = readingById.get(`wp-page-${page.id}`)
+          migratedContent = [material?.description, material?.fileUrl, material?.externalUrl]
+            .filter(Boolean)
+            .join('\n')
+        } else if (pageType === 'retiredReadingIndex') {
+          migratedContent = readingLibraryContent
+        } else if (pageType === 'archiveReadingMaterial') {
+          const material = readingById.get(`wp-archive-page-${page.id}`)
+          migratedContent = [material?.description, material?.fileUrl, material?.externalUrl]
+            .filter(Boolean)
+            .join('\n')
+        }
+
+        const missingFromMigratedContent = assets.filter(
+          (asset) => !assetIsReferencedInText(asset, migratedContent, publicAssetFilenames)
         )
-        migratedContent = [article?.content, article?.excerpt, article?.featuredImageUrl]
-          .filter(Boolean)
-          .join('\n')
-      } else if (pageType === 'readingMaterial') {
-        const material = readingById.get(`wp-page-${page.id}`)
-        migratedContent = [material?.description, material?.fileUrl, material?.externalUrl]
-          .filter(Boolean)
-          .join('\n')
-      } else if (pageType === 'archiveReadingMaterial') {
-        const material = readingById.get(`wp-archive-page-${page.id}`)
-        migratedContent = [material?.description, material?.fileUrl, material?.externalUrl]
-          .filter(Boolean)
-          .join('\n')
-      }
+        const missingFromAssetArchive = assets.filter((asset) => {
+          const filename = asset.filename.toLowerCase()
+          return !uploadedAssetFilenames.has(filename) && !publicAssetFilenames.has(filename)
+        })
+        const statuses = new Map<string, number>()
+        for (const asset of uniqueAssets([
+          ...missingFromMigratedContent,
+          ...missingFromAssetArchive,
+        ])) {
+          statuses.set(normalizeUrl(asset.url), await sourceAssetStatus(asset))
+        }
+        const unavailableAtSource = uniqueAssets([
+          ...missingFromMigratedContent,
+          ...missingFromAssetArchive,
+        ]).filter((asset) => [404, 410].includes(statuses.get(normalizeUrl(asset.url)) || 0))
+        const intentionalDesignDifference = ['singleton', 'retiredReadingIndex'].includes(pageType)
+        const missingRequiredRenderedAssets = intentionalDesignDifference
+          ? []
+          : missingFromMigratedContent.filter(
+            (asset) => !unavailableAtSource.some((missing) => missing.url === asset.url)
+          )
+        const availableOnlyOnWordPress = intentionalDesignDifference
+          ? []
+          : missingFromAssetArchive.filter((asset) => {
+            const status = statuses.get(normalizeUrl(asset.url)) || 0
+            return status > 0 && status < 400
+          })
 
-      const missingFromMigratedContent = assets.filter(
-        (asset) => !assetIsReferencedInText(asset, migratedContent)
-      )
-      const missingFromAssetArchive = assets.filter((asset) => {
-        const filename = asset.filename.toLowerCase()
-        return !uploadedAssetFilenames.has(filename) && !publicAssetFilenames.has(filename)
+        return {
+          slug: page.slug,
+          title: titleOf(page),
+          pageType,
+          wpUrl: page.link,
+          inlineImages: assets.filter((asset) => asset.kind === 'image').length,
+          linkedFiles: assets.filter((asset) => asset.kind === 'linked-file').length,
+          missingFromMigratedContent,
+          missingFromAssetArchive,
+          missingRequiredRenderedAssets,
+          availableOnlyOnWordPress,
+          unavailableAtSource,
+          customSingletonDifference:
+            pageType === 'singleton' && missingFromMigratedContent.length > 0,
+        }
       })
-
-      return {
-        slug: page.slug,
-        title: titleOf(page),
-        pageType,
-        wpUrl: page.link,
-        inlineImages: assets.filter((asset) => asset.kind === 'image').length,
-        linkedFiles: assets.filter((asset) => asset.kind === 'linked-file').length,
-        missingFromMigratedContent,
-        missingFromAssetArchive,
-        customSingletonDifference:
-          pageType === 'singleton' && missingFromMigratedContent.length > 0,
-      }
-    })
-    .filter(
-      (audit) =>
-        audit.inlineImages > 0 ||
-        audit.linkedFiles > 0 ||
-        audit.missingFromMigratedContent.length > 0 ||
-        audit.missingFromAssetArchive.length > 0
     )
+  ).filter(
+    (audit) =>
+      audit.inlineImages > 0 ||
+      audit.linkedFiles > 0 ||
+      audit.missingFromMigratedContent.length > 0 ||
+      audit.missingFromAssetArchive.length > 0
+  )
 
   const assetsReferencedByPages = new Set(
     pageAudits.flatMap((audit) =>
@@ -407,6 +483,18 @@ async function main() {
       missingAssetUrlsMatchedInWpMedia: [...assetsReferencedByPages].filter((url) =>
         mediaByUrl.has(url)
       ).length,
+      missingRequiredRenderedAssets: pageAudits.reduce(
+        (total, audit) => total + audit.missingRequiredRenderedAssets.length,
+        0
+      ),
+      assetsAvailableOnlyOnWordPress: pageAudits.reduce(
+        (total, audit) => total + audit.availableOnlyOnWordPress.length,
+        0
+      ),
+      unavailableSourceAssetReferences: pageAudits.reduce(
+        (total, audit) => total + audit.unavailableAtSource.length,
+        0
+      ),
     },
     pages: pageAudits,
   }
