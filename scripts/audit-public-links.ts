@@ -13,7 +13,7 @@ type ServiceGroupResponse = {
 }
 
 const USER_AGENT = 'Annlin public link audit'
-const MAX_PAGES = 300
+const MAX_PAGES = 500
 const SEEDED_PATHS = [
   '/',
   '/oor-annlin-gemeente',
@@ -140,6 +140,27 @@ async function dynamicSeedUrls(siteUrl: URL) {
     .map((slug) => new URL(`/diensgroepe/${slug}`, siteUrl).toString())
 }
 
+async function sitemapSeedUrls(siteUrl: URL) {
+  const sitemapUrl = new URL('/sitemap.xml', siteUrl)
+  const response = await fetchWithRetry(sitemapUrl.toString())
+
+  if (!response.ok) {
+    throw new Error(`Sitemap route discovery failed with ${response.status}.`)
+  }
+
+  const xml = await response.text()
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/gi)]
+    .map((match) => decodeAttribute(match[1] || ''))
+    .flatMap((value) => {
+      try {
+        const url = new URL(value)
+        return shouldCrawl(url, siteUrl) ? [url.toString()] : []
+      } catch {
+        return []
+      }
+    })
+}
+
 async function main() {
   const siteUrl = requiredUrl('SITE_URL')
   const legacyHost = optionalHost('WORDPRESS_BASE_URL')
@@ -151,6 +172,15 @@ async function main() {
   } catch (error) {
     seedFailures.push({
       source: 'serviceGroups',
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
+
+  try {
+    queue.push(...(await sitemapSeedUrls(siteUrl)))
+  } catch (error) {
+    seedFailures.push({
+      source: 'sitemap',
       error: error instanceof Error ? error.message : String(error),
     })
   }

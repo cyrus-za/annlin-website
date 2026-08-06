@@ -82,7 +82,10 @@ Final source-connected results on `2026-08-05`:
   - Total archived bytes copied or confirmed in R2: `1,048,649,457`
   - WordPress media entries with known source sizes account for `944,379,617` bytes.
   - WordPress media entries without source size metadata: `219`
-- Public pages crawled on the deployed site: `94`
+- Public routes crawled on the deployed site: `329`
+  - The final `2026-08-06` crawl seeds from the generated sitemap as well as navigable links,
+    so paginated publication detail pages are covered even when their cards are not on the
+    currently visible library page.
 - Broken public pages: `0`
 - Public request or route-discovery failures: `0`
 - Redirect failures for legacy slugs: `0`
@@ -195,7 +198,7 @@ Final source-connected verification on `2026-08-05`:
     `missingRetiredReadingIndexes: 0`, `missingEvents: 0`, `badRoutes: 0`,
     `badRedirects: 0`, and `wordpressOfflineReady: true`.
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
-  - The deployed crawl visited `94` pages without hitting its page limit
+  - The deployed sitemap-driven crawl visited `329` routes without hitting its `500`-route limit
   - All `597` current WordPress media items are independently inventoried in R2
   - gstack browser QA confirmed the deployed `Leesstof en publikasies` library and active Google Play and Apple App Store links. A mobile publication-card overflow found during QA was fixed; the final `375px` viewport measures `375px` document width with no console errors.
 - Caveat:
