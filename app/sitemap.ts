@@ -26,7 +26,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { slug: true, updatedAt: true },
     }),
     prisma.readingMaterial.findMany({
-      where: { status: 'PUBLISHED', isArchived: false },
+      where: {
+        status: 'PUBLISHED',
+        isArchived: false,
+        title: { not: 'Leesstof' },
+        category: { name: { not: 'Argief uit WordPress' } },
+      },
       select: { id: true, updatedAt: true },
     }),
   ])
