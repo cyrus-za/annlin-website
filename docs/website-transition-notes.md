@@ -229,3 +229,24 @@ Final source-connected verification on `2026-08-05`:
 - Because the old domain is already unavailable, the hosting/DNS owner should urgently decide
   whether to restore WordPress temporarily or approve routing `annlin.co.za` to the new site.
   Pieter retains the final decision; Codex must not make that DNS change autonomously.
+
+## Approved domain cutover checklist
+
+1. Grant the scoped Cloudflare token `Workers Scripts: Edit`, deploy
+   `annlin-media-upload`, configure `R2_UPLOAD_WORKER_URL` and `R2_UPLOAD_SECRET` in Vercel,
+   and complete an authenticated admin upload to R2.
+2. Obtain Pieter and the communication commission's explicit approval for the production
+   domain change.
+3. Add `annlin.co.za` and `www.annlin.co.za` to the existing Vercel project and use Vercel's
+   current project-specific DNS instructions. Prefer `https://annlin.co.za` as the canonical
+   public hostname and redirect `www` to it.
+4. Change only the apex/`www` web records. Preserve the current MX record, the `mail` host and
+   all SPF, DKIM and DMARC records so church email is not interrupted.
+5. Set Vercel Production `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to the approved canonical
+   final origin, then trigger and verify a fresh production deployment. Auth already trusts the
+   temporary hostname and both final hostname variants during the transition.
+6. Verify HTTPS, apex/`www` redirects, admin sign-in, password reset, invitation links, contact
+   notifications, R2 upload, `robots.txt`, `sitemap.xml`, PDFs/audio/images and the complete
+   public crawl on the final hostname.
+7. Monitor Vercel, Neon, Resend and R2 errors after cutover. Retain rollback access to the old
+   DNS values until the agreed monitoring period has passed.

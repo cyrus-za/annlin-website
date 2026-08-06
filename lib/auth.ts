@@ -4,6 +4,13 @@ import { prisma } from "./db"
 import { env } from "./env"
 import { sendPasswordResetEmail } from "./email"
 
+const trustedOrigins = [
+  new URL(env.NEXT_PUBLIC_APP_URL).origin,
+  'https://annlin.venter.pro',
+  'https://annlin.co.za',
+  'https://www.annlin.co.za',
+]
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -40,7 +47,7 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [env.NEXT_PUBLIC_APP_URL],
+  trustedOrigins: [...new Set(trustedOrigins)],
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
   plugins: [],
