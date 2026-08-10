@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Calendar, ChevronLeft } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -49,6 +49,12 @@ export default async function NewsArticleDetailPage({ params }: PageProps) {
     where: { slug },
     include: { category: true },
   })
+
+  if (article?.status === 'ARCHIVED') {
+    const migratedId = `news-article-${article.id}`
+    const migrated = await prisma.readingMaterial.findUnique({ where: { id: migratedId }, select: { status: true, isArchived: true } })
+    if (migrated?.status === 'PUBLISHED' && !migrated.isArchived) permanentRedirect(`/leesstof/${migratedId}`)
+  }
 
   if (!article || article.status !== 'PUBLISHED') {
     notFound()
