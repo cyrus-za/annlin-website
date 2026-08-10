@@ -59,7 +59,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
     sections: {
       hero: {
         subtitle: 'Gereformeerde Kerk Pretoria-Annlin',
-        body: "Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik. H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom, Pretoria.",
+        body: "Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.",
       },
       events: {
         title: 'Komende Gebeure',
