@@ -33,6 +33,22 @@ export default async function AboutPage() {
     { title: 'councilTitle', subtitle: null, body: 'councilBody' },
     { title: 'graceTitle', subtitle: null, body: 'graceBody' },
   ]
+  const pageLinks = [
+    { label: 'Wie ons is en wat ons glo', href: '#identiteit' },
+    { label: 'Ons embleem', href: '#embleem' },
+    { label: 'Geskiedenis', href: '#geskiedenis' },
+    { label: 'Besoek ons', href: '#besoek-ons' },
+  ]
+  const historyImages = [
+    { src: '/church-building-1974.jpg', title: 'history.oldImageTitle', body: 'history.oldImageBody' },
+    { src: '/church-building-main.jpg', title: 'history.currentImageTitle', body: 'history.currentImageBody' },
+  ]
+  const facilities = [
+    { label: 'Hoofkerk', key: 'churchBody' },
+    { label: 'Kerksaal', key: 'hallBody' },
+    { label: 'Katkisasielokale', key: 'classroomsBody' },
+    { label: 'Parkering', key: 'parkingBody' },
+  ]
 
   return (
     <div className="bg-stone-50">
@@ -46,12 +62,7 @@ export default async function AboutPage() {
 
       <nav aria-label="Op hierdie bladsy" className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
-          {[
-            ['Wie ons is en wat ons glo', '#identiteit'],
-            ['Ons embleem', '#embleem'],
-            ['Geskiedenis', '#geskiedenis'],
-            ['Besoek ons', '#besoek-ons'],
-          ].map(([label, href]) => (
+          {pageLinks.map(({ label, href }) => (
             <a key={href} href={href} className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-stone-300 px-4 font-semibold text-primary hover:bg-stone-50">{label}</a>
           ))}
         </div>
@@ -165,10 +176,7 @@ export default async function AboutPage() {
             </div>
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  ['/church-building-1974.jpg', 'history.oldImageTitle', 'history.oldImageBody'],
-                  ['/church-building-main.jpg', 'history.currentImageTitle', 'history.currentImageBody'],
-                ].map(([src, title, body]) => (
+                {historyImages.map(({ src, title, body }) => (
                   <figure key={src} className="overflow-hidden rounded-2xl bg-stone-900 text-white">
                     <div className="relative aspect-[4/3]"><Image src={src} alt="" fill sizes="(min-width: 1024px) 22vw, 50vw" className="object-cover" /></div>
                     <figcaption className="p-4"><strong>{copy(title)}</strong><span className="mt-1 block text-stone-300">{copy(body)}</span></figcaption>
@@ -191,7 +199,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2">
             <div><h2 className="text-4xl font-bold text-foreground">{copy('visit.title')}</h2><p className="mt-4 text-xl text-muted-foreground">{copy('visit.body')}</p><p className="mt-6 leading-8 text-muted-foreground">{copy('visit.ministryArea')}</p><Button asChild className="mt-7"><a href={CONTACT_DETAILS.mapHref} target="_blank" rel="noopener noreferrer"><MapPin className="mr-2 h-5 w-5" />Bekyk op kaart</a></Button></div>
-            <Card><CardHeader><CardTitle className="text-2xl">Fasiliteite</CardTitle></CardHeader><CardContent className="grid gap-5 sm:grid-cols-2">{[['Hoofkerk','churchBody'],['Kerksaal','hallBody'],['Katkisasielokale','classroomsBody'],['Parkering','parkingBody']].map(([label,key]) => <div key={key}><h3 className="font-semibold text-foreground">{label}</h3><p className="mt-1 text-muted-foreground">{copy(`visit.${key}`)}</p></div>)}<p className="border-t border-stone-200 pt-5 leading-8 text-muted-foreground sm:col-span-2">{copy('visit.accessibilityBody')}</p></CardContent></Card>
+            <Card><CardHeader><CardTitle className="text-2xl">Fasiliteite</CardTitle></CardHeader><CardContent className="grid gap-5 sm:grid-cols-2">{facilities.map(({ label, key }) => <div key={key}><h3 className="font-semibold text-foreground">{label}</h3><p className="mt-1 text-muted-foreground">{copy(`visit.${key}`)}</p></div>)}<p className="border-t border-stone-200 pt-5 leading-8 text-muted-foreground sm:col-span-2">{copy('visit.accessibilityBody')}</p></CardContent></Card>
           </div>
         </div>
       </section>
