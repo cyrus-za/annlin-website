@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Calendar, Newspaper, BookOpen, Mail, ArrowRight, MapPin, PlayCircle, Clock3 } from 'lucide-react'
 import { Metadata } from 'next'
 import { getPublicContentPage } from '@/lib/content-pages.server'
-import { readContentList, readContentText } from '@/lib/content-page-definitions'
+import { readContentText } from '@/lib/content-page-definitions'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
 import { getImageProps } from 'next/image'
 
@@ -132,14 +132,6 @@ export default async function Home() {
               <p className="mb-7 max-w-4xl text-xl leading-8 text-muted-foreground">
                 {copy('about.body')}
               </p>
-              <div className="grid gap-3 md:grid-cols-3">
-                {readContentList(sections, 'about.bullets').map((bullet) => (
-                  <div key={bullet} className="flex items-start rounded-xl bg-white p-4 shadow-sm">
-                    <div className="mr-3 mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
-                    <span className="text-foreground/80">{bullet}</span>
-                  </div>
-                ))}
-              </div>
               <div className="mt-8">
                 <Button asChild>
                   <Link href="/oor-annlin-gemeente">

@@ -77,11 +77,6 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
       about: {
         title: 'Oor Annlin Gemeente',
         body: "Ons is 'n lewendige gemeente wat toegewy is aan die verkondiging van God se Woord en die bou van 'n gemeenskap waar almal welkom is. Ons glo in die krag van geloof, hoop en liefde om lewens te transformeer.",
-        bullets: [
-          'Eredienste elke Sondag om 08:30 en 18:30',
-          'Aktiewe jeug- en kinderprogramme',
-          'Gemeenskapsbetrokkenheid en uitreikprogramme',
-        ],
       },
       history: {
         title: 'Ons Geskiedenis',
@@ -118,7 +113,6 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         fields: [
           text('about.title', 'Oor-afdeling se opskrif'),
           area('about.body', 'Oor-afdeling se teks'),
-          lines('about.bullets', 'Kernpunte', 'Een punt per reël.'),
           text('history.title', 'Geskiedenis-kaart se opskrif'),
           text('history.subtitle', 'Geskiedenis-kaart se subopskrif'),
           area('history.body', 'Geskiedenis-kaart se teks'),
