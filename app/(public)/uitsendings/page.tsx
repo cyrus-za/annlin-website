@@ -1,10 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { YouTubeEmbed } from '@/components/public/YouTubeEmbed'
-import { Calendar, ExternalLink, Radio, User } from 'lucide-react'
+import { Calendar, ExternalLink, Headphones, Radio, User } from 'lucide-react'
 import { Metadata } from 'next'
+import Link from 'next/link'
 import { Suspense } from 'react'
 import { PageHero } from '@/components/public/PageHero'
+import { prisma } from '@/lib/db'
 
 export const metadata: Metadata = {
   title: 'Uitsendings | Annlin Gemeente',
@@ -380,6 +382,56 @@ async function YouTubeSection() {
           </CardHeader>
         </Card>
       )}
+
+      <div className="mt-8 rounded-2xl border border-stone-200 bg-stone-50 p-6 text-center">
+        <p className="text-lg text-muted-foreground">Vir vorige uitsendings, maak ons YouTube-kanaal oop.</p>
+        <Button asChild className="mt-4">
+          <a href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer"><ExternalLink className="mr-2 h-4 w-4" />Besoek die YouTube-kanaal</a>
+        </Button>
+      </div>
+    </section>
+  )
+}
+
+async function DevotionsSection() {
+  const devotions = await prisma.readingMaterial.findMany({
+    where: {
+      status: 'PUBLISHED',
+      isArchived: false,
+      fileType: 'AUDIO',
+      category: { name: 'Oordenkings' },
+    },
+    include: { category: true },
+    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
+    take: 3,
+  })
+
+  if (devotions.length === 0) return null
+
+  return (
+    <section className="mb-12">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Nuutste oordenkings</h2>
+          <p className="mt-2 text-muted-foreground">Luister na die drie nuutste episodes van “Ons gesels oor Jesus”.</p>
+        </div>
+        <Button asChild variant="outline"><Link href="/leesstof?versameling=Oordenkings">Sien alle oordenkings</Link></Button>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        {devotions.map((devotion) => (
+          <Card key={devotion.id} className="flex h-full flex-col">
+            <CardHeader>
+              <Headphones className="h-7 w-7 text-primary" />
+              <CardTitle className="pt-3 text-xl leading-snug">{devotion.title}</CardTitle>
+              {devotion.showDate ? <CardDescription>{devotion.contentDate.toLocaleDateString('af-ZA', { day: 'numeric', month: 'long', year: 'numeric' })}</CardDescription> : null}
+            </CardHeader>
+            <CardContent className="mt-auto space-y-4">
+              {devotion.fileUrl ? <audio controls preload="none" className="w-full"><source src={devotion.fileUrl} />Jou blaaier ondersteun nie die klankspeler nie.</audio> : null}
+              <Button asChild variant="outline" className="w-full"><Link href={`/leesstof/${devotion.id}`}>Maak oordenking oop</Link></Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </section>
   )
 }
@@ -497,6 +549,9 @@ export default function UitsendingsPage() {
         </Suspense>
         <Suspense fallback={<BroadcastSectionSkeleton title="Kerkdienstgemist opnames" />}>
           <KerkdienstgemistSection />
+        </Suspense>
+        <Suspense fallback={<BroadcastSectionSkeleton title="Oordenkings" />}>
+          <DevotionsSection />
         </Suspense>
       </div>
     </div>

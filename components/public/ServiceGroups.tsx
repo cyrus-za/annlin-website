@@ -97,6 +97,7 @@ export function ServiceGroups({
 
   const diakonieGroups = serviceGroups.filter((group) => group.category === 'DIAKONIE')
   const otherGroups = serviceGroups.filter((group) => group.category === 'OTHER')
+  const mobileGroups = serviceGroups.slice(0, 3)
 
   return showAll ? (
     <section className="bg-stone-50 py-12">
@@ -123,17 +124,32 @@ export function ServiceGroups({
           </Button>
         </div>
 
-        <ServiceGroupRail
-          title="Diakonie"
-          groups={diakonieGroups}
-          totalCount={diakonieGroups.length}
-        />
-        <ServiceGroupRail
-          title="Ander diensgroepe"
-          groups={otherGroups}
-          totalCount={otherGroups.length}
-          className="mt-8"
-        />
+        <div className="mb-5 sm:hidden">
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/diensgroepe">
+              Bekyk alle diensgroepe
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-4 sm:hidden">
+          {mobileGroups.map((group) => (
+            <Link key={group.id} href={`/diensgroepe/${group.slug}`} className="group grid grid-cols-[7rem_minmax(0,1fr)] overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+              <ServiceGroupImage group={group} className="h-full min-h-32" sizes="112px" />
+              <span className="flex min-w-0 flex-col justify-center p-4">
+                <strong className="text-lg text-foreground">{group.name}</strong>
+                <span className="mt-2 line-clamp-2 text-muted-foreground">{createServiceGroupExcerpt(group.description, group.name, 90)}</span>
+                <span className="mt-3 inline-flex items-center font-semibold text-primary">Lees meer <ArrowRight className="ml-2 h-4 w-4" /></span>
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        <div className="hidden sm:block">
+          <ServiceGroupRail title="Diakonie" groups={diakonieGroups} totalCount={diakonieGroups.length} />
+          <ServiceGroupRail title="Ander diensgroepe" groups={otherGroups} totalCount={otherGroups.length} className="mt-8" />
+        </div>
 
         <div className="mt-8 sm:hidden">
           <Button asChild variant="outline" className="w-full">

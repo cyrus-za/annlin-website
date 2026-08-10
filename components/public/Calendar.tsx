@@ -371,7 +371,6 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <Button 
-                    variant="outline" 
                     size="sm" 
                     onClick={() => {
                       setSelectedDate(undefined)
@@ -669,14 +668,14 @@ export function UpcomingEvents({
     <>
       <section className="bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="mb-8 text-center">
           <h2 className="text-3xl font-bold text-amber-900">{heading}</h2>
           <p className="mt-4 text-lg text-amber-800">
             {description}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {events.map((event, index) => (
             <motion.div
               key={event.id}
@@ -684,9 +683,14 @@ export function UpcomingEvents({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:shadow-lg transition-shadow duration-300 group">
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
+              <Card className="group grid h-full grid-cols-[5rem_minmax(0,1fr)] overflow-hidden transition-shadow duration-300 hover:shadow-lg sm:block">
+                <div className="flex flex-col items-center justify-center bg-primary px-2 py-5 text-center text-primary-foreground sm:hidden">
+                  <span className="text-3xl font-bold leading-none">{format(new Date(event.startDate), 'dd')}</span>
+                  <span className="mt-1 font-semibold uppercase">{format(new Date(event.startDate), 'MMM', { locale: af })}</span>
+                </div>
+                <div className="min-w-0">
+                <CardHeader className="space-y-3 p-4 sm:p-5">
+                  <div className="flex items-start justify-between gap-2">
                     <Badge 
                       style={{
                         backgroundColor: eventCategoryTint(event.category.color),
@@ -702,16 +706,13 @@ export function UpcomingEvents({
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-xl group-hover:text-amber-700 transition-colors">
+                  <CardTitle className="text-lg leading-snug transition-colors group-hover:text-amber-700 sm:text-xl">
                     {event.title}
                   </CardTitle>
-                  <CardDescription className="line-clamp-2">
-                    {event.description}
-                  </CardDescription>
                 </CardHeader>
 
-                <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-muted-foreground">
+                <CardContent className="space-y-2 p-4 pt-0 sm:p-5 sm:pt-0">
+                  <div className="hidden items-center text-sm text-muted-foreground sm:flex">
                     <CalendarIcon className="h-4 w-4 mr-2 text-muted-foreground/50" />
                     {format(new Date(event.startDate), 'EEEE, dd MMMM yyyy', { locale: af })}
                   </div>
@@ -731,7 +732,7 @@ export function UpcomingEvents({
                     </div>
                   )}
 
-                  <div className="pt-3 border-t border-gray-100">
+                  <div className="border-t border-gray-100 pt-3">
                     <div className="flex items-center justify-between">
                       <Button 
                         variant="outline" 
@@ -741,7 +742,7 @@ export function UpcomingEvents({
                           setShowEventDialog(true)
                         }}
                       >
-                        Meer Info
+                        Meer inligting
                       </Button>
                       {event.sermonUrl && (
                         <Button asChild size="sm" variant="ghost">
@@ -765,6 +766,7 @@ export function UpcomingEvents({
                     </div>
                   </div>
                 </CardContent>
+                </div>
               </Card>
             </motion.div>
           ))}

@@ -8,6 +8,16 @@ body {
   font-family: var(--font-source-sans), system-ui, sans-serif;
 }
 
+.public-site {
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.public-site :where(.text-sm, .text-xs) {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 * {
   border-color: hsl(var(--border));
 }

@@ -32,50 +32,14 @@ export default function JaarprogramPage() {
         </div>
       </section>
 
-      {/* Information Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-6">
-                Gereelde Vergaderings & Gebeure
-              </h2>
-              <div className="space-y-6">
-                <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Kerkraad Vergaderings</h3>
-                  <p className="text-muted-foreground mb-2">Maandeliks</p>
-                  <p className="text-sm text-muted-foreground">
-                    Bestuur en beplanning van kerk aktiwiteite. 
-                    Alle kerkraad lede word verwelkom.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Jeugbediening Vergaderings</h3>
-                  <p className="text-muted-foreground mb-2">Weekliks</p>
-                  <p className="text-sm text-muted-foreground">
-                    Beplanning en koördinasie van jeug aktiwiteite. 
-                    Aktiewe jeugleiers is welkom.
-                  </p>
-                </div>
-                
-                <div className="border-l-4 border-amber-600 pl-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Diensgroep Vergaderings</h3>
-                  <p className="text-muted-foreground mb-2">Maandeliks</p>
-                  <p className="text-sm text-muted-foreground">
-                    Koördinasie van verskillende diensgroepe en hul aktiwiteite. 
-                    Alle diensgroep leiers is welkom.
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="rounded-3xl border border-stone-200 bg-stone-50 p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-foreground mb-6">
+          <div>
+              <h2 className="mb-8 text-center text-3xl font-bold text-foreground sm:text-4xl">
                 Spesiale Gebeure
-              </h3>
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+              </h2>
+              <div className="grid gap-5 md:grid-cols-3">
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Jeugkampe</h4>
                   <p className="text-muted-foreground text-sm">
                     Jaarliks hou ons spesiale kampe vir ons jeug met aktiwiteite, 
@@ -83,7 +47,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Gemeente Uitstappies</h4>
                   <p className="text-muted-foreground text-sm">
                     Gereelde uitstappies en sosiale geleenthede vir die hele gemeente 
@@ -91,7 +55,7 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
                 
-                <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
                   <h4 className="font-semibold text-foreground mb-2">Spesiale Eredienste</h4>
                   <p className="text-muted-foreground text-sm">
                     Kersfees, Paasfees en ander spesiale eredienste met 
@@ -99,7 +63,6 @@ export default function JaarprogramPage() {
                   </p>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </section>

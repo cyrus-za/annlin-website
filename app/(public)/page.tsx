@@ -1,15 +1,13 @@
 import { ServiceGroups } from '@/components/public/ServiceGroups'
 import { UpcomingEvents } from '@/components/public/Calendar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import { Calendar, Newspaper, BookOpen, Mail, ArrowRight, PlayCircle } from 'lucide-react'
+import { Calendar, Newspaper, BookOpen, Mail, ArrowRight, MapPin, PlayCircle, Clock3 } from 'lucide-react'
 import { Metadata } from 'next'
-import { APP_CONFIG } from '@/lib/constants'
 import { getPublicContentPage } from '@/lib/content-pages.server'
 import { readContentList, readContentText } from '@/lib/content-page-definitions'
 import { getPublicServiceGroups } from '@/lib/public-service-groups.server'
-import Image, { getImageProps } from 'next/image'
+import { getImageProps } from 'next/image'
 
 export const revalidate = 300
 
@@ -46,13 +44,17 @@ export default async function Home() {
     getPublicServiceGroups(),
   ])
   const copy = (path: string) => readContentText(sections, path)
+  const quickLinks = [
+    { href: '/jaarprogram', label: 'Sien die kalender', icon: Calendar },
+    { href: '/nuus', label: 'Lees die nuus', icon: Newspaper },
+    { href: '/leesstof', label: 'Vind publikasies', icon: BookOpen },
+    { href: '/kontak', label: 'Kontak die kerkkantoor', icon: Mail },
+  ]
 
   return (
     <div>
       {/* Hero Section */}
-      <section 
-        className="relative overflow-hidden py-16 text-white sm:py-20"
-      >
+      <section className="relative min-h-[36rem] overflow-hidden text-white sm:min-h-[40rem]">
         <picture className="absolute inset-0 block">
           <source
             media="(max-width: 639px)"
@@ -71,15 +73,16 @@ export default async function Home() {
             backgroundImage: 'linear-gradient(135deg, hsl(var(--hero-overlay-start) / 0.55), hsl(var(--hero-overlay-end) / 0.40))',
           }}
         />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="mx-auto mb-4 max-w-3xl font-display text-3xl font-semibold text-amber-50 sm:text-4xl">
-              {copy('hero.subtitle')}
-            </h1>
-            <p className="text-lg text-amber-200 mb-8 max-w-4xl mx-auto">
-              {copy('hero.body')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="relative mx-auto flex min-h-[36rem] max-w-7xl items-end px-4 pb-20 pt-28 sm:min-h-[40rem] sm:px-6 sm:pb-24 lg:px-8">
+          <div className="grid w-full items-end gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+            <div>
+              <h1 className="max-w-4xl font-display text-5xl font-semibold text-white sm:text-6xl">
+                {copy('hero.subtitle')}
+              </h1>
+              <p className="mb-8 mt-5 max-w-3xl text-xl leading-8 text-stone-100">
+                {copy('hero.body')}
+              </p>
+              <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0 w-full sm:w-auto">
                 <Link href="/uitsendings">
                   <PlayCircle className="mr-2 h-5 w-5" />
@@ -91,135 +94,48 @@ export default async function Home() {
                   Leer Meer Oor Ons
                 </Link>
               </Button>
+              </div>
             </div>
+
+            <aside className="rounded-2xl border border-white/25 bg-stone-950/45 p-6 shadow-xl backdrop-blur-md" aria-label="Besoekinligting">
+              <h2 className="text-2xl font-semibold text-white">Besoek ons</h2>
+              <div className="mt-5 space-y-4 text-stone-100">
+                <p className="flex items-start gap-3"><Clock3 className="mt-1 h-5 w-5 shrink-0" /><span>Sondae om 08:30 en 18:30</span></p>
+                <p className="flex items-start gap-3"><MapPin className="mt-1 h-5 w-5 shrink-0" /><span>H/v Braam Pretoriusstraat en Kaneelbaslaan, Wonderboom</span></p>
+              </div>
+              <Button asChild className="mt-6 w-full bg-white text-primary hover:bg-stone-100">
+                <Link href="/kontak">Kontak en aanwysings</Link>
+              </Button>
+            </aside>
           </div>
         </div>
       </section>
 
-      {/* Upcoming Events Section */}
-      <UpcomingEvents
-        limit={3}
-        heading={copy('events.title')}
-        description={copy('events.body')}
-        emptyMessage={copy('events.empty')}
-      />
-
-      {/* Service Groups Section */}
-      <ServiceGroups
-        initialGroups={serviceGroups}
-        heading={copy('serviceGroups.title')}
-        description={copy('serviceGroups.body')}
-      />
-
-      {/* Quick Links Section */}
-      <section className="bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-foreground">{copy('explore.title')}</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              {copy('explore.body')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
-              <CardHeader className="space-y-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-100 transition-colors group-hover:bg-amber-200">
-                  <Calendar className="h-6 w-6 text-amber-700" />
-                </div>
-                <CardTitle>Jaarprogram</CardTitle>
-                <CardDescription>
-                  Eredienste, gebeure en belangrike datums
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/jaarprogram">
-                    Bekyk Kalender
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
-              <CardHeader className="space-y-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-orange-100 transition-colors group-hover:bg-orange-200">
-                  <Newspaper className="h-6 w-6 text-orange-700" />
-                </div>
-                <CardTitle>Nuus & Aankondigings</CardTitle>
-                <CardDescription>
-                  Bly op hoogte met gemeente nuus
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/nuus">
-                    Lees Nuus
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
-              <CardHeader className="space-y-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-yellow-100 transition-colors group-hover:bg-yellow-200">
-                  <BookOpen className="h-6 w-6 text-yellow-700" />
-                </div>
-                <CardTitle>Leesstof</CardTitle>
-                <CardDescription>
-                  Preke, studies en geestelike materiaal
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/leesstof">
-                    Bekyk Materiaal
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="group border-stone-200 shadow-sm transition-shadow duration-300 hover:shadow-md">
-              <CardHeader className="space-y-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-stone-100 transition-colors group-hover:bg-stone-200">
-                  <Mail className="h-6 w-6 text-stone-700" />
-                </div>
-                <CardTitle>Kontak Ons</CardTitle>
-                <CardDescription>
-                  Kom in aanraking met ons gemeente
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/kontak">
-                    Kontak Besonderhede
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+      <nav aria-label="Vind vinnig" className="relative z-10 -mt-8 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg lg:grid-cols-4">
+          {quickLinks.map(({ href, label, icon: Icon }) => (
+            <Link key={href} href={href} className="flex min-h-24 items-center gap-3 border-stone-200 p-4 font-semibold text-foreground transition-colors hover:bg-stone-50 odd:border-r lg:border-r lg:last:border-r-0">
+              <Icon className="h-6 w-6 shrink-0 text-primary" />
+              <span>{label}</span>
+            </Link>
+          ))}
         </div>
-      </section>
+      </nav>
 
-      {/* About Section */}
-      <section className="bg-stone-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-            <div>
-              <h2 className="mb-5 text-3xl font-bold text-amber-900">
+      <section className="bg-stone-50 pb-14 pt-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl">
+            <p className="mb-3 font-semibold uppercase tracking-[0.16em] text-primary">Wie ons is en wat ons glo</p>
+            <h2 className="mb-5 text-4xl font-bold text-foreground sm:text-5xl">
                 {copy('about.title')}
               </h2>
-              <p className="mb-6 text-lg text-muted-foreground">
+              <p className="mb-7 max-w-4xl text-xl leading-8 text-muted-foreground">
                 {copy('about.body')}
               </p>
-              <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-3">
                 {readContentList(sections, 'about.bullets').map((bullet) => (
-                  <div key={bullet} className="flex items-center">
-                    <div className="mr-3 h-2 w-2 shrink-0 rounded-full bg-amber-600" />
+                  <div key={bullet} className="flex items-start rounded-xl bg-white p-4 shadow-sm">
+                    <div className="mr-3 mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
                     <span className="text-foreground/80">{bullet}</span>
                   </div>
                 ))}
@@ -227,83 +143,18 @@ export default async function Home() {
               <div className="mt-8">
                 <Button asChild>
                   <Link href="/oor-annlin-gemeente">
-                    Leer Meer Oor Ons
+                    Lees wie ons is en wat ons glo
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-              </div>
-            </div>
-            
-            <div className="grid gap-5">
-              <Card className="overflow-hidden border-stone-200 shadow-sm">
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src="/church-building-1974.jpg"
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 40vw, 100vw"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/35" />
-                  <div className="relative flex h-full items-end p-6">
-                    <div className="text-white">
-                      <h3 className="text-xl font-bold mb-2">{copy('history.title')}</h3>
-                      <p className="text-sm text-gray-200">{copy('history.subtitle')}</p>
-                    </div>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground mb-6">
-                    {copy('history.body')}
-                  </p>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href="/oor-annlin-gemeente#geskiedenis">
-                      Lees Ons Geskiedenis
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-stone-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle>{copy('visit.title')}</CardTitle>
-                  <CardDescription>
-                    {copy('visit.body')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-foreground">Eredienste</h4>
-                    <p className="text-muted-foreground">Sondae om 08:30 en 18:30</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Adres</h4>
-                    <p className="text-muted-foreground">
-                      H/v Braam Pretoriusstraat en Kaneelbaslaan<br />
-                      Wonderboom, Pretoria<br />
-                      0182
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground">Kontak</h4>
-                    <p className="text-muted-foreground">
-                      Tel: 012 567 1492<br />
-                      Sel: 079 162 3453<br />
-                      E-pos: {APP_CONFIG.email}
-                    </p>
-                  </div>
-                  <Button asChild className="w-full">
-                    <Link href="/kontak">
-                      Volledige Kontak Besonderhede
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
       </section>
+
+      <UpcomingEvents limit={4} heading={copy('events.title')} description={copy('events.body')} emptyMessage={copy('events.empty')} />
+
+      <ServiceGroups initialGroups={serviceGroups} heading={copy('serviceGroups.title')} description={copy('serviceGroups.body')} />
     </div>
   )
 }

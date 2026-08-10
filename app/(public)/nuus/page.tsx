@@ -1,9 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BookOpen, Calendar, ChevronLeft, ChevronRight, Newspaper } from 'lucide-react'
+import { ArrowRight, BookOpen, Newspaper } from 'lucide-react'
 import { PublicationCategoryBadge } from '@/components/public/PublicationCategoryBadge'
 import { prisma } from '@/lib/db'
-import { createArticleExcerpt } from '@/lib/public-content'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { PageHero } from '@/components/public/PageHero'
@@ -31,38 +29,18 @@ function publicationPreviewUrl(fileUrl: string) {
   return `${fileUrl}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0`
 }
 
-const ARTICLES_PER_PAGE = 12
-
-type NewsPageProps = {
-  searchParams: Promise<{ bladsy?: string }>
-}
-
-export default async function NewsPage({ searchParams }: NewsPageProps) {
-  const { bladsy } = await searchParams
-  const requestedPage = Math.max(1, Number.parseInt(bladsy || '1', 10) || 1)
-  const latestCategoryNames = ['Die Fontein - Weekblad', 'Die Fontein - Maandblad', 'Liturgie']
-  const [articleCount, latestPublications] = await Promise.all([
-    prisma.article.count({ where: { status: 'PUBLISHED' } }),
-    prisma.readingMaterial.findMany({
+export default async function NewsPage() {
+  const latestPublications = (await Promise.all(
+    ['Die Fontein - Maandblad', 'Die Fontein - Weekblad'].map((categoryName) => prisma.readingMaterial.findFirst({
       where: {
         status: 'PUBLISHED',
         isArchived: false,
-        category: { name: { in: latestCategoryNames } },
+        category: { name: categoryName },
       },
       include: { category: true },
       orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
-      take: 3,
-    }),
-  ])
-  const pageCount = Math.max(1, Math.ceil(articleCount / ARTICLES_PER_PAGE))
-  const page = Math.min(requestedPage, pageCount)
-  const articles = await prisma.article.findMany({
-    where: { status: 'PUBLISHED' },
-    include: { category: true },
-    orderBy: [{ contentDate: 'desc' }, { title: 'asc' }],
-    skip: (page - 1) * ARTICLES_PER_PAGE,
-    take: ARTICLES_PER_PAGE,
-  })
+    }))
+  )).flatMap((item) => item ? [item] : [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -73,14 +51,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
         icon={<Newspaper className="h-8 w-8" />}
       />
 
-      {latestPublications.length > 0 ? (
-        <section className="border-b bg-white py-10">
+      <section className="border-b bg-white py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Nuutste publikasies</h2>
-              <p className="mt-2 text-muted-foreground">Die drie nuutste gemeentepublikasies op een plek.</p>
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="text-3xl font-bold text-foreground sm:text-4xl">Nuutste publikasies</h2>
+              <p className="mt-3 text-muted-foreground">Die nuutste maandblad en weekblad op een plek.</p>
             </div>
-            <div className="mt-6 grid items-start gap-5 md:grid-cols-3">
+            {latestPublications.length > 0 ? <div className="mx-auto mt-8 grid max-w-5xl items-start gap-6 md:grid-cols-2">
               {latestPublications.map((item) => (
                 <article key={item.id} className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm">
                   {item.fileType === 'PDF' && item.fileUrl ? (
@@ -99,12 +76,6 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                         className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                       />
                     </div>
-                  ) : item.description ? (
-                    <div className="border-b border-stone-200 bg-white p-5">
-                      <p className="line-clamp-8 min-h-44 whitespace-pre-line text-sm leading-6 text-muted-foreground">
-                        {createArticleExcerpt(item.description, 520)}
-                      </p>
-                    </div>
                   ) : null}
 
                   <div className="p-5">
@@ -119,7 +90,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                   </div>
                 </article>
               ))}
-            </div>
+            </div> : <p className="mt-8 text-center text-muted-foreground">Geen publikasies is tans beskikbaar nie.</p>}
             <div className="mt-8 flex justify-center">
               <Button asChild size="lg" className="w-full px-8 sm:w-auto">
                 <Link href="/leesstof">
@@ -129,73 +100,6 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
               </Button>
             </div>
           </div>
-        </section>
-      ) : null}
-
-      <section className="py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {articles.length > 0 ? (
-            <>
-              <div className="mb-8 max-w-3xl">
-                <h2 className="text-3xl font-bold text-foreground">Gemeentenuus</h2>
-                <p className="mt-2 text-muted-foreground">
-                  Berigte en hoogtepunte uit die lewe van die gemeente.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                {articles.map((article) => (
-                  <Card key={article.id}>
-                    <CardHeader>
-                      <CardTitle className="text-amber-900">{article.title}</CardTitle>
-                      {article.showDate ? (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          {formatDate(article.contentDate)}
-                        </div>
-                      ) : null}
-                    </CardHeader>
-                    <CardContent className="space-y-5">
-                      <p className="overflow-hidden break-words text-base leading-7 text-muted-foreground">
-                        {createArticleExcerpt(article.excerpt || article.content, 220)}
-                      </p>
-                      <Button asChild variant="outline">
-                        <Link href={`/nuus/${article.slug}`}>
-                          Lees volledige artikel
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              {pageCount > 1 ? (
-                <nav aria-label="Nuusbladsye" className="mt-10 flex items-center justify-center gap-3">
-                  <Button asChild variant="outline" className={page === 1 ? 'pointer-events-none opacity-50' : ''}>
-                    <Link href={page === 2 ? '/nuus' : `/nuus?bladsy=${page - 1}`} aria-disabled={page === 1}>
-                      <ChevronLeft className="mr-1 h-4 w-4" /> Vorige
-                    </Link>
-                  </Button>
-                  <span className="text-sm text-muted-foreground">Bladsy {page} van {pageCount}</span>
-                  <Button asChild variant="outline" className={page === pageCount ? 'pointer-events-none opacity-50' : ''}>
-                    <Link href={`/nuus?bladsy=${page + 1}`} aria-disabled={page === pageCount}>
-                      Volgende <ChevronRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </nav>
-              ) : null}
-            </>
-          ) : (
-            <div className="rounded-lg border bg-white p-6">
-              <h2 className="text-xl font-semibold text-foreground">Geen nuus beskikbaar nie</h2>
-              <p className="mt-2 text-muted-foreground">
-                Die nuwe webwerf het nog geen gepubliseerde nuusitems nie.
-              </p>
-              <Button asChild className="mt-6">
-                <Link href="/kontak">Kontak die kerkkantoor</Link>
-              </Button>
-            </div>
-          )}
-        </div>
       </section>
     </div>
   )

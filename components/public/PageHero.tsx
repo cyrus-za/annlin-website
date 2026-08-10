@@ -34,7 +34,7 @@ export function PageHero({ title, description, image, icon, imageClassName }: Pa
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-white shadow-sm backdrop-blur-sm">
             {icon}
           </div>
-          <h1 className="font-display text-4xl font-bold sm:text-5xl">{title}</h1>
+          <h1 className="font-display text-5xl font-bold sm:text-6xl">{title}</h1>
           <div className="mt-6 text-lg leading-relaxed text-stone-100 sm:text-xl">{description}</div>
         </div>
       </div>

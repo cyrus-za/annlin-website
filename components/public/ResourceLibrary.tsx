@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CalendarDays, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, ExternalLink, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -191,7 +191,11 @@ export function ResourceLibrary({ items }: { items: ResourceItem[] }) {
         ) : (
           <div className="mt-8 rounded-xl border border-dashed border-stone-300 p-10 text-center">
             <h3 className="text-lg font-semibold text-foreground">Geen leesstof of publikasies pas by hierdie filters nie</h3>
-            <Button type="button" variant="outline" className="mt-4" onClick={clearFilters}>Maak filters skoon</Button>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">Ons kon nie leesstof vind wat by u soektog pas nie. Probeer ’n ander soekterm, of besoek Deputate Gereformeerde Publikasies vir verdere gereformeerde leesstof.</p>
+            <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button type="button" variant="outline" onClick={clearFilters}>Maak filters skoon</Button>
+              <Button asChild><a href="https://www.cjbf.co.za/" target="_blank" rel="noopener noreferrer">Besoek Deputate Gereformeerde Publikasies <ExternalLink className="ml-2 h-4 w-4" /></a></Button>
+            </div>
           </div>
         )}
 
