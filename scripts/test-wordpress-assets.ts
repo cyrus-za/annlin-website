@@ -28,6 +28,7 @@ import {
   extractMarkdownAudioLinks,
   normalizeArticleContent,
   normalizeEventTitle,
+  normalizeServiceGroupContent,
   stripMarkdownAudioLinks,
   stripMarkdown,
 } from '../lib/public-content'
@@ -54,6 +55,13 @@ assert.equal(canonicalNewsArticleSlug('nuus-2025', 'Nuus 2026'), 'nuus-2026')
 assert.equal(canonicalNewsArticleSlug('nuus-2024', 'Nuus 2024'), 'nuus-2024')
 assert.equal(normalizeEventTitle('Oggenderediens (Klik vir detail detail)'), 'Oggenderediens')
 assert.equal(normalizeEventTitle('Aanderediens (Klik vir detail)'), 'Aanderediens')
+assert.equal(
+  normalizeServiceGroupContent(
+    'Die groep word gelei deur ouderling Hannes Venter. Kontak ook gerus hul ouderling.',
+    'Terebinte'
+  ),
+  'Die groep word gelei deur oudl. Hannes Venter. Kontak ook gerus hul ouderling.'
+)
 
 assert.equal(decodeWordPressEntities('4.14.7&#8243;'), '4.14.7"')
 

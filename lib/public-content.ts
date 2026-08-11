@@ -275,6 +275,13 @@ export function normalizeEventTitle(value: string) {
     .trim()
 }
 
+function abbreviateElderTitleBeforeName(value: string) {
+  return value.replace(
+    /\b(?:Ouderling|ouderling)(?=\s+\p{Lu}[\p{L}.'’-]*(?:\s+\p{Lu}[\p{L}.'’-]*)+)/gu,
+    'oudl.'
+  )
+}
+
 export function normalizeServiceGroupContent(value: string, title: string) {
   let normalized = normalizeWhitespace(value)
   const completeHeaderPattern = new RegExp(
@@ -285,8 +292,8 @@ export function normalizeServiceGroupContent(value: string, title: string) {
   const lastCompleteHeader = completeHeaders.at(-1)
 
   if (lastCompleteHeader?.index !== undefined) {
-    return normalizeWhitespace(
-      normalized.slice(lastCompleteHeader.index + lastCompleteHeader[0].length)
+    return abbreviateElderTitleBeforeName(
+      normalizeWhitespace(normalized.slice(lastCompleteHeader.index + lastCompleteHeader[0].length))
     )
   }
 
@@ -296,7 +303,9 @@ export function normalizeServiceGroupContent(value: string, title: string) {
     'i'
   )
 
-  return normalizeWhitespace(normalized.replace(repeatedTitlePattern, ''))
+  return abbreviateElderTitleBeforeName(
+    normalizeWhitespace(normalized.replace(repeatedTitlePattern, ''))
+  )
 }
 
 export function createServiceGroupExcerpt(value: string, title: string, maxLength = 180) {
