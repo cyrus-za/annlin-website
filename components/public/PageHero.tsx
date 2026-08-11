@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image, { getImageProps } from 'next/image'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -6,22 +6,61 @@ interface PageHeroProps {
   title: string
   description: ReactNode
   image: string
+  mobileImage?: string
   icon: ReactNode
   imageClassName?: string
 }
 
-export function PageHero({ title, description, image, icon, imageClassName }: PageHeroProps) {
+export function PageHero({ title, description, image, mobileImage, icon, imageClassName }: PageHeroProps) {
+  const responsiveImage = mobileImage
+    ? {
+        desktop: getImageProps({
+          src: image,
+          alt: '',
+          fill: true,
+          sizes: '100vw',
+          quality: 80,
+          loading: 'eager',
+          fetchPriority: 'high',
+        }).props,
+        mobile: getImageProps({
+          src: mobileImage,
+          alt: '',
+          fill: true,
+          sizes: '100vw',
+          quality: 80,
+          loading: 'eager',
+          fetchPriority: 'high',
+        }).props,
+      }
+    : null
+
   return (
     <section className="relative flex min-h-[24rem] items-end overflow-hidden bg-stone-900 sm:min-h-[30rem]">
-      <Image
-        src={image}
-        alt=""
-        fill
-        preload
-        sizes="100vw"
-        quality={80}
-        className={cn('object-cover', imageClassName)}
-      />
+      {responsiveImage ? (
+        <picture className="absolute inset-0 block">
+          <source
+            media="(max-width: 639px)"
+            sizes={responsiveImage.mobile.sizes}
+            srcSet={responsiveImage.mobile.srcSet}
+          />
+          <img
+            {...responsiveImage.desktop}
+            alt=""
+            className={cn('object-cover', imageClassName)}
+          />
+        </picture>
+      ) : (
+        <Image
+          src={image}
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          quality={80}
+          className={cn('object-cover', imageClassName)}
+        />
+      )}
       <div
         className="absolute inset-0"
         style={{

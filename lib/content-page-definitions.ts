@@ -365,11 +365,9 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         ],
       },
       {
-        title: 'Kerkgebou en erfenis',
+        title: 'Bykomende geskiedenisfeite',
         fields: [
-          text('heritage.title', 'Afdelingopskrif'),
-          area('heritage.body', 'Inleidende teks'),
-          paragraphs('heritage.facts', 'Erfenisfeite', 'Skei feite met ’n leë reël.'),
+          paragraphs('heritage.facts', 'Feite', 'Hierdie feite word by die toepaslike tydperk in die geskiedenis gevoeg. Skei feite met ’n leë reël.'),
         ],
       },
       {

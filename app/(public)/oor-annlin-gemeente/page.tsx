@@ -49,6 +49,12 @@ export default async function AboutPage() {
     { label: 'Katkisasielokale', key: 'classroomsBody' },
     { label: 'Parkering', key: 'parkingBody' },
   ]
+  const historyFacts = readContentList(sections, 'heritage.facts')
+  const historyPeriods = [
+    { key: 'beginning', facts: historyFacts.slice(0, 1) },
+    { key: 'building', facts: historyFacts.slice(1) },
+    { key: 'modern', facts: [] },
+  ]
 
   return (
     <div className="bg-stone-50">
@@ -56,6 +62,7 @@ export default async function AboutPage() {
         title={copy('hero.title')}
         description={<><p className="font-semibold">{copy('hero.subtitle')}</p><p className="mt-3">{copy('hero.body')}</p></>}
         image="/images/home-hero-desktop.webp"
+        mobileImage="/images/home-hero-mobile.webp"
         imageClassName="object-center"
         icon={<Church className="h-8 w-8" />}
       />
@@ -163,14 +170,14 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-4xl font-bold text-foreground sm:text-5xl">{copy('history.title')}</h2>
-            <p className="mt-5 text-xl leading-8 text-muted-foreground">{copy('heritage.body')}</p>
           </div>
           <div className="mt-12 grid gap-8 lg:grid-cols-2">
             <div className="space-y-8">
-              {['beginning', 'building', 'modern'].map((period) => (
-                <article key={period} className="border-l-4 border-primary pl-6">
-                  <h3 className="text-2xl font-semibold text-foreground">{copy(`detailedHistory.${period}Title`)}</h3>
-                  {readContentList(sections, `detailedHistory.${period}Paragraphs`).map((paragraph) => <p key={paragraph} className="mt-3 leading-8 text-muted-foreground">{paragraph}</p>)}
+              {historyPeriods.map(({ key, facts }) => (
+                <article key={key} className="border-l-4 border-primary pl-6">
+                  <h3 className="text-2xl font-semibold text-foreground">{copy(`detailedHistory.${key}Title`)}</h3>
+                  {readContentList(sections, `detailedHistory.${key}Paragraphs`).map((paragraph) => <p key={paragraph} className="mt-3 leading-8 text-muted-foreground">{paragraph}</p>)}
+                  {facts.map((fact) => <p key={fact} className="mt-3 leading-8 text-muted-foreground">{fact}</p>)}
                 </article>
               ))}
             </div>
@@ -182,12 +189,6 @@ export default async function AboutPage() {
                     <figcaption className="p-4"><strong>{copy(title)}</strong><span className="mt-1 block text-stone-300">{copy(body)}</span></figcaption>
                   </figure>
                 ))}
-              </div>
-              <div className="rounded-2xl bg-stone-50 p-6">
-                <h3 className="text-2xl font-semibold text-foreground">Erfenisfeite</h3>
-                <ul className="mt-5 space-y-4">
-                  {readContentList(sections, 'heritage.facts').map((fact) => <li key={fact} className="flex gap-3 leading-8 text-muted-foreground"><span className="mt-3 h-2 w-2 shrink-0 rounded-full bg-primary" />{fact}</li>)}
-                </ul>
               </div>
               <p><a href="https://af.wikipedia.org/wiki/Gereformeerde_kerk_Pretoria-Annlin" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline underline-offset-4">Lees ook die openbare geskiedenis op Wikipedia</a>.</p>
             </div>
