@@ -1,6 +1,6 @@
 # Website Transition Notes
 
-Last updated: 2026-08-06
+Last updated: 2026-08-11
 
 ## Confirmed from the live WordPress site
 
@@ -20,12 +20,11 @@ Last updated: 2026-08-06
     - `title`: `Nuus 2026`
     - `modified`: `2026-07-03T12:00:33`
   - The annual pages were mutable index containers rather than individual news stories.
-  - Their stories now have first-class article records. `/nuus/nuus-2021` through
+  - Their stories now have first-class library records. `/nuus/nuus-2021` through
     `/nuus/nuus-2026` permanently redirect to `/nuus`.
-- On `2026-08-06`, `annlin.co.za` stopped serving WordPress and began returning an Apache
-  `This domain is temporarily unavailable` placeholder. The REST API now returns that HTML
-  placeholder, and `www.annlin.co.za` does not resolve. This was observed, not performed by
-  this migration process.
+- On `2026-08-06`, `annlin.co.za` temporarily stopped serving WordPress and returned an Apache
+  `This domain is temporarily unavailable` placeholder. This was observed, not performed by
+  this migration process. The WordPress site and REST API were reachable again on `2026-08-11`.
 - WordPress service-group pages expose these named contacts publicly:
   - `Jeug`: Lisa Vosloo, oudl. Thomas Venter, Zoë Venter, Clarissa Rehder
   - `Gebedsgroep`: Carina Pyper
@@ -65,22 +64,23 @@ Audit run against:
 - WordPress: `https://annlin.co.za`
 - New site: `https://annlin.venter.pro`
 
-Final source-connected results on `2026-08-05`:
+Latest source-connected results on `2026-08-11`:
 
 - WordPress pages checked: `48`
 - Active service groups migrated: `16 / 16`
 - WordPress news-container pages accounted for: `8 / 8`
   - The annual `Nuus 2021` through `Nuus 2026` pages were mutable containers, not individual news articles.
   - Five annual containers are retained internally as `ARCHIVED` and no longer appear as public articles.
-  - `40` historical stories were extracted from the annual containers into first-class articles.
-  - The database contains `42` published news stories in total and `5` archived annual containers.
-- Events retained in the new database: `72`
-  - The current WordPress events API returned `50`; all `50` are present. The other `22` are retained historical events.
-- WordPress media items independently archived to Cloudflare R2: `597 / 597`
-  - The live WordPress library grew from the original `587` count to `597` items before the latest final run.
-  - `UploadedAsset` inventory rows: `597`
-  - Total archived bytes copied or confirmed in R2: `1,048,649,457`
-  - WordPress media entries with known source sizes account for `944,379,617` bytes.
+  - Historical stories extracted from those containers are retained in the public library; the
+    WordPress-derived source article records are archived and do not compete with current News.
+- Events retained in the new database: `79`
+  - The current WordPress events API returned `50`; all `50` are present. The other `29` are retained historical events.
+- WordPress media items independently archived to Cloudflare R2: `606 / 606`
+  - The live WordPress library grew from the original `587` count to `597`, then to `606` by
+    `2026-08-11`.
+  - `UploadedAsset` inventory rows: `606`
+  - Total archived bytes copied or confirmed in R2: `1,062,578,856`
+  - WordPress media entries with known source sizes account for `958,309,016` bytes.
   - WordPress media entries without source size metadata: `219`
 - Public routes crawled on the deployed site: `329`
   - The final `2026-08-06` crawl seeds from the generated sitemap as well as navigable links,
@@ -92,8 +92,11 @@ Final source-connected results on `2026-08-05`:
 - Links back to old WordPress pages: `0`
 - Links back to old WordPress media URLs: `0`
 - Remaining old-domain data references in migrated records: `0`
-- The final resumable run copied the five newly discovered objects, skipped the `592` already completed objects, and ended with `failed: 0`.
-- Independent archive accounting: `597 / 597` WordPress media items have matching `UploadedAsset` rows and R2 object keys.
+- The `2026-08-11` incremental refresh discovered and archived `9` new objects: seven Fontein
+  cover images, the Weekblad for 9 August 2026 and the Liturgie for 9 August 2026.
+- Independent HTTP verification returned `200` for all nine new R2 objects and matched every
+  response `Content-Length` to its `UploadedAsset.size`.
+- Independent archive accounting: `606 / 606` WordPress media items have matching `UploadedAsset` rows and R2 object keys.
 - The expanded route/media audit reports `wordpressOfflineReady: true` after also checking
   retired Reading indexes, independent publication records, annual News redirects and source
   documents. One linked historical pre-summary PDF was already `404` at its WordPress source
@@ -101,31 +104,35 @@ Final source-connected results on `2026-08-05`:
 
 ## Publication-library migration
 
-The WordPress media library contained `249` document or audio objects in addition to images. Archiving the objects to R2 did not by itself make those publications discoverable on the new site.
+The WordPress media library now contains `251` document or audio objects in addition to images. Archiving the objects to R2 did not by itself make those publications discoverable on the new site.
 
-Semantic import result on `2026-08-05`:
+Semantic import result on `2026-08-11`:
 
-- Source document/audio objects: `249`
-- Canonical public or historical records: `239`
+- Source document/audio objects: `251`
+- Canonical public or historical records: `241`
 - Duplicate Maandblad variants omitted from the public catalogue: `10`
   - Each duplicated issue keeps one public record, preferring its web-optimized PDF.
   - The alternate binary remains safely retained in the independent R2 inventory.
-- Die Fontein Weekblaaie: `87`
+- Die Fontein Weekblaaie: `88`
 - Die Fontein Maandblaaie: `21` canonical issues
-- Liturgie: `31`
+- Liturgie: `32`
 - Preeksamevattings: `11`
 - Kinderwerk: `33`
 - Oordenkingsklank: `5`
 - Jaarprogramdokumente: `12`
 - Uitreikmateriaal: `15`
 - Algemene dokumente: `24`
-- Publication records with valid metadata: `239 / 239`
-- Publication records with successful, size-consistent R2 responses: `239 / 239`
+- Publication records with valid metadata: `241 / 241`
+- Publication records with successful, size-consistent R2 responses: `241 / 241`
 - Missing publication records: `0`
 - Invalid publication records: `0`
 - Publication/article records containing temporary migration-context wording: `0`
 
-The public information architecture treats `Nuus` as dated articles plus the latest Weekblad, Maandblad and liturgy. The expanded `Leesstof en publikasies` library provides search, collection/year filters, editorial-date sorting and pagination. Historical archive-only records remain visible to administrators rather than appearing in the public library.
+The public information architecture keeps `Nuus` focused on only the latest Weekblad and
+Maandblad. The expanded `Leesstof en publikasies` library contains the full publication history,
+historical gemeentenuus and other resources with search, collection/year filters,
+editorial-date sorting and pagination. Historical archive-only records remain visible to
+administrators rather than appearing in the public library.
 
 The imported catalogue now uses stable publication names instead of WordPress filename workarounds. Week- and month dates live only in `contentDate`; Liturgie and preeksamevatting records use subject headings recovered from their PDFs; and category badges use distinct icons and colours. PDF detail pages provide a larger embedded reader with the browser's page controls, plus prominent open/download actions for mobile users.
 
@@ -158,16 +165,16 @@ Source fix added on `2026-07-06`:
 - The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
   dynamically.
 
-Final source-connected verification on `2026-08-05`:
+Latest source-connected verification on `2026-08-11`:
 
-- WordPress pages with inline images or linked files: `31`
+- WordPress pages with inline images or linked files: `32`
 - Raw rendered-reference differences: `39`
   - These include custom singleton redesigns, retired WordPress index pages and files already
     unavailable at their WordPress source; the raw count is retained for diagnostic context.
 - Required rendered assets missing from the new site: `0`
 - Assets still available only from WordPress: `0`
 - Source asset references already returning `404` or `410` on WordPress: `8`
-- Redesigned singleton pages with expected source differences: `3`
+- Redesigned singleton pages with expected source differences: `2`
   - These are intentionally custom implementations rather than copied WordPress bodies.
 - Raw page-level asset references not matched to the independent archive: `25`
 - The updated `Jeug` WordPress page contained `24` images referenced only through Divi gallery media IDs. The importer now resolves those IDs through the WordPress media API and preserves the gallery as markdown images.
@@ -179,31 +186,33 @@ Final source-connected verification on `2026-08-05`:
     filterable publication records. Their source documents are accounted for except for the
     already-unavailable pre-summary PDF noted above.
   - The singleton pages `homepagenew`, `oor-annlin-gemeente`, and `jaarprogram` are deliberate custom builds rather than mirrored WordPress bodies.
-- The text-coverage audit still reports `10` low-scoring records. Manual checks confirmed that its strongest outliers are expected normalization differences:
+- The text-coverage audit reports `11` low-scoring records. Manual checks confirmed that its strongest outliers are expected normalization differences:
   - `Pinksterfeesvieringe 4 & 5 Junie 2022` preserves the source event image but omits the
     expired WordPress RSVP form.
-  - `Fontein Redaksie` preserves the source's substantive status text, `Webblad onder konstruksie`.
+  - `Fontein Redaksie` now preserves the source's seven linked 2026 issue covers and their
+    publication links, all rewritten to R2; the score reflects image/link normalization rather
+    than missing content.
 - `npm run content:test` passes.
 
 ## WordPress shutdown status
 
 - The WordPress binary-media archive blocker is cleared.
 - The first-class content and publication discovery blocker is cleared.
-- Technical evidence through `2026-08-05`:
+- Technical evidence through `2026-08-11`:
   - `scripts/import-wordpress-media.ts` completed with `failed: 0`
-  - `inventoried: 597`
-  - `copiedToStorage + skippedExistingStorage = 597`
-  - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 597`, `missingMedia: 0`, and `oldDomainRows: 0`
+  - The previous complete resumable run ended with `failed: 0`; the subsequent incremental
+    refresh independently verified every new object and inventory row.
+  - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 606`, `missingMedia: 0`, and `oldDomainRows: 0`
   - The expanded route/media audit against production reports `missingContent: 0`,
     `missingRetiredReadingIndexes: 0`, `missingEvents: 0`, `badRoutes: 0`,
     `badRedirects: 0`, and `wordpressOfflineReady: true`.
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
   - The deployed sitemap-driven crawl visited `329` routes without hitting its `500`-route limit
-  - All `597` current WordPress media items are independently inventoried in R2
+  - All `606` current WordPress media items are independently inventoried in R2
   - gstack browser QA confirmed the deployed `Leesstof en publikasies` library and active Google Play and Apple App Store links. A mobile publication-card overflow found during QA was fixed; the final `375px` viewport measures `375px` document width with no console errors.
 - Caveat:
-  - The text comparison still reports `10` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
-  - The first-class publication library is deployed and production-crawled, with `239 / 239` canonical records and successful R2 responses.
+  - The text comparison reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
+  - The first-class publication library contains `241 / 241` canonical records with successful R2 responses.
   - The publication semantic audit reports `invalidRecords: 0` and `migrationContextRecords: 0` after title and description cleanup.
   - The inline-asset audit reports `missingRequiredRenderedAssets: 0` and
     `assetsAvailableOnlyOnWordPress: 0`; there are no current Jeug gallery differences.
@@ -216,8 +225,8 @@ Final source-connected verification on `2026-08-05`:
     the narrowly scoped Workers permission before the Worker can be deployed.
   - The checked-in Worker configuration already allows the temporary hostname plus both final
     `annlin.co.za` hostname variants, so the approved DNS cutover will not require a CORS code change.
-- Current external state on `2026-08-06`:
-  - WordPress is already unavailable at `annlin.co.za`, independently of this migration.
+- Current external state on `2026-08-11`:
+  - WordPress and its REST API are reachable again at `annlin.co.za`.
   - `annlin.venter.pro` remains the verified working production site.
   - No DNS/domain switch was performed by this migration process.
 
@@ -229,9 +238,8 @@ Final source-connected verification on `2026-08-05`:
   WordPress.
 - Do not approve the permanent shutdown/domain cutover as operationally complete until the
   direct admin R2 upload path is working and an authenticated upload has been verified end to end.
-- Because the old domain is already unavailable, the hosting/DNS owner should urgently decide
-  whether to restore WordPress temporarily or approve routing `annlin.co.za` to the new site.
-  Pieter retains the final decision; Codex must not make that DNS change autonomously.
+- Pieter and the communication commission retain the final WordPress shutdown and DNS decision;
+  Codex must not make that change autonomously.
 
 ## Approved domain cutover checklist
 
