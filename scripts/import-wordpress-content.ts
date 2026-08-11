@@ -206,6 +206,14 @@ function getPageSlugFilter() {
   return slug
 }
 
+function getEventsOnly() {
+  const eventsOnly = process.argv.includes('--events-only')
+  if (eventsOnly && getPageSlugFilter()) {
+    throw new Error('--events-only cannot be combined with --slug.')
+  }
+  return eventsOnly
+}
+
 function htmlToText(html = '', options: { preserveAssets?: boolean } = {}) {
   const responsiveContent = stripDuplicateResponsiveDiviModules(html)
   const preparedHtml = options.preserveAssets
@@ -331,7 +339,8 @@ async function main() {
   console.log('Fetching WordPress content...')
   const wordpressBaseUrl = getWordPressBaseUrl()
   const pageSlugFilter = getPageSlugFilter()
-  const defaultContactEmail = pageSlugFilter ? null : getDefaultContactEmail()
+  const eventsOnly = getEventsOnly()
+  const defaultContactEmail = pageSlugFilter || eventsOnly ? null : getDefaultContactEmail()
 
   const [pageMetadata, pageContents, eventResponse] = await Promise.all([
     fetchJson<WpPage[]>(
@@ -349,7 +358,9 @@ async function main() {
     ...page,
     content: contentByPageId.get(page.id) || { rendered: '' },
   }))
-  const pagesToImport = pages.filter((page) => !pageSlugFilter || page.slug === pageSlugFilter)
+  const pagesToImport = eventsOnly
+    ? []
+    : pages.filter((page) => !pageSlugFilter || page.slug === pageSlugFilter)
   const galleryMediaById = await fetchGalleryMedia(wordpressBaseUrl, pagesToImport)
   const legacyPageRoutes = buildWordPressPageRouteMap(pages, {
     serviceGroupSlugs,
@@ -417,7 +428,7 @@ async function main() {
     throw new Error(`WordPress page not found for --slug=${pageSlugFilter}`)
   }
 
-  if (!pageSlugFilter) {
+  if (!pageSlugFilter && !eventsOnly) {
     await prisma.readingMaterial.deleteMany({
       where: { id: { in: obsoleteReadingIndexIds } },
     })

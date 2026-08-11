@@ -543,7 +543,9 @@ function replaceMediaReferences(value: string, replacements: Map<string, string>
     if (!target) continue
 
     for (const variant of urlVariants(source)) {
-      updated = updated.replaceAll(variant, target)
+      if (updated.includes(variant)) {
+        updated = updated.replaceAll(variant, target)
+      }
     }
   }
 
@@ -673,6 +675,7 @@ async function main() {
   const sizeConcurrency = parseConcurrency()
   const mediaLimit = parseMediaLimit()
   const storageProvider = parseStorageProvider()
+  const rewriteOnly = process.argv.includes('--rewrite-only')
 
   if (copyFiles && storageProvider === 'vercel' && !hasUsableBlobToken()) {
     throw new Error('A real BLOB_READ_WRITE_TOKEN is required when using --copy-files.')
@@ -690,6 +693,46 @@ async function main() {
 
   const allMedia = await fetchAllMedia(wordpressBaseUrl)
   const media = mediaLimit === null ? allMedia : allMedia.slice(0, mediaLimit)
+
+  if (rewriteOnly) {
+    const existingAssets = await prisma.uploadedAsset.findMany({
+      where: { id: { in: media.map((item) => `wp-media-${item.id}`) } },
+      select: { id: true, url: true },
+    })
+    const existingById = new Map(existingAssets.map((item) => [item.id, item]))
+    const replacements = new Map<string, string>()
+    let matchingAssets = 0
+
+    for (const item of media) {
+      const existing = existingById.get(`wp-media-${item.id}`)
+      if (!existing || !isArchivedUrl(existing.url, storageProvider)) continue
+
+      matchingAssets++
+      for (const sourceUrl of mediaReferenceUrls(item, wordpressBaseUrl)) {
+        replacements.set(sourceUrl, existing.url)
+      }
+    }
+
+    const rewritten = await rewriteStoredReferences(replacements)
+    console.log(
+      JSON.stringify(
+        {
+          rewriteOnly: true,
+          totalMedia: media.length,
+          matchingAssets,
+          replacementUrls: replacements.size,
+          rewrittenRecords: rewritten.records,
+          rewrittenFields: rewritten.fields,
+          storageProvider,
+          mediaLimit,
+        },
+        null,
+        2
+      )
+    )
+    return
+  }
+
   const sizeById = await resolveMediaSizes(media, sizeConcurrency)
   printPreflight(media, sizeById)
 
