@@ -335,6 +335,11 @@ async function main() {
   const serviceGroupBySlug = new Map(serviceGroups.map((item) => [item.slug, item]))
   const articleBySlug = new Map(articles.map((item) => [item.slug, item]))
   const readingById = new Map(readingMaterials.map((item) => [item.id, item]))
+  const readingBySourceMediaId = new Map(
+    readingMaterials
+      .filter((item) => item.sourceMediaId !== null)
+      .map((item) => [item.sourceMediaId!, item])
+  )
   const uploadedAssetFilenames = new Set(uploadedAssets.map((item) => item.filename.toLowerCase()))
   const publicAssetFilenames = collectPublicAssetFilenames(join(process.cwd(), 'public', 'migrated'))
 
@@ -382,7 +387,25 @@ async function main() {
         }
 
         const missingFromMigratedContent = assets.filter(
-          (asset) => !assetIsReferencedInText(asset, migratedContent, publicAssetFilenames)
+          (asset) => {
+            const sourceMedia = mediaByUrl.get(normalizeUrl(asset.url))
+            const publication = sourceMedia
+              ? readingBySourceMediaId.get(sourceMedia.id)
+              : undefined
+            const publicationContent = [
+              publication?.description,
+              publication?.fileUrl,
+              publication?.externalUrl,
+            ]
+              .filter(Boolean)
+              .join('\n')
+
+            return !assetIsReferencedInText(
+              asset,
+              [migratedContent, publicationContent].filter(Boolean).join('\n'),
+              publicAssetFilenames
+            )
+          }
         )
         const missingFromAssetArchive = assets.filter((asset) => {
           const filename = asset.filename.toLowerCase()
