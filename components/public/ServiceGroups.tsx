@@ -151,14 +151,6 @@ export function ServiceGroups({
           <ServiceGroupRail title="Ander diensgroepe" groups={otherGroups} totalCount={otherGroups.length} className="mt-8" />
         </div>
 
-        <div className="mt-8 sm:hidden">
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/diensgroepe">
-              Bekyk alle diensgroepe
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   )
