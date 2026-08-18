@@ -4,9 +4,6 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { PageHero } from '@/components/public/PageHero'
 
-const calendarHeroImage =
-  'https://pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev/wordpress-media/10451-gemeentekamp-img.jpg'
-
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -20,8 +17,8 @@ export default function JaarprogramPage() {
       <PageHero
         title="Jaarprogram"
         description="Bly op hoogte met al ons vergaderings, spesiale gebeure en belangrike datums. Ons nooi jou uit om deel te wees van ons gemeenteaktiwiteite."
-        image={calendarHeroImage}
-        imageClassName="object-[center_48%]"
+        image="/images/jaarprogram-hero-desktop.webp"
+        mobileImage="/images/jaarprogram-hero-mobile.webp"
         icon={<CalendarDays className="h-8 w-8" />}
       />
 

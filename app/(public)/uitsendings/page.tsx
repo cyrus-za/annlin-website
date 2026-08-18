@@ -540,7 +540,8 @@ export default function UitsendingsPage() {
       <PageHero
         title="Uitsendings"
         description="Kyk of luister na onlangse eredienste en vind vorige uitsendings."
-        image="/images/diensgroepe/tradisionele-dienste-banner-v3.webp"
+        image="/images/uitsendings-hero-desktop.webp"
+        mobileImage="/images/uitsendings-hero-mobile.webp"
         icon={<Radio className="h-8 w-8" />}
       />
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
