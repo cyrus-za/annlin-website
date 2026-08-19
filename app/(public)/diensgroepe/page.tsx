@@ -21,8 +21,8 @@ export default async function DiensgroepePage() {
       <PageHero
         title="Diensgroepe"
         description="By Annlin Gemeente het elke lidmaat ’n belangrike rol. Gebruik jou talente en maak saam ’n verskil in ons gemeente en gemeenskap."
-        image="/images/diensgroepe-hero-v2-desktop.webp"
-        mobileImage="/images/diensgroepe-hero-v2-mobile.webp"
+        image="/images/diensgroepe-hero-v3-desktop.webp"
+        mobileImage="/images/diensgroepe-hero-v3-mobile.webp"
         icon={<HandHeart className="h-8 w-8" />}
       />
 
