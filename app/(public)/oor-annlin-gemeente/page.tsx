@@ -31,7 +31,6 @@ export default async function AboutPage() {
   const leadershipCards = [
     { title: 'ministerName', subtitle: 'ministerRole', body: 'ministerBody' },
     { title: 'councilTitle', subtitle: null, body: 'councilBody' },
-    { title: 'graceTitle', subtitle: null, body: 'graceBody' },
   ]
   const pageLinks = [
     { label: 'Wie ons is en wat ons glo', href: '#identiteit' },
@@ -134,7 +133,7 @@ export default async function AboutPage() {
 
           <div className="mt-16">
             <h3 className="text-3xl font-bold text-foreground">{copy('leadership.title')}</h3>
-            <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
               {leadershipCards.map(({ title, subtitle, body }) => (
                 <Card key={title} className="border-stone-200">
                   <CardHeader><CardTitle className="text-2xl">{copy(`leadership.${title}`)}</CardTitle>{subtitle ? <p className="font-semibold text-primary">{copy(`leadership.${subtitle}`)}</p> : null}</CardHeader>
@@ -180,6 +179,10 @@ export default async function AboutPage() {
                   {facts.map((fact) => <p key={fact} className="mt-3 leading-8 text-muted-foreground">{fact}</p>)}
                 </article>
               ))}
+              <article className="border-l-4 border-primary pl-6">
+                <h3 className="text-2xl font-semibold text-foreground">{copy('leadership.graceTitle')}</h3>
+                <p className="mt-3 leading-8 text-muted-foreground">{copy('leadership.graceBody')}</p>
+              </article>
             </div>
             <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">

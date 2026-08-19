@@ -39,10 +39,6 @@ const navigationItems: NavigationItem[] = [
     href: '/nuus',
   },
   {
-    name: 'Diensgroepe',
-    href: '/diensgroepe',
-  },
-  {
     name: 'Leesstof',
     href: '/leesstof',
   },

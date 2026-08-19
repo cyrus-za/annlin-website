@@ -332,8 +332,6 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
           area('leadership.ministerBody', 'Predikant se beskrywing'),
           text('leadership.councilTitle', 'Kerkraad-opskrif'),
           area('leadership.councilBody', 'Kerkraad-teks'),
-          text('leadership.graceTitle', 'Grace Reformed Church-opskrif'),
-          area('leadership.graceBody', 'Grace Reformed Church-teks'),
         ],
       },
       {
@@ -362,6 +360,8 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
           paragraphs('detailedHistory.buildingParagraphs', 'Kerkbou-paragrawe', 'Skei paragrawe met ’n leë reël.'),
           text('detailedHistory.modernTitle', 'Moderne era-opskrif'),
           paragraphs('detailedHistory.modernParagraphs', 'Moderne era-paragrawe', 'Skei paragrawe met ’n leë reël.'),
+          text('leadership.graceTitle', 'Grace Reformed Church-opskrif'),
+          area('leadership.graceBody', 'Grace Reformed Church en gedeelde gebou'),
         ],
       },
       {

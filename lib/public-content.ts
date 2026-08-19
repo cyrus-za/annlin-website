@@ -282,6 +282,15 @@ function abbreviateElderTitleBeforeName(value: string) {
   )
 }
 
+function formatServiceGroupSectionHeadings(value: string, title: string) {
+  if (!/^Evangelisasie$/i.test(title.trim())) return value
+
+  return value.replace(
+    /^(?:[1-4][ \t]+)(Eie omgewing|Nabye omgewing|Buitelands|Bybelverspreiding)[ \t]*$/gim,
+    '### $1'
+  )
+}
+
 export function normalizeServiceGroupContent(value: string, title: string) {
   let normalized = normalizeWhitespace(value)
   const completeHeaderPattern = new RegExp(
@@ -292,8 +301,11 @@ export function normalizeServiceGroupContent(value: string, title: string) {
   const lastCompleteHeader = completeHeaders.at(-1)
 
   if (lastCompleteHeader?.index !== undefined) {
-    return abbreviateElderTitleBeforeName(
-      normalizeWhitespace(normalized.slice(lastCompleteHeader.index + lastCompleteHeader[0].length))
+    return formatServiceGroupSectionHeadings(
+      abbreviateElderTitleBeforeName(
+        normalizeWhitespace(normalized.slice(lastCompleteHeader.index + lastCompleteHeader[0].length))
+      ),
+      title
     )
   }
 
@@ -303,8 +315,11 @@ export function normalizeServiceGroupContent(value: string, title: string) {
     'i'
   )
 
-  return abbreviateElderTitleBeforeName(
-    normalizeWhitespace(normalized.replace(repeatedTitlePattern, ''))
+  return formatServiceGroupSectionHeadings(
+    abbreviateElderTitleBeforeName(
+      normalizeWhitespace(normalized.replace(repeatedTitlePattern, ''))
+    ),
+    title
   )
 }
 

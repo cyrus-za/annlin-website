@@ -62,6 +62,13 @@ assert.equal(
   ),
   'Die groep word gelei deur oudl. Hannes Venter. Kontak ook gerus hul ouderling.'
 )
+assert.match(
+  normalizeServiceGroupContent(
+    'Vertakkings\n\nEie omgewing\n\n1     Eie omgewing\n\nTeks\n\n3  Buitelands\n\nTeks',
+    'Evangelisasie'
+  ),
+  /Eie omgewing\n\n### Eie omgewing\n\nTeks\n\n### Buitelands/
+)
 
 assert.equal(decodeWordPressEntities('4.14.7&#8243;'), '4.14.7"')
 
