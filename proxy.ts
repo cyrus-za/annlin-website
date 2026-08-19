@@ -20,6 +20,7 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith('/api/events/') ||
       pathname === '/api/diensgroepe' ||
       pathname.startsWith('/api/diensgroepe/') ||
+      /^\/api\/leesstof\/[^/]+\/download$/.test(pathname) ||
       pathname.startsWith('/api/content-pages/public/')
     )
 
