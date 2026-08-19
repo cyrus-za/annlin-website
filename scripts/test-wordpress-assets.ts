@@ -64,7 +64,7 @@ assert.equal(
 )
 assert.match(
   normalizeServiceGroupContent(
-    'Vertakkings\n\nEie omgewing\n\n1     Eie omgewing\n\nTeks\n\n3  Buitelands\n\nTeks',
+    'Vertakkings\n\nEie omgewing\n\n 1     Eie omgewing\n\nTeks\n\n 3  Evangelisasie in die buiteland\n\nTeks',
     'Evangelisasie'
   ),
   /Eie omgewing\n\n### Eie omgewing\n\nTeks\n\n### Buitelands/

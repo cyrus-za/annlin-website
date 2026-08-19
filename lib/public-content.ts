@@ -286,8 +286,9 @@ function formatServiceGroupSectionHeadings(value: string, title: string) {
   if (!/^Evangelisasie$/i.test(title.trim())) return value
 
   return value.replace(
-    /^(?:[1-4][ \t]+)(Eie omgewing|Nabye omgewing|Buitelands|Bybelverspreiding)[ \t]*$/gim,
-    '### $1'
+    /^[ \t]*(?:[1-4][ \t]+)(Eie omgewing|Nabye omgewing|Buitelands|Evangelisasie in die buiteland|Bybelverspreiding)[ \t]*$/gim,
+    (_match, heading: string) =>
+      `### ${/^Evangelisasie in die buiteland$/i.test(heading) ? 'Buitelands' : heading}`
   )
 }
 
