@@ -29,7 +29,6 @@ import {
   addMonths,
   subMonths,
   isSameDay,
-  isSameMonth,
 } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -37,6 +36,19 @@ import { eventCategoryColor, eventCategoryTint } from '@/lib/event-colors'
 
 function isInternalHref(href: string) {
   return href.startsWith('/')
+}
+
+function churchToday() {
+  const parts = new Intl.DateTimeFormat('en-ZA', {
+    timeZone: 'Africa/Johannesburg',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).formatToParts(new Date())
+  const value = (type: 'year' | 'month' | 'day') =>
+    Number(parts.find((part) => part.type === type)?.value)
+
+  return new Date(value('year'), value('month') - 1, value('day'), 12)
 }
 
 interface Event {
@@ -190,8 +202,8 @@ interface PublicCalendarProps {
 }
 
 export function PublicCalendar({ compact = false, showUpcoming = false, limit }: PublicCalendarProps) {
-  const [currentDate, setCurrentDate] = React.useState(new Date())
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>()
+  const [currentDate, setCurrentDate] = React.useState(churchToday)
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(churchToday)
   const [events, setEvents] = React.useState<Event[]>([])
   const [loading, setLoading] = React.useState(true)
   const [selectedEvent, setSelectedEvent] = React.useState<Event | null>(null)
@@ -227,23 +239,6 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
   React.useEffect(() => {
     fetchEvents(currentDate)
   }, [currentDate, fetchEvents])
-
-  React.useEffect(() => {
-    if (loading || selectedDate || events.length === 0) return
-
-    const now = new Date()
-    const eventDatesInMonth = events
-      .map((event) => new Date(event.startDate))
-      .filter((date) => isSameMonth(date, currentDate))
-      .sort((a, b) => a.getTime() - b.getTime())
-
-    const firstUpcomingDate =
-      eventDatesInMonth.find((date) => date >= now) || eventDatesInMonth[0]
-
-    if (firstUpcomingDate) {
-      setSelectedDate(firstUpcomingDate)
-    }
-  }, [currentDate, events, loading, selectedDate])
 
   const handlePreviousMonth = () => {
     setSelectedDate(undefined)
@@ -373,8 +368,9 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                   <Button 
                     size="sm" 
                     onClick={() => {
-                      setSelectedDate(undefined)
-                      setCurrentDate(new Date())
+                      const today = churchToday()
+                      setSelectedDate(today)
+                      setCurrentDate(today)
                     }}
                   >
                     Vandag
@@ -401,6 +397,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
                 <CalendarComponent
                   mode="single"
                   locale={af}
+                  today={churchToday()}
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   month={currentDate}
