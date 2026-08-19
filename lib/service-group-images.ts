@@ -16,8 +16,8 @@ export const serviceGroupImages = {
     bannerUrl: '/images/diensgroepe/sosiale-dienste-banner-v4.webp',
   },
   'tradisionele-dienste': {
-    thumbnailUrl: '/images/diensgroepe/tradisionele-dienste-thumbnail-v4.webp',
-    bannerUrl: '/images/diensgroepe/tradisionele-dienste-banner-v4.webp',
+    thumbnailUrl: '/images/diensgroepe/tradisionele-dienste-thumbnail-v5.webp',
+    bannerUrl: '/images/diensgroepe/tradisionele-dienste-banner-v5.webp',
   },
   'versorging-en-barmhartigheid-2': {
     thumbnailUrl: '/images/diensgroepe/versorging-en-barmhartigheid-2-thumbnail-v4.webp',
