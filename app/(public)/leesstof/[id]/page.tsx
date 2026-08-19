@@ -198,7 +198,7 @@ export default async function ReadingMaterialDetailPage({ params }: ReadingMater
 
             {isPdf ? (
               <Button asChild variant="outline" className="w-full justify-between">
-                <a href={material.fileUrl || '#'} download>
+                <a href={`/api/leesstof/${material.id}/download`}>
                   Laai PDF af
                   <Download className="h-4 w-4" />
                 </a>

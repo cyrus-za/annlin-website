@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { ArrowRight, BookOpen, Newspaper } from 'lucide-react'
+import { ArrowRight, BookOpen, Download, Newspaper } from 'lucide-react'
 import { PublicationCategoryBadge } from '@/components/public/PublicationCategoryBadge'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
@@ -86,7 +86,14 @@ export default async function NewsPage() {
                         {formatDate(item.contentDate, item.category.name)}
                       </p>
                     ) : null}
-                    <Button asChild className="mt-5 w-full"><Link href={`/leesstof/${item.id}`}>Lees publikasie <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <Button asChild>
+                        <Link href={`/leesstof/${item.id}`}>Lees aanlyn <BookOpen className="ml-2 h-4 w-4" /></Link>
+                      </Button>
+                      <Button asChild variant="outline">
+                        <a href={`/api/leesstof/${item.id}/download`}>Laai PDF af <Download className="ml-2 h-4 w-4" /></a>
+                      </Button>
+                    </div>
                   </div>
                 </article>
               ))}
