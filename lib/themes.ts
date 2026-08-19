@@ -1,5 +1,5 @@
 export const THEME_STORAGE_KEY = 'annlin-theme'
-export const DEFAULT_THEME = 'heritage'
+export const DEFAULT_THEME = 'stained-glass'
 
 export const themes = [
   { id: 'heritage', name: 'Annlin Erfenis' },
