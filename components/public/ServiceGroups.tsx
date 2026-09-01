@@ -102,6 +102,10 @@ export function ServiceGroups({
   return showAll ? (
     <section className="bg-stone-50 py-12">
       <div className="mx-auto max-w-7xl space-y-14 px-4 sm:px-6 lg:px-8">
+        <ServiceGroupQuickLinks
+          diakonieGroups={diakonieGroups}
+          otherGroups={otherGroups}
+        />
         <ServiceGroupGridSection title="Diakonie" groups={diakonieGroups} />
         <ServiceGroupGridSection title="Ander diensgroepe" groups={otherGroups} />
       </div>
@@ -156,6 +160,56 @@ export function ServiceGroups({
   )
 }
 
+function ServiceGroupQuickLinks({
+  diakonieGroups,
+  otherGroups,
+}: {
+  diakonieGroups: PublicServiceGroup[]
+  otherGroups: PublicServiceGroup[]
+}) {
+  const categories = [
+    { id: 'diakonie', title: 'Diakonie', groups: diakonieGroups },
+    { id: 'ander-diensgroepe', title: 'Ander diensgroepe', groups: otherGroups },
+  ].filter(({ groups }) => groups.length > 0)
+
+  return (
+    <nav
+      aria-labelledby="diensgroep-snelskakels"
+      className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8"
+    >
+      <div className="max-w-3xl">
+        <h2 id="diensgroep-snelskakels" className="text-2xl font-semibold text-foreground">
+          Spring na ’n diensgroep
+        </h2>
+        <p className="mt-2 text-muted-foreground">
+          Kies ’n naam om direk na die groep se inligting op hierdie blad te gaan.
+        </p>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {categories.map(({ id, title, groups }) => (
+          <section key={id} aria-labelledby={`snelskakels-${id}`}>
+            <h3 id={`snelskakels-${id}`} className="font-semibold text-foreground">
+              {title}
+            </h3>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {groups.map((group) => (
+                <a
+                  key={group.id}
+                  href={`#groep-${group.slug}`}
+                  className="inline-flex min-h-11 items-center rounded-full border border-stone-300 bg-stone-50 px-4 py-2 font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  {group.name}
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
 function ServiceGroupGridSection({
   title,
   groups,
@@ -178,6 +232,8 @@ function ServiceGroupGridSection({
         {groups.map((group) => (
           <div
             key={group.id}
+            id={`groep-${group.slug}`}
+            className="scroll-mt-24"
           >
             <Card className="h-full overflow-hidden border-stone-200 bg-white shadow-sm">
               <Link
