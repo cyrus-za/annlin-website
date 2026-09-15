@@ -5,6 +5,8 @@ import { AdminSidebar, MobileAdminSidebar } from './AdminSidebar'
 import { AdminHeader } from './AdminHeader'
 import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth-client'
+import { FeatureRequestWidget } from '@/components/feature-requests/FeatureRequestWidget'
+import { FEATURE_REQUEST_DRAFT_STORAGE_PREFIX } from '@/lib/feature-requests'
 
 interface AdminLayoutClientProps {
   children: React.ReactNode
@@ -23,6 +25,10 @@ export function AdminLayoutClient({ children, user, notificationCount }: AdminLa
 
   const handleLogout = async () => {
     try {
+      for (let index = sessionStorage.length - 1; index >= 0; index--) {
+        const key = sessionStorage.key(index)
+        if (key?.startsWith(FEATURE_REQUEST_DRAFT_STORAGE_PREFIX)) sessionStorage.removeItem(key)
+      }
       const result = await signOut()
 
       if (!result.error) {
@@ -101,6 +107,7 @@ export function AdminLayoutClient({ children, user, notificationCount }: AdminLa
           </main>
         </div>
       </div>
+      <FeatureRequestWidget />
     </div>
   )
 }

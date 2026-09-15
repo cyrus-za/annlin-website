@@ -14,6 +14,7 @@ import {
   BookOpen,
   Inbox,
   FileText,
+  MessageSquarePlus,
   Menu,
   X
 } from 'lucide-react'
@@ -56,6 +57,12 @@ const navigationItems: NavigationItem[] = [
     name: 'Leesstof & Publikasies',
     href: '/admin/leesstof',
     icon: BookOpen,
+  },
+  {
+    name: 'Voorstelle',
+    href: '/admin/voorstelle',
+    icon: MessageSquarePlus,
+    adminOnly: true,
   },
   {
     name: 'Navraag',
