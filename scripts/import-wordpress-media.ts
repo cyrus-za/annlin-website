@@ -413,12 +413,26 @@ function runWranglerUpload(
     )
     let stderr = ''
     let uploadedBytes = 0
+    const source = Readable.fromWeb(body as unknown as NodeReadableStream<Uint8Array>)
+    let settled = false
+
+    const fail = (error: Error) => {
+      if (settled) return
+      settled = true
+      source.destroy()
+      reject(error)
+    }
 
     child.stderr.on('data', (chunk) => {
       stderr += String(chunk)
     })
-    child.on('error', reject)
+    child.on('error', fail)
+    child.stdin.on('error', (error) => {
+      fail(new Error(`Wrangler upload stream failed: ${error.message}`))
+    })
     child.on('close', (code) => {
+      if (settled) return
+      settled = true
       if (code === 0 && uploadedBytes > 0) {
         resolve(uploadedBytes)
       } else if (code === 0) {
@@ -428,11 +442,11 @@ function runWranglerUpload(
       }
     })
 
-    Readable.fromWeb(body as unknown as NodeReadableStream<Uint8Array>)
+    source
       .on('data', (chunk: Buffer) => {
         uploadedBytes += chunk.length
       })
-      .on('error', reject)
+      .on('error', fail)
       .pipe(child.stdin)
   })
 }
