@@ -1,0 +1,44 @@
+import { prisma } from '../lib/db'
+
+async function main() {
+  const [totals] = await prisma.$queryRaw<Array<{
+    requests: bigint
+    activities: bigint
+    receipts: bigint
+    sequence_errors: bigint
+    receipt_errors: bigint
+  }>>`
+    SELECT
+      (SELECT COUNT(*) FROM "feature_requests") AS requests,
+      (SELECT COUNT(*) FROM "feature_request_activities") AS activities,
+      (SELECT COUNT(*) FROM "feature_request_read_receipts") AS receipts,
+      (
+        SELECT COUNT(*) FROM "feature_requests" r
+        WHERE r."activitySeq" <> (
+          SELECT COALESCE(MAX(a.seq), 0) FROM "feature_request_activities" a WHERE a."requestId" = r.id
+        )
+      ) AS sequence_errors,
+      (
+        SELECT COUNT(*) FROM "feature_request_read_receipts" rr
+        JOIN "feature_requests" r ON r.id = rr."requestId"
+        WHERE rr."lastReadSeq" > r."activitySeq"
+      ) AS receipt_errors
+  `
+
+  if (!totals) throw new Error('Feature request audit returned no result')
+  const summary = Object.fromEntries(Object.entries(totals).map(([key, value]) => [key, Number(value)]))
+  console.log(JSON.stringify(summary, null, 2))
+
+  if (summary.sequence_errors !== 0 || summary.receipt_errors !== 0) {
+    process.exitCode = 1
+  }
+}
+
+main()
+  .catch((error) => {
+    console.error(error instanceof Error ? error.message : 'Feature request audit failed')
+    process.exitCode = 1
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
