@@ -235,12 +235,13 @@ Latest source-connected verification on `2026-09-15`:
     R2 URL returned `200` with the same byte count, and the smoke-test object was then removed.
   - The production signing route rejects unauthenticated requests with `401`, and the Worker
     rejects an unsupported `GET` with `405`.
+  - An authenticated production admin session uploaded a `64,424`-byte PDF through the
+    browser form. The resulting draft `ReadingMaterial`, `UploadedAsset` inventory row and
+    public R2 response all reported the same byte count, with the public object returning
+    `200`. The temporary record, revision, audit row, inventory row and R2 object were then
+    removed and their absence was independently verified.
   - The Worker configuration allows the temporary hostname plus both final `annlin.co.za`
     hostname variants, so the approved DNS cutover will not require a CORS code change.
-- Remaining operational verification:
-  - Complete one upload from an authenticated admin form to prove the browser session, Next.js
-    signing route, Worker CORS handling and R2 response together. The infrastructure and direct
-    signed upload are proven, but this final authenticated browser path has not yet been exercised.
 - Current external state on `2026-09-15`:
   - WordPress and its REST API are reachable again at `annlin.co.za`.
   - `annlin.venter.pro` remains the verified working production site.
@@ -252,27 +253,25 @@ Latest source-connected verification on `2026-09-15`:
 - The migrated public site is independent of WordPress for its current content and media, and
   the final source-connected audits found no recoverable content or asset that exists only on
   WordPress.
-- Do not approve the permanent shutdown/domain cutover as operationally complete until the
-  direct admin R2 upload path is working and an authenticated upload has been verified end to end.
+- The direct admin R2 upload path is working and has been verified end to end. The remaining
+  domain-cutover work requires explicit approval and DNS, environment and post-cutover checks.
 - Pieter and the communication commission retain the final WordPress shutdown and DNS decision;
   Codex must not make that change autonomously.
 
 ## Approved domain cutover checklist
 
-1. Complete an authenticated admin upload to R2. The Worker deployment, Vercel configuration
-   and direct signed upload verification are already complete.
-2. Obtain Pieter and the communication commission's explicit approval for the production
+1. Obtain Pieter and the communication commission's explicit approval for the production
    domain change.
-3. Add `annlin.co.za` and `www.annlin.co.za` to the existing Vercel project and use Vercel's
+2. Add `annlin.co.za` and `www.annlin.co.za` to the existing Vercel project and use Vercel's
    current project-specific DNS instructions. Prefer `https://annlin.co.za` as the canonical
    public hostname and redirect `www` to it.
-4. Change only the apex/`www` web records. Preserve the current MX record, the `mail` host and
+3. Change only the apex/`www` web records. Preserve the current MX record, the `mail` host and
    all SPF, DKIM and DMARC records so church email is not interrupted.
-5. Set Vercel Production `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to the approved canonical
+4. Set Vercel Production `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` to the approved canonical
    final origin, then trigger and verify a fresh production deployment. Auth already trusts the
    temporary hostname and both final hostname variants during the transition.
-6. Verify HTTPS, apex/`www` redirects, admin sign-in, password reset, invitation links, contact
+5. Verify HTTPS, apex/`www` redirects, admin sign-in, password reset, invitation links, contact
    notifications, R2 upload, `robots.txt`, `sitemap.xml`, PDFs/audio/images and the complete
    public crawl on the final hostname.
-7. Monitor Vercel, Neon, Resend and R2 errors after cutover. Retain rollback access to the old
+6. Monitor Vercel, Neon, Resend and R2 errors after cutover. Retain rollback access to the old
    DNS values until the agreed monitoring period has passed.
