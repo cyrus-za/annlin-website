@@ -226,16 +226,21 @@ Latest source-connected verification on `2026-09-15`:
   - The publication semantic audit reports `invalidRecords: 0` and `migrationContextRecords: 0` after title and description cleanup.
   - The inline-asset audit reports `missingRequiredRenderedAssets: 0` and
     `assetsAvailableOnlyOnWordPress: 0`; there are no current Jeug gallery differences.
-- Remaining operational blocker:
-  - Direct future R2 uploads from admin require deployment of the signed upload Worker.
-  - Vercel Production has `R2_BUCKET_NAME` and `R2_PUBLIC_BASE_URL`, but does not yet have
-    `R2_UPLOAD_WORKER_URL` or `R2_UPLOAD_SECRET`.
-  - The current file-based Cloudflare API token identifies the GK Annlin account and manages R2,
-    but a Worker deployment lookup still fails with Cloudflare authentication error `10000`.
-    The separately approved Wrangler OAuth session had expired by the `2026-09-15` verification,
-    so a fresh interactive login or an updated narrowly scoped token is still required.
-  - The checked-in Worker configuration already allows the temporary hostname plus both final
-    `annlin.co.za` hostname variants, so the approved DNS cutover will not require a CORS code change.
+- Direct admin-upload infrastructure completed on `2026-09-15`:
+  - `annlin-media-upload` is deployed in the GK Annlin Cloudflare account and bound to the
+    `annlin-media` R2 bucket.
+  - Vercel Production and Preview have `R2_UPLOAD_WORKER_URL` and the matching sensitive
+    `R2_UPLOAD_SECRET`; the production redeployment containing those variables reached `READY`.
+  - The local Worker contract suite passes. A real signed PDF `PUT` returned `200`, the public
+    R2 URL returned `200` with the same byte count, and the smoke-test object was then removed.
+  - The production signing route rejects unauthenticated requests with `401`, and the Worker
+    rejects an unsupported `GET` with `405`.
+  - The Worker configuration allows the temporary hostname plus both final `annlin.co.za`
+    hostname variants, so the approved DNS cutover will not require a CORS code change.
+- Remaining operational verification:
+  - Complete one upload from an authenticated admin form to prove the browser session, Next.js
+    signing route, Worker CORS handling and R2 response together. The infrastructure and direct
+    signed upload are proven, but this final authenticated browser path has not yet been exercised.
 - Current external state on `2026-09-15`:
   - WordPress and its REST API are reachable again at `annlin.co.za`.
   - `annlin.venter.pro` remains the verified working production site.
@@ -254,9 +259,8 @@ Latest source-connected verification on `2026-09-15`:
 
 ## Approved domain cutover checklist
 
-1. Grant the scoped Cloudflare token `Workers Scripts: Edit`, deploy
-   `annlin-media-upload`, configure `R2_UPLOAD_WORKER_URL` and `R2_UPLOAD_SECRET` in Vercel,
-   and complete an authenticated admin upload to R2.
+1. Complete an authenticated admin upload to R2. The Worker deployment, Vercel configuration
+   and direct signed upload verification are already complete.
 2. Obtain Pieter and the communication commission's explicit approval for the production
    domain change.
 3. Add `annlin.co.za` and `www.annlin.co.za` to the existing Vercel project and use Vercel's
