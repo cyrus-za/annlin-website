@@ -66,7 +66,8 @@ export async function proxy(request: NextRequest) {
       const adminOnlyRoutes = [
         '/admin/users',
         '/admin/invitations',
-        '/admin/settings'
+        '/admin/settings',
+        '/admin/voorstelle'
       ]
 
       if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && !isAdmin) {
@@ -99,7 +100,8 @@ export async function proxy(request: NextRequest) {
         // Admin-only API routes
         const adminApiRoutes = [
           '/api/invitations',
-          '/api/users'
+          '/api/users',
+          '/api/feature-requests/assignees'
         ]
 
         if (adminApiRoutes.some(route => pathname.startsWith(route)) && !isAdmin) {
