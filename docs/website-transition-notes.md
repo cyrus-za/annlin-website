@@ -1,6 +1,6 @@
 # Website Transition Notes
 
-Last updated: 2026-08-11
+Last updated: 2026-09-15
 
 ## Confirmed from the live WordPress site
 
@@ -64,7 +64,7 @@ Audit run against:
 - WordPress: `https://annlin.co.za`
 - New site: `https://annlin.venter.pro`
 
-Latest source-connected results on `2026-08-11`:
+Latest source-connected results on `2026-09-15`:
 
 - WordPress pages checked: `48`
 - Active service groups migrated: `16 / 16`
@@ -73,16 +73,16 @@ Latest source-connected results on `2026-08-11`:
   - Five annual containers are retained internally as `ARCHIVED` and no longer appear as public articles.
   - Historical stories extracted from those containers are retained in the public library; the
     WordPress-derived source article records are archived and do not compete with current News.
-- Events retained in the new database: `79`
-  - The current WordPress events API returned `50`; all `50` are present. The other `29` are retained historical events.
-- WordPress media items independently archived to Cloudflare R2: `606 / 606`
-  - The live WordPress library grew from the original `587` count to `597`, then to `606` by
-    `2026-08-11`.
-  - `UploadedAsset` inventory rows: `606`
-  - Total archived bytes copied or confirmed in R2: `1,062,578,856`
-  - WordPress media entries with known source sizes account for `958,309,016` bytes.
+- Events retained in the new database: `80`
+  - The current WordPress events API returned `36`; all `36` are present. The other `44` are retained historical events.
+- WordPress media items independently archived to Cloudflare R2: `629 / 629`
+  - The live WordPress library grew from the original `587` count to `597`, `606`, and then
+    `629` by `2026-09-15`.
+  - `UploadedAsset` inventory rows: `629`
+  - Total archived bytes copied or confirmed in R2: `1,206,328,682`
+  - WordPress media entries with known source metadata account for `1,102,058,842` bytes.
   - WordPress media entries without source size metadata: `219`
-- Public routes crawled on the deployed site: `329`
+- Public routes crawled on the deployed site: `331`
   - The final `2026-08-06` crawl seeds from the generated sitemap as well as navigable links,
     so paginated publication detail pages are covered even when their cards are not on the
     currently visible library page.
@@ -96,7 +96,11 @@ Latest source-connected results on `2026-08-11`:
   cover images, the Weekblad for 9 August 2026 and the Liturgie for 9 August 2026.
 - Independent HTTP verification returned `200` for all nine new R2 objects and matched every
   response `Content-Length` to its `UploadedAsset.size`.
-- Independent archive accounting: `606 / 606` WordPress media items have matching `UploadedAsset` rows and R2 object keys.
+- The `2026-09-15` refresh discovered and archived another `23` objects, including the August
+  and September Maandblaaie, five Weekblaaie, five Liturgie documents and three new Oordenkings.
+  The resumable run copied the remaining `22` after a one-item smoke test, skipped `607`
+  already-complete objects and finished with `failed: 0`.
+- Independent archive accounting: `629 / 629` WordPress media items have matching `UploadedAsset` rows and R2 object keys.
 - The expanded route/media audit reports `wordpressOfflineReady: true` after also checking
   retired Reading indexes, independent publication records, annual News redirects and source
   documents. One linked historical pre-summary PDF was already `404` at its WordPress source
@@ -104,26 +108,26 @@ Latest source-connected results on `2026-08-11`:
 
 ## Publication-library migration
 
-The WordPress media library now contains `251` document or audio objects in addition to images. Archiving the objects to R2 did not by itself make those publications discoverable on the new site.
+The WordPress media library now contains `270` document or audio objects in addition to images. Archiving the objects to R2 did not by itself make those publications discoverable on the new site.
 
-Semantic import result on `2026-08-11`:
+Semantic import result on `2026-09-15`:
 
-- Source document/audio objects: `251`
-- Canonical public or historical records: `241`
-- Duplicate Maandblad variants omitted from the public catalogue: `10`
+- Source document/audio objects: `270`
+- Canonical public or historical records: `258`
+- Duplicate Maandblad variants omitted from the public catalogue: `12`
   - Each duplicated issue keeps one public record, preferring its web-optimized PDF.
   - The alternate binary remains safely retained in the independent R2 inventory.
-- Die Fontein Weekblaaie: `88`
-- Die Fontein Maandblaaie: `21` canonical issues
-- Liturgie: `32`
+- Die Fontein Weekblaaie: `93`
+- Die Fontein Maandblaaie: `23` canonical issues
+- Liturgie: `37`
 - Preeksamevattings: `11`
 - Kinderwerk: `33`
-- Oordenkingsklank: `5`
+- Oordenkingsklank: `8`
 - Jaarprogramdokumente: `12`
 - Uitreikmateriaal: `15`
-- Algemene dokumente: `24`
-- Publication records with valid metadata: `241 / 241`
-- Publication records with successful, size-consistent R2 responses: `241 / 241`
+- Algemene dokumente: `26`
+- Publication records with valid metadata: `258 / 258`
+- Publication records with successful, size-consistent R2 responses: `258 / 258`
 - Missing publication records: `0`
 - Invalid publication records: `0`
 - Publication/article records containing temporary migration-context wording: `0`
@@ -165,10 +169,10 @@ Source fix added on `2026-07-06`:
 - The inline-asset audit now detects Divi image shortcodes and scans `public/migrated`
   dynamically.
 
-Latest source-connected verification on `2026-08-11`:
+Latest source-connected verification on `2026-09-15`:
 
 - WordPress pages with inline images or linked files: `32`
-- Raw rendered-reference differences: `39`
+- Raw rendered-reference differences: `40`
   - These include custom singleton redesigns, retired WordPress index pages and files already
     unavailable at their WordPress source; the raw count is retained for diagnostic context.
 - Required rendered assets missing from the new site: `0`
@@ -177,6 +181,8 @@ Latest source-connected verification on `2026-08-11`:
 - Redesigned singleton pages with expected source differences: `2`
   - These are intentionally custom implementations rather than copied WordPress bodies.
 - Raw page-level asset references not matched to the independent archive: `25`
+- The targeted Fontein Redaksie refresh added the new August and September cover images and
+  rewrote both references to R2; neither remains a required rendered-asset difference.
 - The updated `Jeug` WordPress page contained `24` images referenced only through Divi gallery media IDs. The importer now resolves those IDs through the WordPress media API and preserves the gallery as markdown images.
   - The targeted Jeug sync and resumable R2 rewrite finished with `597 / 597` inventoried, `597` existing objects skipped, `failed: 0`, and one record rewritten.
   - Production renders all `24` gallery images from R2 with successful responses and no console errors.
@@ -198,21 +204,25 @@ Latest source-connected verification on `2026-08-11`:
 
 - The WordPress binary-media archive blocker is cleared.
 - The first-class content and publication discovery blocker is cleared.
-- Technical evidence through `2026-08-11`:
+- Technical evidence through `2026-09-15`:
   - `scripts/import-wordpress-media.ts` completed with `failed: 0`
   - The previous complete resumable run ended with `failed: 0`; the subsequent incremental
     refresh independently verified every new object and inventory row.
-  - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 606`, `missingMedia: 0`, and `oldDomainRows: 0`
+  - `scripts/audit-wordpress-migration.ts` reports `migratedMediaAssets: 629`, `missingMedia: 0`, and `oldDomainRows: 0`
   - The expanded route/media audit against production reports `missingContent: 0`,
     `missingRetiredReadingIndexes: 0`, `missingEvents: 0`, `badRoutes: 0`,
     `badRedirects: 0`, and `wordpressOfflineReady: true`.
   - The deployed public crawl reports `brokenPages: 0`, `requestFailures: 0`, `seedFailures: 0`, `legacyPageLinks: 0`, and `legacyMediaLinks: 0`
-  - The deployed sitemap-driven crawl visited `329` routes without hitting its `500`-route limit
-  - All `606` current WordPress media items are independently inventoried in R2
+  - The deployed sitemap-driven crawl visited `331` routes without hitting its `500`-route limit
+  - All `629` current WordPress media items are independently inventoried in R2
   - gstack browser QA confirmed the deployed `Leesstof en publikasies` library and active Google Play and Apple App Store links. A mobile publication-card overflow found during QA was fixed; the final `375px` viewport measures `375px` document width with no console errors.
+  - The `2026-09-15` production QA confirmed that Nuus displays the September Maandblad and
+    13 September Weekblad, the library lists all nine 2026 Maandblaaie in date order, and the
+    September detail page exposes a working embedded R2 reader plus open/download actions.
+    The checked `390px` viewport had no horizontal overflow, broken images or console errors.
 - Caveat:
   - The text comparison reports `11` low-similarity warnings caused by intentional editorial, normalization, and redesign differences. All corresponding records are present, so these are not WordPress runtime dependencies.
-  - The first-class publication library contains `241 / 241` canonical records with successful R2 responses.
+  - The first-class publication library contains `258 / 258` canonical records with successful R2 responses.
   - The publication semantic audit reports `invalidRecords: 0` and `migrationContextRecords: 0` after title and description cleanup.
   - The inline-asset audit reports `missingRequiredRenderedAssets: 0` and
     `assetsAvailableOnlyOnWordPress: 0`; there are no current Jeug gallery differences.
@@ -220,12 +230,13 @@ Latest source-connected verification on `2026-08-11`:
   - Direct future R2 uploads from admin require deployment of the signed upload Worker.
   - Vercel Production has `R2_BUCKET_NAME` and `R2_PUBLIC_BASE_URL`, but does not yet have
     `R2_UPLOAD_WORKER_URL` or `R2_UPLOAD_SECRET`.
-  - The current scoped Cloudflare API token identifies the GK Annlin account and manages R2,
-    but a Worker deployment lookup fails with Cloudflare authentication error `10000`; it needs
-    the narrowly scoped Workers permission before the Worker can be deployed.
+  - The current file-based Cloudflare API token identifies the GK Annlin account and manages R2,
+    but a Worker deployment lookup still fails with Cloudflare authentication error `10000`.
+    The separately approved Wrangler OAuth session had expired by the `2026-09-15` verification,
+    so a fresh interactive login or an updated narrowly scoped token is still required.
   - The checked-in Worker configuration already allows the temporary hostname plus both final
     `annlin.co.za` hostname variants, so the approved DNS cutover will not require a CORS code change.
-- Current external state on `2026-08-11`:
+- Current external state on `2026-09-15`:
   - WordPress and its REST API are reachable again at `annlin.co.za`.
   - `annlin.venter.pro` remains the verified working production site.
   - No DNS/domain switch was performed by this migration process.
