@@ -20,7 +20,8 @@
     "editor:test": "tsx scripts/test-tiptap-markdown.ts",
     "r2-upload:test": "tsx scripts/test-r2-upload-worker.ts",
     "invitations:test": "tsx scripts/test-invitation-system.ts",
-    "feature-requests:audit": "tsx scripts/audit-feature-request-system.ts"
+    "feature-requests:audit": "tsx scripts/audit-feature-request-system.ts",
+    "feature-requests:test": "tsx scripts/test-feature-request-system.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -18,15 +18,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { featureRequestJson as requestJson, loadCompleteFeatureRequest } from '@/lib/feature-request-client'
 
 type Assignee = { id: string; name: string }
-
-async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, { ...init, cache: 'no-store' })
-  const body = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(body.error || 'Die versoek kon nie voltooi word nie')
-  return body as T
-}
 
 function shortDate(value: string) {
   return new Intl.DateTimeFormat('af-ZA', { day: 'numeric', month: 'short' }).format(new Date(value))
@@ -102,7 +96,7 @@ export function FeatureRequestBoard() {
   async function openRequest(id: string) {
     setLoading(true)
     try {
-      const value = await requestJson<FeatureRequestDetail>(`/api/feature-requests/${id}`)
+      const value = await loadCompleteFeatureRequest(id)
       setDetail(value)
       setStatus(value.status)
       setPriority(value.priority)
@@ -127,13 +121,13 @@ export function FeatureRequestBoard() {
     setSaving(true)
     try {
       if (!workflowOperationKey.current) workflowOperationKey.current = crypto.randomUUID()
-      const updated = await requestJson<FeatureRequestDetail>(`/api/feature-requests/${detail.id}`, {
+      await requestJson<FeatureRequestDetail>(`/api/feature-requests/${detail.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, priority, assigneeId: assigneeId || null, nextAction: nextAction.trim() || null, note: note.trim(), workflowVersion: detail.workflowVersion, operationKey: workflowOperationKey.current }),
       })
       workflowOperationKey.current = ''
-      setDetail(updated)
+      setDetail(await loadCompleteFeatureRequest(detail.id))
       setNote('')
       setConfirmWip(false)
       await loadBoard(true)
@@ -150,11 +144,11 @@ export function FeatureRequestBoard() {
     setSaving(true)
     try {
       if (!replyOperationKey.current) replyOperationKey.current = crypto.randomUUID()
-      const updated = await requestJson<FeatureRequestDetail>(`/api/feature-requests/${detail.id}/messages`, {
+      await requestJson<FeatureRequestDetail>(`/api/feature-requests/${detail.id}/messages`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: reply.trim(), operationKey: replyOperationKey.current }),
       })
       replyOperationKey.current = ''
-      setDetail(updated)
+      setDetail(await loadCompleteFeatureRequest(detail.id))
       setReply('')
       await loadBoard(true)
     } catch (cause) {

@@ -15,16 +15,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { featureRequestJson as requestJson, loadCompleteFeatureRequest } from '@/lib/feature-request-client'
 
 type Screen = { name: 'list' | 'new' } | { name: 'thread'; id: string }
 type Scope = 'mine' | 'all' | 'unread'
-
-async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(url, { ...init, cache: 'no-store' })
-  const body = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(body.error || 'Die versoek kon nie voltooi word nie')
-  return body as T
-}
 
 function relativeDate(value: string) {
   return new Intl.DateTimeFormat('af-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(value))
@@ -121,7 +115,7 @@ export function FeatureRequestWidget() {
     if (!user) return
     if (!quiet) setLoading(true)
     try {
-      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number }>(`/api/feature-requests?scope=${scope}&limit=50`)
+      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number }>(`/api/feature-requests?scope=${scope}&limit=20`)
       setRequests(data.requests)
       setUnreadCount(data.unreadCount)
       setError('')
@@ -135,7 +129,7 @@ export function FeatureRequestWidget() {
   const loadDetail = React.useCallback(async (id: string, quiet = false) => {
     if (!quiet) setLoading(true)
     try {
-      const data = await requestJson<FeatureRequestDetail>(`/api/feature-requests/${id}`)
+      const data = await loadCompleteFeatureRequest(id)
       setDetail(data)
       setError('')
       await requestJson(`/api/feature-requests/${id}/read`, {
@@ -226,11 +220,11 @@ export function FeatureRequestWidget() {
     setBusy(true)
     try {
       if (!replyOperationKey.current) replyOperationKey.current = crypto.randomUUID()
-      const updated = await requestJson<FeatureRequestDetail>(`/api/feature-requests/${screen.id}/messages`, {
+      await requestJson<FeatureRequestDetail>(`/api/feature-requests/${screen.id}/messages`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body, operationKey: replyOperationKey.current }),
       })
       replyOperationKey.current = ''
-      setDetail(updated)
+      setDetail(await loadCompleteFeatureRequest(screen.id))
       await loadList(true)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Antwoord kon nie gestuur word nie')
@@ -239,7 +233,7 @@ export function FeatureRequestWidget() {
     }
   }
 
-  if (isPending || !user || pathname.startsWith('/auth/')) return null
+  if (isPending || !user || pathname.startsWith('/auth/') || pathname === '/admin/voorstelle') return null
 
   return (
     <>

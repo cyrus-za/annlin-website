@@ -300,9 +300,13 @@ export async function updateFeatureRequestWorkflow(
       })
       if (changed.count !== 1) throw new FeatureRequestError('CONFLICT', 'Hierdie voorstel is intussen verander')
       const updated = await tx.featureRequest.findUniqueOrThrow({ where: { id } })
+      const activeWorkCount = status === 'IN_PROGRESS'
+        ? await tx.featureRequest.count({ where: { status: 'IN_PROGRESS', id: { not: id } } })
+        : 0
       const changes = {
         before: { status: current.status, priority: current.priority, assigneeId: current.assigneeId, nextAction: current.nextAction },
         after: { status: updated.status, priority: updated.priority, assigneeId: updated.assigneeId, nextAction: updated.nextAction },
+        wipLimitOverridden: status === 'IN_PROGRESS' && activeWorkCount >= 3,
       }
       await tx.featureRequestActivity.create({
         data: { ...unique, seq: updated.activitySeq, body: input.note, changes, payloadHash: hash },
