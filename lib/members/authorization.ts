@@ -1,4 +1,4 @@
-import type { MemberCapability } from '@prisma/client'
+import type { MemberCapability, Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db'
 
 export class MemberAuthorizationError extends Error {
@@ -12,11 +12,17 @@ export function isMemberPilotEnabled() {
   return process.env['MEMBER_PILOT_ENABLED'] === 'true'
 }
 
-export async function requireMemberCapability(userId: string, capability: MemberCapability) {
+type MemberAuthorizationDb = Pick<Prisma.TransactionClient, 'user'>
+
+export async function requireMemberCapability(
+  userId: string,
+  capability: MemberCapability,
+  db: MemberAuthorizationDb = prisma,
+) {
   if (!isMemberPilotEnabled()) throw new MemberAuthorizationError()
 
   const now = new Date()
-  const user = await prisma.user.findFirst({
+  const user = await db.user.findFirst({
     where: {
       id: userId,
       disabledAt: null,
