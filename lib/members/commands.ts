@@ -26,7 +26,7 @@ export interface CreateMemberInput {
   preferredName?: string | null
   lastName: string
   birthDate: Date | null
-  status: Exclude<MemberStatus, 'ARCHIVED'>
+  status: MemberStatus
   wardId: string | null
 }
 
