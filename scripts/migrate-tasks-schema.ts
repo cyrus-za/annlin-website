@@ -63,7 +63,7 @@ async function finalize() {
     `DROP VIEW IF EXISTS "feature_request_activities"`,
     `DROP VIEW IF EXISTS "feature_requests"`,
     `ALTER TABLE "tasks" DROP COLUMN IF EXISTS "nextAction"`,
-    `UPDATE "task_activities" SET body = 'Taakbeplanning is opgedateer.' WHERE kind::text = 'WORKFLOW' AND btrim(COALESCE(body, '')) = '.'`,
+    `UPDATE "task_activities" SET body = NULL WHERE kind::text = 'WORKFLOW' AND btrim(COALESCE(body, '')) IN ('.', 'Taakbeplanning is opgedateer.')`,
   ]
   await prisma.$transaction(statements.map((statement) => prisma.$executeRawUnsafe(statement)))
 }

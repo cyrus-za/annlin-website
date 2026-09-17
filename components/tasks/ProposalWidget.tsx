@@ -59,7 +59,7 @@ function Thread({ detail, currentUserId, busy, onReply }: {
           <p className="whitespace-pre-wrap">{detail.description}</p>
           <div className="mt-3"><TaskAttachmentGallery attachments={detail.attachments} /></div>
         </div>
-        {detail.activities.filter((activity) => activity.kind !== 'CREATED').map((activity) => {
+        {detail.activities.filter((activity) => activity.kind !== 'CREATED' && activity.body?.trim()).map((activity) => {
           const mine = activity.actor.id === currentUserId
           return (
             <div key={activity.id} className={cn('flex', mine ? 'justify-end' : 'justify-start')}>
