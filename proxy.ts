@@ -4,6 +4,13 @@ import { auth } from './lib/auth'
 // Define route patterns
 const authRoutes = ['/auth/sign-in', '/auth/sign-up', '/auth/accept-invitation']
 
+function privateApiError(error: string, status: number) {
+  const response = NextResponse.json({ error }, { status })
+  response.headers.set('Cache-Control', 'private, no-store, max-age=0')
+  response.headers.set('Pragma', 'no-cache')
+  return response
+}
+
 /**
  * Proxy to handle authentication and route protection.
  */
@@ -91,10 +98,7 @@ export async function proxy(request: NextRequest) {
     if (isApiRoute) {
       if (!isPublicApiRoute) {
         if (!isAuthenticated) {
-          return NextResponse.json(
-            { error: 'Authentication required' },
-            { status: 401 }
-          )
+          return privateApiError('Authentication required', 401)
         }
 
         // Admin-only API routes
@@ -105,10 +109,7 @@ export async function proxy(request: NextRequest) {
         ]
 
         if (adminApiRoutes.some(route => pathname.startsWith(route)) && !isAdmin) {
-          return NextResponse.json(
-            { error: 'Insufficient permissions' },
-            { status: 403 }
-          )
+          return privateApiError('Insufficient permissions', 403)
         }
       }
     }
@@ -122,10 +123,7 @@ export async function proxy(request: NextRequest) {
     // On error, allow public routes but block protected routes
     if (pathname.startsWith('/admin') || pathname.startsWith('/api/')) {
       if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Authentication service unavailable' },
-          { status: 503 }
-        )
+        return privateApiError('Authentication service unavailable', 503)
       }
       return NextResponse.redirect(new URL('/auth/sign-in', request.url))
     }
