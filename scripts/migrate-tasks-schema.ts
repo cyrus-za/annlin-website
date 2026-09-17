@@ -2,8 +2,8 @@ import { prisma } from '../lib/db'
 
 const phase = process.argv.find((argument) => argument.startsWith('--phase='))?.split('=')[1]
 
-if (phase !== 'prepare' && phase !== 'finalize') {
-  throw new Error('Use --phase=prepare or --phase=finalize')
+if (!['prepare', 'finalize', 'enum-prepare', 'enum-finalize'].includes(phase ?? '')) {
+  throw new Error('Use --phase=prepare, --phase=finalize, --phase=enum-prepare or --phase=enum-finalize')
 }
 
 async function prepare() {
@@ -68,6 +68,47 @@ async function finalize() {
   await prisma.$transaction(statements.map((statement) => prisma.$executeRawUnsafe(statement)))
 }
 
+async function prepareEnums() {
+  // PostgreSQL requires a newly added enum value to be committed before it is used.
+  await prisma.$executeRawUnsafe(`DO $$
+  BEGIN
+    IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FeatureRequestStatus') THEN
+      ALTER TYPE "FeatureRequestStatus" ADD VALUE IF NOT EXISTS 'CANCELLED';
+    ELSIF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TaskStatus') THEN
+      RAISE EXCEPTION 'Neither the legacy nor current task status enum exists';
+    END IF;
+  END $$`)
+}
+
+async function finalizeEnums() {
+  const statements = [
+    `SELECT pg_advisory_xact_lock(1820917)`,
+    `DO $$
+    BEGIN
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FeatureRequestStatus')
+        AND NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TaskStatus') THEN
+        ALTER TABLE "tasks" ALTER COLUMN "status" DROP DEFAULT;
+        CREATE TYPE "TaskStatus" AS ENUM ('NEW', 'PLANNED', 'IN_PROGRESS', 'WAITING_FOR_FEEDBACK', 'DONE', 'CANCELLED');
+        ALTER TABLE "tasks" ALTER COLUMN "status" TYPE "TaskStatus"
+          USING (CASE WHEN "status"::text = 'NOT_PLANNED' THEN 'CANCELLED' ELSE "status"::text END)::"TaskStatus";
+        ALTER TABLE "tasks" ALTER COLUMN "status" SET DEFAULT 'NEW'::"TaskStatus";
+        DROP TYPE "FeatureRequestStatus";
+      END IF;
+
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FeatureRequestPriority')
+        AND NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TaskPriority') THEN
+        ALTER TYPE "FeatureRequestPriority" RENAME TO "TaskPriority";
+      END IF;
+
+      IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FeatureRequestActivityKind')
+        AND NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'TaskActivityKind') THEN
+        ALTER TYPE "FeatureRequestActivityKind" RENAME TO "TaskActivityKind";
+      END IF;
+    END $$`,
+  ]
+  await prisma.$transaction(statements.map((statement) => prisma.$executeRawUnsafe(statement)))
+}
+
 async function verify() {
   const [summary] = await prisma.$queryRawUnsafe<Array<{
     tasks: bigint
@@ -96,7 +137,9 @@ async function verify() {
 
 async function main() {
   if (phase === 'prepare') await prepare()
-  else await finalize()
+  else if (phase === 'finalize') await finalize()
+  else if (phase === 'enum-prepare') await prepareEnums()
+  else await finalizeEnums()
   await verify()
 }
 

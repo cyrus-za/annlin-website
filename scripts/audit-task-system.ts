@@ -10,6 +10,9 @@ async function main() {
     receipt_errors: bigint
     attachment_errors: bigint
     source_errors: bigint
+    legacy_statuses: bigint
+    legacy_types: bigint
+    legacy_relations: bigint
   }>>`
     SELECT
       (SELECT COUNT(*) FROM "tasks") AS requests,
@@ -36,7 +39,16 @@ async function main() {
       (
         SELECT COUNT(*) FROM "tasks" r
         WHERE r.source NOT IN ('PROPOSAL', 'MANUAL')
-      ) AS source_errors
+      ) AS source_errors,
+      (SELECT COUNT(*) FROM "tasks" WHERE status::text = 'NOT_PLANNED') AS legacy_statuses,
+      (
+        SELECT COUNT(*) FROM pg_type
+        WHERE typname IN ('FeatureRequestStatus', 'FeatureRequestPriority', 'FeatureRequestActivityKind')
+      ) AS legacy_types,
+      (
+        SELECT COUNT(*) FROM pg_class
+        WHERE relname IN ('feature_requests', 'feature_request_activities', 'feature_request_attachments', 'feature_request_read_receipts')
+      ) AS legacy_relations
   `
 
   if (!totals) throw new Error('Task audit returned no result')
@@ -49,10 +61,16 @@ async function main() {
     receipt_errors: Number(totals.receipt_errors),
     attachment_errors: Number(totals.attachment_errors),
     source_errors: Number(totals.source_errors),
+    legacy_statuses: Number(totals.legacy_statuses),
+    legacy_types: Number(totals.legacy_types),
+    legacy_relations: Number(totals.legacy_relations),
   }
   console.log(JSON.stringify(summary, null, 2))
 
-  if (summary.sequence_errors !== 0 || summary.receipt_errors !== 0 || summary.attachment_errors !== 0 || summary.source_errors !== 0) {
+  const failures = Object.entries(summary).filter(([key, value]) => (
+    key.endsWith('_errors') || key.startsWith('legacy_')
+  ) && value !== 0)
+  if (failures.length > 0) {
     process.exitCode = 1
   }
 }

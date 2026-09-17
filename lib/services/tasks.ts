@@ -126,8 +126,7 @@ export async function listTasks(
   const cursor = decodeCursor(options.cursor)
   const allAccessible = actor.role === 'ADMIN' && options.scope !== 'mine'
   const access = allAccessible ? Prisma.sql`TRUE` : Prisma.sql`r."requesterId" = ${actor.id}`
-  const storedStatus = options.status === 'CANCELLED' ? 'NOT_PLANNED' : options.status
-  const status = storedStatus ? Prisma.sql`AND r.status::text = ${storedStatus}` : Prisma.empty
+  const status = options.status ? Prisma.sql`AND r.status::text = ${options.status}` : Prisma.empty
   const source = options.source ? Prisma.sql`AND r.source = ${options.source}` : Prisma.empty
   const unread = options.scope === 'unread'
     ? Prisma.sql`AND EXISTS (
