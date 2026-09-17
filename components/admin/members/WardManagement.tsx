@@ -43,7 +43,7 @@ function ElderOptions({ candidates, wardId }: { candidates: Candidate[]; wardId?
 function CreateWardForm({ candidates }: { candidates: Candidate[] }) {
   const [state, action, pending] = useActionState(addWard, WARD_FORM_IDLE)
   return (
-    <details className="rounded-xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm" defaultOpen={state.status === 'error'}>
+    <details className="rounded-xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm">
       <summary className="cursor-pointer text-lg font-semibold text-amber-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">Voeg ’n wyk by</summary>
       <form action={action} className="mt-5 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
