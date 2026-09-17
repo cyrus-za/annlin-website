@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/public/ThemeSwitcher'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -32,6 +33,7 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ user, onMenuToggle, onLogout, notifications }: AdminHeaderProps) {
+  const pathname = usePathname()
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false)
   const [seenIds, setSeenIds] = React.useState<Set<string>>(new Set())
   const [notificationsReady, setNotificationsReady] = React.useState(false)
@@ -48,6 +50,25 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notifications }: Adm
       setNotificationsReady(true)
     }
   }, [storageKey])
+
+  React.useEffect(() => {
+    if (!notificationsReady || !pathname.startsWith('/admin/veranderingslogboek')) return
+    const changelogIds = notifications
+      .filter((notification) => notification.kind === 'CHANGELOG')
+      .map((notification) => notification.id)
+    if (changelogIds.length === 0) return
+
+    setSeenIds((current) => {
+      const next = new Set([...current, ...changelogIds])
+      if (next.size === current.size) return current
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify([...next].slice(-500)))
+      } catch {
+        // The in-memory state remains useful when browser storage is unavailable.
+      }
+      return next
+    })
+  }, [notifications, notificationsReady, pathname, storageKey])
 
   function persistSeen(next: Set<string>) {
     setSeenIds(next)
