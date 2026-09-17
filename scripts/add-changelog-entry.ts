@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/db'
 
 function argument(name: string): string | undefined {
@@ -24,11 +25,18 @@ async function main() {
   const publishedAt = publishedAtValue ? new Date(publishedAtValue) : new Date()
   if (Number.isNaN(publishedAt.getTime())) throw new Error('Ongeldige --published-at datum')
 
-  await prisma.changelogEntry.upsert({
-    where: { commitSha },
-    create: { commitSha, title, description, category, publishedAt },
-    update: { title, description, category, publishedAt },
-  })
+  const id = `changelog-${commitSha.slice(0, 12)}`
+  await prisma.$executeRaw(Prisma.sql`
+    INSERT INTO "changelog_entries"
+      ("id", "commitSha", "title", "description", "category", "publishedAt", "createdAt")
+    VALUES
+      (${id}, ${commitSha}, ${title}, ${description}, ${category}, ${publishedAt}, CURRENT_TIMESTAMP)
+    ON CONFLICT ("commitSha") DO UPDATE SET
+      "title" = EXCLUDED."title",
+      "description" = EXCLUDED."description",
+      "category" = EXCLUDED."category",
+      "publishedAt" = EXCLUDED."publishedAt"
+  `)
 
   console.log(`Veranderingslogboek opgedateer vir ${commitSha.slice(0, 7)}.`)
 }
