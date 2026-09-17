@@ -116,7 +116,8 @@ export async function saveMemberHousehold(_previous: MemberRelatedState, data: F
 
 export async function saveMemberContactPoint(_previous: MemberRelatedState, data: FormData) {
   const parsed = parseContactForm(data)
-  return runRelated(parsed, (userId, contact) => {
+  type ContactValue = Extract<ReturnType<typeof parseContactForm>, { ok: true }>['value']
+  return runRelated<ContactValue>(parsed, (userId, contact) => {
     return contact.operation === 'end'
       ? endMemberContact(userId, { memberId: contact.memberId, version: contact.version, contactId: contact.contactId })
       : saveMemberContact(userId, contact)
