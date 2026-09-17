@@ -123,7 +123,7 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
         await prisma.user.update({
           where: { id: existingUser.id },
           data: {
-            name: 'Pieter',
+            name: 'Pieter Venter',
             role: 'ADMIN',
             emailVerified: true,
           },
@@ -138,7 +138,7 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
         const updatedUser = await prisma.user.update({
           where: { email: env.ADMIN_EMAIL },
           data: {
-            name: 'Pieter',
+            name: 'Pieter Venter',
             role: 'ADMIN',
             emailVerified: true,
           }
@@ -153,7 +153,7 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
         where: { id: legacyLocalAdmin.id },
         data: {
           email: env.ADMIN_EMAIL!,
-          name: 'Pieter',
+          name: 'Pieter Venter',
           role: 'ADMIN',
           emailVerified: true,
         },
@@ -166,7 +166,7 @@ async function seedAdminUser(skipExisting: boolean, verbose: boolean) {
     const newUser = await prisma.user.create({
       data: {
         email: env.ADMIN_EMAIL!,
-        name: 'Pieter',
+        name: 'Pieter Venter',
         role: 'ADMIN',
         emailVerified: true,
       }
