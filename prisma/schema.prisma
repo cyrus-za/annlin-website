@@ -19,6 +19,7 @@ model User {
   name          String
   image         String?
   role          UserRole @default(ADMIN)
+  disabledAt    DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -34,6 +35,10 @@ model User {
   taskActivities  TaskActivity[]
   taskReceipts    TaskReadReceipt[]
   taskAttachments TaskAttachment[]
+  memberPilotAccess         MemberPilotAccess?      @relation("MemberPilotUser")
+  memberPilotAccessGranted  MemberPilotAccess[]     @relation("MemberPilotGrantor")
+  memberCapabilityGrants    MemberCapabilityGrant[] @relation("MemberCapabilityUser")
+  memberCapabilitiesGranted MemberCapabilityGrant[] @relation("MemberCapabilityGrantor")
 
   @@map("users")
 }
@@ -41,6 +46,49 @@ model User {
 enum UserRole {
   ADMIN
   EDITOR
+}
+
+enum MemberCapability {
+  MEMBER_ACCESS_ADMIN
+  MEMBER_READ
+  MEMBER_WRITE
+  HOUSEHOLD_WRITE
+  WARD_WRITE
+  MEMBER_EXPORT
+  MEMBER_IMPORT_PREVIEW
+  MEMBER_AUDIT_READ
+}
+
+model MemberPilotAccess {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  grantedById String
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User @relation("MemberPilotUser", fields: [userId], references: [id], onDelete: Cascade)
+  grantedBy User @relation("MemberPilotGrantor", fields: [grantedById], references: [id], onDelete: Restrict)
+
+  @@index([expiresAt])
+  @@map("member_pilot_access")
+}
+
+model MemberCapabilityGrant {
+  id          String           @id @default(cuid())
+  userId      String
+  capability  MemberCapability
+  grantedById String
+  expiresAt   DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user      User @relation("MemberCapabilityUser", fields: [userId], references: [id], onDelete: Cascade)
+  grantedBy User @relation("MemberCapabilityGrantor", fields: [grantedById], references: [id], onDelete: Restrict)
+
+  @@unique([userId, capability])
+  @@index([capability, expiresAt])
+  @@map("member_capability_grants")
 }
 
 // Authentication models required by better-auth
@@ -158,7 +206,7 @@ model Event {
   isRecurring      Boolean           @default(false)
   recurringPattern RecurringPattern?
   recurrenceGroupId String?
-  sermonUrl        String?
+  sermonUrl         String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 

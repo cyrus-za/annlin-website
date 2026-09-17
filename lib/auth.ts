@@ -37,6 +37,19 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
+  databaseHooks: {
+    session: {
+      create: {
+        async before(session) {
+          const user = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: { disabledAt: true },
+          })
+          return user?.disabledAt ? false : undefined
+        },
+      },
+    },
+  },
   user: {
     additionalFields: {
       role: {
@@ -44,6 +57,11 @@ export const auth = betterAuth({
         required: true,
         defaultValue: "EDITOR",
         input: false, // Don't allow setting role through registration
+      },
+      disabledAt: {
+        type: "date",
+        required: false,
+        input: false,
       },
     },
   },

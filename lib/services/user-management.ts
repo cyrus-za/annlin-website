@@ -128,7 +128,7 @@ export async function activateUser(id: string, activatedBy: string): Promise<boo
   try {
     await prisma.user.update({
       where: { id },
-      data: { emailVerified: true }
+      data: { emailVerified: true, disabledAt: null }
     })
 
     // Log the activation
@@ -138,7 +138,8 @@ export async function activateUser(id: string, activatedBy: string): Promise<boo
       entityType: ENTITY_TYPES.USER,
       entityId: id,
       changes: {
-        emailVerified: true
+        emailVerified: true,
+        disabledAt: null
       }
     })
 
@@ -154,15 +155,15 @@ export async function activateUser(id: string, activatedBy: string): Promise<boo
  */
 export async function deactivateUser(id: string, deactivatedBy: string): Promise<boolean> {
   try {
-    await prisma.user.update({
-      where: { id },
-      data: { emailVerified: false }
-    })
-
-    // Invalidate all user sessions
-    await prisma.session.deleteMany({
-      where: { userId: id }
-    })
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id },
+        data: { emailVerified: false, disabledAt: new Date() }
+      }),
+      prisma.session.deleteMany({ where: { userId: id } }),
+      prisma.memberPilotAccess.deleteMany({ where: { userId: id } }),
+      prisma.memberCapabilityGrant.deleteMany({ where: { userId: id } }),
+    ])
 
     // Log the deactivation
     await createAuditLog({
@@ -172,6 +173,8 @@ export async function deactivateUser(id: string, deactivatedBy: string): Promise
       entityId: id,
       changes: {
         emailVerified: false,
+        disabledAt: true,
+        memberAccessRevoked: true,
         sessionsCleared: true
       }
     })
@@ -199,6 +202,7 @@ export async function deleteUser(id: string, deletedBy: string): Promise<boolean
         email: anonymizedEmail,
         name: anonymizedName,
         emailVerified: false,
+        disabledAt: new Date(),
         image: null
       }
     })

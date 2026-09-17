@@ -11,6 +11,7 @@ export async function getSession(): Promise<{ user: User; session: Session } | n
     const session = await auth.api.getSession({
       headers: await headers(),
     })
+    if (session?.user.disabledAt) return null
     return session
   } catch (error) {
     console.error("Error getting session:", error)
