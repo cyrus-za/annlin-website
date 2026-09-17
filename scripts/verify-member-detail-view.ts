@@ -4,7 +4,13 @@
  * Runs without a database, environment file or member data: it only exercises the register
  * link sanitiser and the audit/event summarisers with synthetic placeholder values.
  */
-import { summarizeMemberAuditChanges, summarizeMembershipEventDetails } from '../lib/members/detail-view'
+import {
+  MEMBER_DETAIL_VIEW_ACTION,
+  VIEW_AUDIT_ACTIONS,
+  buildMemberDetailViewAudit,
+  summarizeMemberAuditChanges,
+  summarizeMembershipEventDetails,
+} from '../lib/members/detail-view'
 import { memberDetailHref, memberRowId, registerHref, registerListQuery } from '../lib/members/register-links'
 
 const failures: string[] = []
@@ -75,6 +81,22 @@ check('non-object before/after are tolerated', summarizeMemberAuditChanges({ bef
 check('overlong values are bounded', (summarizeMemberAuditChanges({ after: { lastName: 'v'.repeat(1000) } })[0]?.after ?? '').length === 200)
 check('non-string values are not rendered', summarizeMemberAuditChanges({ after: { firstNames: { deep: true } } })[0]?.after === null)
 check('invalid status values are masked', summarizeMemberAuditChanges({ before: { status: 'ACTIVE' }, after: { status: 'BOGUS' } })[0]?.after === '—')
+
+// View audits: the payload is metadata only and view actions stay out of the change history.
+const viewWithHistory = buildMemberDetailViewAudit({ scopeKind: 'GLOBAL', historyIncluded: true })
+const viewWithoutHistory = buildMemberDetailViewAudit({ scopeKind: 'WARDS', historyIncluded: false })
+const allowedAuditKeys = ['view', 'scope', 'sections', 'historyIncluded'].sort().join(',')
+check('view audit carries only metadata keys', Object.keys(viewWithHistory).sort().join(',') === allowedAuditKeys)
+check('view audit records the scope kind', viewWithHistory.scope === 'GLOBAL' && viewWithoutHistory.scope === 'WARDS')
+check('view audit lists history only when it was served', viewWithHistory.sections.includes('history') && !viewWithoutHistory.sections.includes('history'))
+check('view audit flags history inclusion', viewWithHistory.historyIncluded === true && viewWithoutHistory.historyIncluded === false)
+check('view audit is JSON-safe and small', JSON.stringify(viewWithHistory).length < 200)
+check(
+  'view audit values are plain strings and booleans',
+  Object.values(viewWithHistory).every((value) => typeof value === 'string' || typeof value === 'boolean' || (Array.isArray(value) && value.every((item) => typeof item === 'string'))),
+)
+check('view action is excluded from user-facing history', VIEW_AUDIT_ACTIONS.includes(MEMBER_DETAIL_VIEW_ACTION))
+check('view action name is stable', MEMBER_DETAIL_VIEW_ACTION === 'VIEW_DETAIL')
 
 if (failures.length > 0) {
   console.error(`Lidmaatdetail-verifikasie het misluk (${failures.length}/${total}): ${failures.join('; ')}`)

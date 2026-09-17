@@ -64,6 +64,7 @@ export default async function MembersPage({
                       {/* The stretched link makes the whole row clickable with a single tab stop. */}
                       <Link
                         href={memberDetailHref(member.id, params)}
+                        prefetch={false}
                         className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
                       >
                         {member.preferredName || member.firstNames} {member.lastName}

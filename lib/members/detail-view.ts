@@ -29,6 +29,8 @@ export type MemberDetail = MemberDetailPerson & {
   archivedAt: Date | null
   updatedAt: Date
   scopeKind: 'GLOBAL' | 'WARDS'
+  /** False when the caller lacks MEMBER_AUDIT_READ; `history` is then empty and was never queried. */
+  historyAvailable: boolean
   household: {
     id: string
     name: string
@@ -69,6 +71,37 @@ export type MemberDetail = MemberDetailPerson & {
     createdAt: Date
     fields: MemberDetailFieldChange[]
   }>
+}
+
+/** Audit action written for every successful detail view. */
+export const MEMBER_DETAIL_VIEW_ACTION = 'VIEW_DETAIL'
+
+/** Read-only audit actions that are kept out of the user-facing record-change history. */
+export const VIEW_AUDIT_ACTIONS: readonly string[] = [MEMBER_DETAIL_VIEW_ACTION]
+
+const MEMBER_DETAIL_SECTIONS = ['core', 'household', 'ward', 'contacts', 'events'] as const
+
+export type MemberDetailViewAudit = {
+  view: 'MEMBER_DETAIL'
+  scope: 'GLOBAL' | 'WARDS'
+  sections: string[]
+  historyIncluded: boolean
+}
+
+/**
+ * Builds the `changes` payload for a VIEW_DETAIL audit event. It deliberately carries only
+ * PII-free metadata: which sections were served and whether record history was included.
+ */
+export function buildMemberDetailViewAudit(input: {
+  scopeKind: 'GLOBAL' | 'WARDS'
+  historyIncluded: boolean
+}): MemberDetailViewAudit {
+  return {
+    view: 'MEMBER_DETAIL',
+    scope: input.scopeKind,
+    sections: [...MEMBER_DETAIL_SECTIONS, ...(input.historyIncluded ? ['history'] : [])],
+    historyIncluded: input.historyIncluded,
+  }
 }
 
 const MEMBER_STATUSES: ReadonlySet<string> = new Set(Object.keys(MEMBER_STATUS_LABELS))

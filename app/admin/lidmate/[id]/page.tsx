@@ -27,6 +27,7 @@ const AUDIT_ACTION_LABELS: Record<string, string> = {
   ARCHIVE: 'Geargiveer',
   RESTORE: 'Heraktiveer',
   UNARCHIVE: 'Heraktiveer',
+  VIEW_DETAIL: 'Besigtig',
 }
 
 const dateFormatter = new Intl.DateTimeFormat('af-ZA', { dateStyle: 'long', timeZone: 'Africa/Johannesburg' })
@@ -176,6 +177,7 @@ function HouseholdSection({ member, listParams }: { member: MemberDetail; listPa
               <div className="min-w-0">
                 <Link
                   href={memberDetailHref(person.id, listParams)}
+                  prefetch={false}
                   className="break-words text-base font-semibold text-amber-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 >
                   {displayName(person)}
@@ -337,7 +339,9 @@ function formatHistoryValue(field: MemberDetailFieldChange, value: string | null
 function HistorySection({ member }: { member: MemberDetail }) {
   return (
     <Section id="geskiedenis" title="Rekordgeskiedenis" description="Wie hierdie rekord verander het en watter velde geraak is.">
-      {member.history.length === 0 ? (
+      {!member.historyAvailable ? (
+        <Notice tone="unavailable">Rekordgeskiedenis val buite jou huidige toegang en word nie hier gewys nie.</Notice>
+      ) : member.history.length === 0 ? (
         <Notice>Geen veranderinge aan hierdie rekord is nog aangeteken nie.</Notice>
       ) : (
         <LongList
