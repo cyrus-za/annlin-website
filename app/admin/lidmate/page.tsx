@@ -1,19 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import type { MemberStatus } from '@prisma/client'
 import { requireAuth } from '@/lib/auth-config'
 import { MemberAuthorizationError } from '@/lib/members/authorization'
+import { MEMBER_STATUS_LABELS } from '@/lib/members/labels'
 import { listMembers } from '@/lib/members/queries'
+import { memberDetailHref, memberRowId } from '@/lib/members/register-links'
 
 export const dynamic = 'force-dynamic'
-
-const statusLabels: Record<MemberStatus, string> = {
-  ACTIVE: 'Aktief',
-  INACTIVE: 'Onaktief',
-  DEPARTED: 'Vertrek',
-  DECEASED: 'Oorlede',
-  ARCHIVED: 'Geargiveer',
-}
 
 export default async function MembersPage({
   searchParams,
@@ -61,13 +54,25 @@ export default async function MembersPage({
               const household = member.householdHistory[0]?.household
               const ward = member.wardAssignments[0]?.ward
               return (
-                <article key={member.id} className="grid gap-2 p-4 sm:grid-cols-[minmax(0,1fr)_12rem_10rem] sm:items-center">
+                <article
+                  key={member.id}
+                  id={memberRowId(member.id)}
+                  className="relative grid scroll-mt-4 gap-2 p-4 transition-colors hover:bg-amber-50/60 focus-within:ring-2 focus-within:ring-inset focus-within:ring-amber-500 target:bg-amber-50 sm:grid-cols-[minmax(0,1fr)_12rem_10rem] sm:items-center"
+                >
                   <div className="min-w-0">
-                    <h2 className="truncate text-lg font-semibold text-gray-900">{member.preferredName || member.firstNames} {member.lastName}</h2>
+                    <h2 className="truncate text-lg font-semibold text-gray-900">
+                      {/* The stretched link makes the whole row clickable with a single tab stop. */}
+                      <Link
+                        href={memberDetailHref(member.id, params)}
+                        className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+                      >
+                        {member.preferredName || member.firstNames} {member.lastName}
+                      </Link>
+                    </h2>
                     <p className="text-sm text-gray-600">{household?.name || 'Geen huidige huishouding'}</p>
                   </div>
                   <p className="text-sm text-gray-700">{ward ? `${ward.code}: ${ward.name}` : 'Geen individuele wyk'}</p>
-                  <span className="w-fit rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">{statusLabels[member.status]}</span>
+                  <span className="w-fit rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">{MEMBER_STATUS_LABELS[member.status]}</span>
                 </article>
               )
             })}

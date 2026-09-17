@@ -27,6 +27,7 @@
     "tasks:migrate": "tsx scripts/migrate-tasks-schema.ts",
     "changelog:add": "tsx scripts/add-changelog-entry.ts",
     "changelog:migrate": "tsx scripts/migrate-changelog-entries.ts",
+    "members:detail:verify": "tsx scripts/verify-member-detail-view.ts",
     "members:schema:verify": "tsx scripts/verify-member-pilot-foundation.ts",
     "members:core:verify": "tsx scripts/verify-member-register-core.ts",
     "members:seed:synthetic": "tsx scripts/seed-synthetic-members.ts",

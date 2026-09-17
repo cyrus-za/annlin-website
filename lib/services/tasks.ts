@@ -8,6 +8,7 @@ import type {
   UpdateTaskWorkflowInput,
 } from '@/lib/validations/tasks'
 import {
+  ACTIVE_TASK_STATUSES,
   TASK_PRIORITY_LABELS,
   TASK_STATUS_LABELS,
   type TaskStatusValue,
@@ -455,4 +456,46 @@ export async function getTaskAssignees(actor: TaskActor) {
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
   })
+}
+
+const LINKED_TASK_LIMIT = 20
+
+/**
+ * Lists open tasks linked to one member for the read-only member detail view.
+ *
+ * Member-linked tasks inherit the strictest linked-record access, exactly as `requireAccessibleTask`
+ * and `taskAccessSql` enforce it: the caller needs global `MEMBER_READ`. Callers without that access
+ * get `available: false` so the UI can show an unavailable state instead of an empty list.
+ */
+export async function listOpenTasksForMember(actor: TaskActor, memberId: string) {
+  try {
+    const memberAccess = await requireMemberCapability(actor.id, 'MEMBER_READ')
+    if (memberAccess.scope.kind !== 'GLOBAL') throw new MemberAuthorizationError()
+  } catch {
+    return { available: false as const, requests: [] as TaskSummary[], hasMore: false }
+  }
+
+  const access = taskAccessSql(actor, false)
+  const candidates = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+    SELECT r.id
+    FROM "tasks" r
+    WHERE ${access}
+      AND r.status::text IN (${Prisma.join([...ACTIVE_TASK_STATUSES])})
+      AND EXISTS (
+        SELECT 1 FROM "task_subjects" ts
+        WHERE ts."taskId" = r.id AND ts."memberId" = ${memberId}
+      )
+    ORDER BY r."lastActivityAt" DESC, r.id DESC
+    LIMIT ${LINKED_TASK_LIMIT + 1}
+  `)
+  const pageIds = candidates.slice(0, LINKED_TASK_LIMIT).map(({ id }) => id)
+  const rows = await getTaskRows(pageIds, actor.id)
+  const byId = new Map(rows.map((row) => [row.id, row]))
+  const ordered = pageIds.flatMap((id) => byId.get(id) ? [byId.get(id)!] : [])
+
+  return {
+    available: true as const,
+    requests: ordered.map(toSummary),
+    hasMore: candidates.length > LINKED_TASK_LIMIT,
+  }
 }
