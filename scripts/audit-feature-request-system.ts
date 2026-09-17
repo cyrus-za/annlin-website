@@ -9,6 +9,7 @@ async function main() {
     sequence_errors: bigint
     receipt_errors: bigint
     attachment_errors: bigint
+    source_errors: bigint
   }>>`
     SELECT
       (SELECT COUNT(*) FROM "feature_requests") AS requests,
@@ -31,7 +32,11 @@ async function main() {
         WHERE a.size <= 0
           OR a."mimeType" NOT IN ('image/jpeg', 'image/png', 'image/webp')
           OR a.pathname NOT LIKE 'admin-uploads/%'
-      ) AS attachment_errors
+      ) AS attachment_errors,
+      (
+        SELECT COUNT(*) FROM "feature_requests" r
+        WHERE r.source NOT IN ('PROPOSAL', 'MANUAL')
+      ) AS source_errors
   `
 
   if (!totals) throw new Error('Feature request audit returned no result')
@@ -43,10 +48,11 @@ async function main() {
     sequence_errors: Number(totals.sequence_errors),
     receipt_errors: Number(totals.receipt_errors),
     attachment_errors: Number(totals.attachment_errors),
+    source_errors: Number(totals.source_errors),
   }
   console.log(JSON.stringify(summary, null, 2))
 
-  if (summary.sequence_errors !== 0 || summary.receipt_errors !== 0 || summary.attachment_errors !== 0) {
+  if (summary.sequence_errors !== 0 || summary.receipt_errors !== 0 || summary.attachment_errors !== 0 || summary.source_errors !== 0) {
     process.exitCode = 1
   }
 }

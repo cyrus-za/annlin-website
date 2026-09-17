@@ -7,7 +7,7 @@ import type {
   FeatureRequestAttachmentInput,
   UpdateFeatureRequestWorkflowInput,
 } from '@/lib/validations/feature-requests'
-import type { FeatureRequestStatusValue, FeatureRequestSummary } from '@/lib/feature-requests'
+import type { FeatureRequestStatusValue, FeatureRequestSummary, TaskSourceValue } from '@/lib/feature-requests'
 import { isAllowedR2Upload, isAllowedR2UploadFilename, isAllowedR2UploadKey } from '@/lib/r2-upload-policy'
 
 export type FeatureRequestActor = { id: string; role: UserRole }
@@ -78,6 +78,7 @@ function toSummary(request: Awaited<ReturnType<typeof getRequestRows>>[number]):
     priority: request.priority,
     nextAction: request.nextAction,
     pagePath: request.pagePath,
+    source: request.source as TaskSourceValue,
     workflowVersion: request.workflowVersion,
     lastActivityAt: request.lastActivityAt.toISOString(),
     createdAt: request.createdAt.toISOString(),
@@ -115,12 +116,13 @@ async function getRequestRows(ids: string[], actorId: string) {
 
 export async function listFeatureRequests(
   actor: FeatureRequestActor,
-  options: { scope: 'mine' | 'all' | 'unread'; status?: FeatureRequestStatusValue; cursor?: string; limit: number },
+  options: { scope: 'mine' | 'all' | 'unread'; status?: FeatureRequestStatusValue; source?: TaskSourceValue; cursor?: string; limit: number },
 ) {
   const cursor = decodeCursor(options.cursor)
   const allAccessible = actor.role === 'ADMIN' && options.scope !== 'mine'
   const access = allAccessible ? Prisma.sql`TRUE` : Prisma.sql`r."requesterId" = ${actor.id}`
   const status = options.status ? Prisma.sql`AND r.status = ${options.status}::"FeatureRequestStatus"` : Prisma.empty
+  const source = options.source ? Prisma.sql`AND r.source = ${options.source}` : Prisma.empty
   const unread = options.scope === 'unread'
     ? Prisma.sql`AND EXISTS (
         SELECT 1 FROM "feature_request_activities" a
@@ -137,7 +139,7 @@ export async function listFeatureRequests(
     FROM "feature_requests" r
     LEFT JOIN "feature_request_read_receipts" rr
       ON rr."requestId" = r.id AND rr."userId" = ${actor.id}
-    WHERE ${access} ${status} ${unread} ${after}
+    WHERE ${access} ${status} ${source} ${unread} ${after}
     ORDER BY r."lastActivityAt" DESC, r.id DESC
     LIMIT ${options.limit + 1}
   `)
@@ -153,14 +155,15 @@ export async function listFeatureRequests(
   }
 }
 
-export async function getFeatureRequestUnreadCount(actor: FeatureRequestActor): Promise<number> {
+export async function getFeatureRequestUnreadCount(actor: FeatureRequestActor, source?: TaskSourceValue): Promise<number> {
   const access = actor.role === 'ADMIN' ? Prisma.sql`TRUE` : Prisma.sql`r."requesterId" = ${actor.id}`
+  const sourceFilter = source ? Prisma.sql`AND r.source = ${source}` : Prisma.empty
   const [row] = await prisma.$queryRaw<Array<{ count: bigint }>>(Prisma.sql`
     SELECT COUNT(*)::bigint AS count
     FROM "feature_requests" r
     LEFT JOIN "feature_request_read_receipts" rr
       ON rr."requestId" = r.id AND rr."userId" = ${actor.id}
-    WHERE ${access}
+    WHERE ${access} ${sourceFilter}
       AND EXISTS (
         SELECT 1 FROM "feature_request_activities" a
         WHERE a."requestId" = r.id
@@ -172,7 +175,11 @@ export async function getFeatureRequestUnreadCount(actor: FeatureRequestActor): 
 }
 
 export async function createFeatureRequest(actor: FeatureRequestActor, input: CreateFeatureRequestInput) {
-  const normalized = { title: input.title, description: input.description, pagePath: input.pagePath ?? null }
+  const source = input.source ?? 'PROPOSAL'
+  if (source === 'MANUAL' && actor.role !== 'ADMIN') {
+    throw new FeatureRequestError('FORBIDDEN', 'Slegs administrateurs kan handmatige take skep')
+  }
+  const normalized = { title: input.title, description: input.description, pagePath: input.pagePath ?? null, source }
   const attachments = input.attachments ?? []
   const attachmentRows = attachments.map((attachment) => attachmentData(actor.id, attachment))
   const hash = payloadHash({ ...normalized, attachments })

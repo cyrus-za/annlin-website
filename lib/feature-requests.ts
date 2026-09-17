@@ -24,6 +24,13 @@ export const CLOSED_FEATURE_REQUEST_STATUSES = FEATURE_REQUEST_STATUSES.slice(4)
 export const FEATURE_REQUEST_PRIORITIES = ['LOW', 'NORMAL', 'HIGH', 'URGENT'] as const
 export type FeatureRequestPriorityValue = (typeof FEATURE_REQUEST_PRIORITIES)[number]
 
+export const TASK_SOURCES = ['PROPOSAL', 'MANUAL'] as const
+export type TaskSourceValue = (typeof TASK_SOURCES)[number]
+export const TASK_SOURCE_LABELS: Record<TaskSourceValue, string> = {
+  PROPOSAL: 'Voorstel',
+  MANUAL: 'Handmatig',
+}
+
 export const FEATURE_REQUEST_PRIORITY_LABELS: Record<FeatureRequestPriorityValue, string> = {
   LOW: 'Laag',
   NORMAL: 'Normaal',
@@ -44,6 +51,7 @@ export type FeatureRequestSummary = {
   priority: FeatureRequestPriorityValue
   nextAction: string | null
   pagePath: string | null
+  source: TaskSourceValue
   workflowVersion: number
   lastActivityAt: string
   createdAt: string

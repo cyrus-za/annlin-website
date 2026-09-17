@@ -1,9 +1,12 @@
-import { FeatureRequestBoard } from '@/components/admin/FeatureRequestBoard'
-import { requireAdmin } from '@/lib/auth-config'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
-export default async function FeatureRequestsPage() {
-  await requireAdmin()
-  return <FeatureRequestBoard />
+export default async function FeatureRequestsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ voorstel?: string }>
+}) {
+  const { voorstel } = await searchParams
+  redirect(voorstel ? `/admin/take?taak=${encodeURIComponent(voorstel)}` : '/admin/take')
 }

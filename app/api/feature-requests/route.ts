@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const query = featureRequestListQuerySchema.parse(Object.fromEntries(request.nextUrl.searchParams))
     const [page, unreadCount] = await Promise.all([
       listFeatureRequests(actor, query),
-      getFeatureRequestUnreadCount(actor),
+      getFeatureRequestUnreadCount(actor, query.source),
     ])
     return privateJson({ ...page, unreadCount, canManage: actor.role === 'ADMIN' })
   } catch (error) {

@@ -14,7 +14,7 @@ import {
   BookOpen,
   Inbox,
   FileText,
-  MessageSquarePlus,
+  ListTodo,
   History,
   Menu,
   X
@@ -60,9 +60,9 @@ const navigationItems: NavigationItem[] = [
     icon: BookOpen,
   },
   {
-    name: 'Voorstelle',
-    href: '/admin/voorstelle',
-    icon: MessageSquarePlus,
+    name: 'Take',
+    href: '/admin/take',
+    icon: ListTodo,
     adminOnly: true,
   },
   {

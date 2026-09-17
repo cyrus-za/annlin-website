@@ -377,6 +377,7 @@ model FeatureRequest {
   title               String
   description         String
   pagePath            String?
+  source              String                 @default("PROPOSAL")
   status              FeatureRequestStatus   @default(NEW)
   priority            FeatureRequestPriority @default(NORMAL)
   nextAction          String?
@@ -397,6 +398,7 @@ model FeatureRequest {
 
   @@unique([requesterId, creationKey])
   @@index([requesterId, lastActivityAt, id])
+  @@index([source, lastActivityAt, id])
   @@index([status, lastActivityAt, id])
   @@index([lastActivityAt, id])
   @@map("feature_requests")

@@ -34,8 +34,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       id: `feature:${request.id}:${request.lastActivityAt}`,
       kind: 'FEATURE_REQUEST' as const,
       title: request.title,
-      description: request.assignee?.id === user.id ? 'Aan jou toegewys' : 'Nuwe voorstelaktiwiteit',
-      href: `/admin/voorstelle?voorstel=${request.id}`,
+      description: request.assignee?.id === user.id ? 'Aan jou toegewys' : 'Nuwe taakaktiwiteit',
+      href: `/admin/take?taak=${request.id}`,
       createdAt: request.lastActivityAt,
     })),
     ...changes.map((change) => ({

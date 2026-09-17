@@ -123,7 +123,7 @@ export function FeatureRequestWidget() {
     if (!user) return
     if (!quiet) setLoading(true)
     try {
-      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number; canManage: boolean }>(`/api/feature-requests?scope=${scope}&limit=20`)
+      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number; canManage: boolean }>(`/api/feature-requests?scope=${scope}&source=PROPOSAL&limit=20`)
       setRequests(data.requests)
       setUnreadCount(data.unreadCount)
       setCanManage(data.canManage)
@@ -244,7 +244,7 @@ export function FeatureRequestWidget() {
     }
   }
 
-  if (isPending || !user || pathname.startsWith('/auth/') || pathname === '/admin/voorstelle') return null
+  if (isPending || !user || pathname.startsWith('/auth/') || pathname === '/admin/take' || pathname === '/admin/voorstelle') return null
 
   return (
     <>
@@ -289,7 +289,7 @@ export function FeatureRequestWidget() {
                   <Plus className="mr-1 h-4 w-4" /> Nuwe voorstel
                 </Button>
               </div>
-              {canManage && <Button asChild variant="link" className="mb-2 h-auto justify-start p-0"><Link href="/admin/voorstelle" onClick={() => setOpen(false)}>Maak die volledige voorstellebord oop</Link></Button>}
+              {canManage && <Button asChild variant="link" className="mb-2 h-auto justify-start p-0"><Link href="/admin/take" onClick={() => setOpen(false)}>Maak die volledige takebord oop</Link></Button>}
               <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
                 {loading && <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}
                 {!loading && requests.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Geen voorstelle in hierdie aansig nie.</p>}
