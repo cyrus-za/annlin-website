@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/auth-config'
 import { AdminLayoutClient } from '@/components/admin/AdminLayoutClient'
 import type { UserRole } from '@prisma/client'
 import { prisma } from '@/lib/db'
-import { listFeatureRequests } from '@/lib/services/feature-requests'
+import { listTasks } from '@/lib/services/tasks'
 import type { AdminNotification } from '@/lib/admin-notifications'
 
 export const dynamic = 'force-dynamic'
@@ -14,11 +14,11 @@ interface AdminLayoutProps {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = await requireAuth()
   const actor = { id: user.id, role: user.role as UserRole }
-  const [contacts, featureRequestPage, changes] = await Promise.all([
+  const [contacts, taskPage, changes] = await Promise.all([
     user.role === 'ADMIN'
       ? prisma.contactSubmission.findMany({ where: { status: 'NEW' }, select: { id: true, subject: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 100 })
       : Promise.resolve([]),
-    listFeatureRequests(actor, { scope: 'unread', limit: 100 }),
+    listTasks(actor, { scope: 'unread', limit: 100 }),
     prisma.changelogEntry.findMany({ select: { id: true, title: true, category: true, publishedAt: true }, orderBy: { publishedAt: 'desc' }, take: 100 }),
   ])
   const notifications: AdminNotification[] = [
@@ -30,13 +30,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       href: `/admin/indienings/${contact.id}`,
       createdAt: contact.createdAt.toISOString(),
     })),
-    ...featureRequestPage.requests.map((request) => ({
-      id: `feature:${request.id}:${request.lastActivityAt}`,
-      kind: 'FEATURE_REQUEST' as const,
-      title: request.title,
-      description: request.assignee?.id === user.id ? 'Aan jou toegewys' : 'Nuwe taakaktiwiteit',
-      href: `/admin/take?taak=${request.id}`,
-      createdAt: request.lastActivityAt,
+    ...taskPage.requests.map((task) => ({
+      id: `task:${task.id}:${task.lastActivityAt}`,
+      kind: 'TASK' as const,
+      title: task.title,
+      description: task.assignee?.id === user.id ? 'Aan jou toegewys' : 'Nuwe taakaktiwiteit',
+      href: `/admin/take?taak=${task.id}`,
+      createdAt: task.lastActivityAt,
     })),
     ...changes.map((change) => ({
       id: `changelog:${change.id}`,

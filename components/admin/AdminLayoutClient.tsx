@@ -5,8 +5,8 @@ import { AdminSidebar, MobileAdminSidebar } from './AdminSidebar'
 import { AdminHeader } from './AdminHeader'
 import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth-client'
-import { FeatureRequestWidget } from '@/components/feature-requests/FeatureRequestWidget'
-import { FEATURE_REQUEST_DRAFT_STORAGE_PREFIX } from '@/lib/feature-requests'
+import { ProposalWidget } from '@/components/tasks/ProposalWidget'
+import { TASK_DRAFT_STORAGE_PREFIX } from '@/lib/tasks'
 import type { AdminNotification } from '@/lib/admin-notifications'
 
 interface AdminLayoutClientProps {
@@ -29,7 +29,7 @@ export function AdminLayoutClient({ children, user, notifications }: AdminLayout
     try {
       for (let index = sessionStorage.length - 1; index >= 0; index--) {
         const key = sessionStorage.key(index)
-        if (key?.startsWith(FEATURE_REQUEST_DRAFT_STORAGE_PREFIX)) sessionStorage.removeItem(key)
+        if (key?.startsWith(TASK_DRAFT_STORAGE_PREFIX)) sessionStorage.removeItem(key)
       }
       const result = await signOut()
 
@@ -109,7 +109,7 @@ export function AdminLayoutClient({ children, user, notifications }: AdminLayout
           </main>
         </div>
       </div>
-      <FeatureRequestWidget />
+      <ProposalWidget />
     </div>
   )
 }

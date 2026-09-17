@@ -3,14 +3,14 @@
 import * as React from 'react'
 import { ImagePlus, Loader2, Trash2, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import type { FeatureRequestAttachmentDto, PendingFeatureRequestAttachment } from '@/lib/feature-requests'
+import type { PendingTaskAttachment, TaskAttachmentDto } from '@/lib/tasks'
 import { cn } from '@/lib/utils'
 
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_IMAGES = 5
 const MAX_BYTES = 10 * 1024 * 1024
 
-export function FeatureRequestAttachmentGallery({ attachments }: { attachments: FeatureRequestAttachmentDto[] }) {
+export function TaskAttachmentGallery({ attachments }: { attachments: TaskAttachmentDto[] }) {
   if (attachments.length === 0) return null
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -31,13 +31,13 @@ function clipboardFilename(file: File) {
   return `skermskoot-${new Date().toISOString().replace(/[:.]/g, '-')}.${extension}`
 }
 
-export function FeatureRequestImageAttachments({
+export function TaskImageAttachments({
   value,
   onChange,
   disabled = false,
 }: {
-  value: PendingFeatureRequestAttachment[]
-  onChange: (attachments: PendingFeatureRequestAttachment[]) => void
+  value: PendingTaskAttachment[]
+  onChange: (attachments: PendingTaskAttachment[]) => void
   disabled?: boolean
 }) {
   const [uploading, setUploading] = React.useState(false)
@@ -63,7 +63,7 @@ export function FeatureRequestImageAttachments({
     setUploading(true)
     setError('')
     try {
-      const uploaded: PendingFeatureRequestAttachment[] = []
+      const uploaded: PendingTaskAttachment[] = []
       for (const sourceFile of images) {
         const filename = clipboardFilename(sourceFile)
         const file = sourceFile.name ? sourceFile : new File([sourceFile], filename, { type: sourceFile.type })
@@ -80,7 +80,7 @@ export function FeatureRequestImageAttachments({
           headers: { 'content-type': file.type },
           body: file,
         })
-        const result = await uploadResponse.json() as Omit<PendingFeatureRequestAttachment, 'filename'> & { error?: string }
+        const result = await uploadResponse.json() as Omit<PendingTaskAttachment, 'filename'> & { error?: string }
         if (!uploadResponse.ok) throw new Error(result.error || 'Oplaai het misluk')
         uploaded.push({ ...result, filename })
       }

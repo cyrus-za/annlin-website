@@ -20,8 +20,9 @@
     "editor:test": "tsx scripts/test-tiptap-markdown.ts",
     "r2-upload:test": "tsx scripts/test-r2-upload-worker.ts",
     "invitations:test": "tsx scripts/test-invitation-system.ts",
-    "feature-requests:audit": "tsx scripts/audit-feature-request-system.ts",
-    "feature-requests:test": "tsx scripts/test-feature-request-system.ts",
+    "tasks:audit": "tsx scripts/audit-task-system.ts",
+    "tasks:test": "tsx scripts/test-task-system.ts",
+    "tasks:migrate": "tsx scripts/migrate-tasks-schema.ts",
     "changelog:add": "tsx scripts/add-changelog-entry.ts",
     "hooks:install": "sh scripts/install-git-hooks.sh"
   },

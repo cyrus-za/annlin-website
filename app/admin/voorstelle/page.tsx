@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
-export default async function FeatureRequestsPage({
+export default async function ProposalsRedirectPage({
   searchParams,
 }: {
   searchParams: Promise<{ voorstel?: string }>

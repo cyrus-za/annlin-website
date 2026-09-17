@@ -43,7 +43,8 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notifications }: Adm
   React.useEffect(() => {
     try {
       const stored = JSON.parse(window.localStorage.getItem(storageKey) || '[]') as unknown
-      setSeenIds(new Set(Array.isArray(stored) ? stored.filter((value): value is string => typeof value === 'string') : []))
+      const ids = Array.isArray(stored) ? stored.filter((value): value is string => typeof value === 'string') : []
+      setSeenIds(new Set(ids.flatMap((id) => id.startsWith('feature:') ? [id, `task:${id.slice('feature:'.length)}`] : [id])))
     } catch {
       window.localStorage.removeItem(storageKey)
     } finally {
@@ -126,7 +127,7 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notifications }: Adm
               <DropdownMenuSeparator />
               <div className="max-h-96 overflow-y-auto">
                 {unreadNotifications.map((notification) => {
-                  const Icon = notification.kind === 'CONTACT' ? Inbox : notification.kind === 'FEATURE_REQUEST' ? ListTodo : GitCommitHorizontal
+                  const Icon = notification.kind === 'CONTACT' ? Inbox : notification.kind === 'TASK' ? ListTodo : GitCommitHorizontal
                   return <DropdownMenuItem key={notification.id} asChild className="items-start p-0"><Link href={notification.href} onClick={() => markSeen(notification.id)} className="flex w-full gap-3 rounded-md px-3 py-3"><Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span className="min-w-0"><strong className="block truncate text-sm text-foreground">{notification.title}</strong><span className="mt-0.5 block text-xs text-muted-foreground">{notification.description}</span></span></Link></DropdownMenuItem>
                 })}
                 {notificationsReady && unreadNotifications.length === 0 && <p className="px-3 py-8 text-center text-sm text-muted-foreground">Geen nuwe kennisgewings nie.</p>}

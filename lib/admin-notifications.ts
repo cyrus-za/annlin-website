@@ -1,4 +1,4 @@
-export type AdminNotificationKind = 'CONTACT' | 'FEATURE_REQUEST' | 'CHANGELOG'
+export type AdminNotificationKind = 'CONTACT' | 'TASK' | 'CHANGELOG'
 
 export type AdminNotification = {
   id: string

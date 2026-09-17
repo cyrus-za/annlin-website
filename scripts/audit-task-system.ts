@@ -12,34 +12,34 @@ async function main() {
     source_errors: bigint
   }>>`
     SELECT
-      (SELECT COUNT(*) FROM "feature_requests") AS requests,
-      (SELECT COUNT(*) FROM "feature_request_activities") AS activities,
-      (SELECT COUNT(*) FROM "feature_request_read_receipts") AS receipts,
-      (SELECT COUNT(*) FROM "feature_request_attachments") AS attachments,
+      (SELECT COUNT(*) FROM "tasks") AS requests,
+      (SELECT COUNT(*) FROM "task_activities") AS activities,
+      (SELECT COUNT(*) FROM "task_read_receipts") AS receipts,
+      (SELECT COUNT(*) FROM "task_attachments") AS attachments,
       (
-        SELECT COUNT(*) FROM "feature_requests" r
+        SELECT COUNT(*) FROM "tasks" r
         WHERE r."activitySeq" <> (
-          SELECT COALESCE(MAX(a.seq), 0) FROM "feature_request_activities" a WHERE a."requestId" = r.id
+          SELECT COALESCE(MAX(a.seq), 0) FROM "task_activities" a WHERE a."requestId" = r.id
         )
       ) AS sequence_errors,
       (
-        SELECT COUNT(*) FROM "feature_request_read_receipts" rr
-        JOIN "feature_requests" r ON r.id = rr."requestId"
+        SELECT COUNT(*) FROM "task_read_receipts" rr
+        JOIN "tasks" r ON r.id = rr."requestId"
         WHERE rr."lastReadSeq" > r."activitySeq"
       ) AS receipt_errors,
       (
-        SELECT COUNT(*) FROM "feature_request_attachments" a
+        SELECT COUNT(*) FROM "task_attachments" a
         WHERE a.size <= 0
           OR a."mimeType" NOT IN ('image/jpeg', 'image/png', 'image/webp')
           OR a.pathname NOT LIKE 'admin-uploads/%'
       ) AS attachment_errors,
       (
-        SELECT COUNT(*) FROM "feature_requests" r
+        SELECT COUNT(*) FROM "tasks" r
         WHERE r.source NOT IN ('PROPOSAL', 'MANUAL')
       ) AS source_errors
   `
 
-  if (!totals) throw new Error('Feature request audit returned no result')
+  if (!totals) throw new Error('Task audit returned no result')
   const summary = {
     requests: Number(totals.requests),
     activities: Number(totals.activities),
@@ -59,7 +59,7 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error(error instanceof Error ? error.message : 'Feature request audit failed')
+    console.error(error instanceof Error ? error.message : 'Task audit failed')
     process.exitCode = 1
   })
   .finally(async () => {

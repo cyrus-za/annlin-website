@@ -6,18 +6,18 @@ import { usePathname } from 'next/navigation'
 import { ArrowLeft, Loader2, MessageSquarePlus, Plus, Send } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
 import {
-  FEATURE_REQUEST_DRAFT_STORAGE_PREFIX,
-  FEATURE_REQUEST_PRIORITY_LABELS,
-  FEATURE_REQUEST_STATUS_LABELS,
-  type FeatureRequestDetail,
-  type PendingFeatureRequestAttachment,
-  type FeatureRequestSummary,
-} from '@/lib/feature-requests'
+  TASK_DRAFT_STORAGE_PREFIX,
+  TASK_PRIORITY_LABELS,
+  TASK_STATUS_LABELS,
+  type PendingTaskAttachment,
+  type TaskDetail,
+  type TaskSummary,
+} from '@/lib/tasks'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
-import { featureRequestJson as requestJson, loadCompleteFeatureRequest } from '@/lib/feature-request-client'
-import { FeatureRequestAttachmentGallery, FeatureRequestImageAttachments } from '@/components/feature-requests/FeatureRequestImageAttachments'
+import { loadCompleteTask, taskJson as requestJson } from '@/lib/task-client'
+import { TaskAttachmentGallery, TaskImageAttachments } from '@/components/tasks/TaskImageAttachments'
 
 type Screen = { name: 'list' | 'new' } | { name: 'thread'; id: string }
 type Scope = 'mine' | 'all' | 'unread'
@@ -26,22 +26,22 @@ function relativeDate(value: string) {
   return new Intl.DateTimeFormat('af-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(value))
 }
 
-function StatusPill({ request }: { request: FeatureRequestSummary }) {
+function StatusPill({ request }: { request: TaskSummary }) {
   return (
     <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-700">
-      {FEATURE_REQUEST_STATUS_LABELS[request.status]}
+      {TASK_STATUS_LABELS[request.status]}
     </span>
   )
 }
 
 function Thread({ detail, currentUserId, busy, onReply }: {
-  detail: FeatureRequestDetail
+  detail: TaskDetail
   currentUserId: string
   busy: boolean
-  onReply: (body: string, attachments: PendingFeatureRequestAttachment[]) => Promise<void>
+  onReply: (body: string, attachments: PendingTaskAttachment[]) => Promise<void>
 }) {
   const [body, setBody] = React.useState('')
-  const [attachments, setAttachments] = React.useState<PendingFeatureRequestAttachment[]>([])
+  const [attachments, setAttachments] = React.useState<PendingTaskAttachment[]>([])
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -57,7 +57,7 @@ function Thread({ detail, currentUserId, busy, onReply }: {
         <div className="rounded-xl bg-amber-50 p-4 text-sm leading-6 text-stone-800">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-800">Oorspronklike voorstel</p>
           <p className="whitespace-pre-wrap">{detail.description}</p>
-          <div className="mt-3"><FeatureRequestAttachmentGallery attachments={detail.attachments} /></div>
+          <div className="mt-3"><TaskAttachmentGallery attachments={detail.attachments} /></div>
         </div>
         {detail.activities.filter((activity) => activity.kind !== 'CREATED').map((activity) => {
           const mine = activity.actor.id === currentUserId
@@ -70,14 +70,14 @@ function Thread({ detail, currentUserId, busy, onReply }: {
                 </div>
                 {activity.kind === 'WORKFLOW' && <p className="mb-1 text-xs font-semibold uppercase tracking-wide">Status opgedateer</p>}
                 <p className="whitespace-pre-wrap">{activity.body}</p>
-                <div className="mt-3"><FeatureRequestAttachmentGallery attachments={activity.attachments} /></div>
+                <div className="mt-3"><TaskAttachmentGallery attachments={activity.attachments} /></div>
               </div>
             </div>
           )
         })}
       </div>
       <form onSubmit={submit} className="space-y-3 border-t bg-white pt-4">
-        <FeatureRequestImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
+        <TaskImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
         <label htmlFor={`feature-reply-${detail.id}`} className="sr-only">Skryf ’n antwoord</label>
         <div className="flex items-end gap-2">
           <textarea
@@ -98,14 +98,14 @@ function Thread({ detail, currentUserId, busy, onReply }: {
   )
 }
 
-export function FeatureRequestWidget() {
+export function ProposalWidget() {
   const pathname = usePathname()
   const { data: session, isPending } = useSession()
   const [open, setOpen] = React.useState(false)
   const [screen, setScreen] = React.useState<Screen>({ name: 'list' })
   const [scope, setScope] = React.useState<Scope>('mine')
-  const [requests, setRequests] = React.useState<FeatureRequestSummary[]>([])
-  const [detail, setDetail] = React.useState<FeatureRequestDetail | null>(null)
+  const [requests, setRequests] = React.useState<TaskSummary[]>([])
+  const [detail, setDetail] = React.useState<TaskDetail | null>(null)
   const [unreadCount, setUnreadCount] = React.useState(0)
   const [canManage, setCanManage] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -113,17 +113,17 @@ export function FeatureRequestWidget() {
   const [error, setError] = React.useState('')
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
-  const [attachments, setAttachments] = React.useState<PendingFeatureRequestAttachment[]>([])
+  const [attachments, setAttachments] = React.useState<PendingTaskAttachment[]>([])
   const [operationKey, setOperationKey] = React.useState('')
   const replyOperationKey = React.useRef('')
   const user = session?.user
-  const draftKey = user ? `${FEATURE_REQUEST_DRAFT_STORAGE_PREFIX}:${user.id}:new` : ''
+  const draftKey = user ? `${TASK_DRAFT_STORAGE_PREFIX}:${user.id}:new` : ''
 
   const loadList = React.useCallback(async (quiet = false) => {
     if (!user) return
     if (!quiet) setLoading(true)
     try {
-      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number; canManage: boolean }>(`/api/feature-requests?scope=${scope}&source=PROPOSAL&limit=20`)
+      const data = await requestJson<{ requests: TaskSummary[]; unreadCount: number; canManage: boolean }>(`/api/tasks?scope=${scope}&source=PROPOSAL&limit=20`)
       setRequests(data.requests)
       setUnreadCount(data.unreadCount)
       setCanManage(data.canManage)
@@ -138,10 +138,10 @@ export function FeatureRequestWidget() {
   const loadDetail = React.useCallback(async (id: string, quiet = false) => {
     if (!quiet) setLoading(true)
     try {
-      const data = await loadCompleteFeatureRequest(id)
+      const data = await loadCompleteTask(id)
       setDetail(data)
       setError('')
-      await requestJson(`/api/feature-requests/${id}/read`, {
+      await requestJson(`/api/tasks/${id}/read`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ throughSeq: data.throughSeq }),
       })
       setUnreadCount((count) => Math.max(0, count - (data.unread ? 1 : 0)))
@@ -180,7 +180,7 @@ export function FeatureRequestWidget() {
     const saved = window.sessionStorage.getItem(draftKey)
     if (!saved) return
     try {
-      const draft = JSON.parse(saved) as { title?: string; description?: string; operationKey?: string; attachments?: PendingFeatureRequestAttachment[] }
+      const draft = JSON.parse(saved) as { title?: string; description?: string; operationKey?: string; attachments?: PendingTaskAttachment[] }
       setTitle(draft.title ?? '')
       setDescription(draft.description ?? '')
       setOperationKey(draft.operationKey ?? crypto.randomUUID())
@@ -206,7 +206,7 @@ export function FeatureRequestWidget() {
     if (!title.trim() || !description.trim()) return
     setBusy(true)
     try {
-      const created = await requestJson<FeatureRequestDetail>('/api/feature-requests', {
+      const created = await requestJson<TaskDetail>('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: title.trim(), description: description.trim(), pagePath: pathname, operationKey, attachments }),
@@ -226,16 +226,16 @@ export function FeatureRequestWidget() {
     }
   }
 
-  async function reply(body: string, replyAttachments: PendingFeatureRequestAttachment[]) {
+  async function reply(body: string, replyAttachments: PendingTaskAttachment[]) {
     if (screen.name !== 'thread') return
     setBusy(true)
     try {
       if (!replyOperationKey.current) replyOperationKey.current = crypto.randomUUID()
-      await requestJson<FeatureRequestDetail>(`/api/feature-requests/${screen.id}/messages`, {
+      await requestJson<TaskDetail>(`/api/tasks/${screen.id}/messages`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body, operationKey: replyOperationKey.current, attachments: replyAttachments }),
       })
       replyOperationKey.current = ''
-      setDetail(await loadCompleteFeatureRequest(screen.id))
+      setDetail(await loadCompleteTask(screen.id))
       await loadList(true)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Antwoord kon nie gestuur word nie')
@@ -270,7 +270,7 @@ export function FeatureRequestWidget() {
               )}
               <div>
                 <DialogTitle>{screen.name === 'new' ? 'Nuwe voorstel' : screen.name === 'thread' ? detail?.title ?? 'Voorstel' : 'Voorstelle'}</DialogTitle>
-                <DialogDescription>{screen.name === 'list' ? 'Deel idees en volg terugvoer op een plek.' : screen.name === 'new' ? 'Beskryf wat jy graag wil verander of verbeter.' : detail ? `${FEATURE_REQUEST_STATUS_LABELS[detail.status]} · ${FEATURE_REQUEST_PRIORITY_LABELS[detail.priority]}` : 'Laai gesprek...'}</DialogDescription>
+                <DialogDescription>{screen.name === 'list' ? 'Deel idees en volg terugvoer op een plek.' : screen.name === 'new' ? 'Beskryf wat jy graag wil verander of verbeter.' : detail ? `${TASK_STATUS_LABELS[detail.status]} · ${TASK_PRIORITY_LABELS[detail.priority]}` : 'Laai gesprek...'}</DialogDescription>
               </div>
             </div>
           </DialogHeader>
@@ -310,7 +310,7 @@ export function FeatureRequestWidget() {
             <form onSubmit={createRequest} className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pt-5">
               <div><label htmlFor="feature-title" className="mb-1.5 block text-sm font-medium">Opskrif</label><input id="feature-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} required className="h-11 w-full rounded-lg border border-stone-300 px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
               <div className="flex min-h-0 flex-1 flex-col"><label htmlFor="feature-description" className="mb-1.5 block text-sm font-medium">Beskrywing</label><textarea id="feature-description" value={description} onChange={(event) => setDescription(event.target.value)} maxLength={10000} required className="min-h-52 flex-1 resize-none rounded-lg border border-stone-300 p-3 text-base leading-6 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Wat moet verander, en waarom?" /></div>
-              <FeatureRequestImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
+              <TaskImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
               <p className="text-xs text-muted-foreground">Bladsykonteks: {pathname}</p>
               <Button type="submit" disabled={busy || !operationKey || !title.trim() || !description.trim()}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Stuur voorstel</Button>
             </form>

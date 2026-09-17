@@ -1,6 +1,6 @@
 import { Navigation } from '@/components/public/Navigation'
 import { Footer } from '@/components/public/Footer'
-import { FeatureRequestWidget } from '@/components/feature-requests/FeatureRequestWidget'
+import { ProposalWidget } from '@/components/tasks/ProposalWidget'
 
 export default function PublicLayout({
   children,
@@ -14,7 +14,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
-      <FeatureRequestWidget />
+      <ProposalWidget />
     </div>
   )
 }

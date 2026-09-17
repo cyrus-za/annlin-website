@@ -1,5 +1,7 @@
 <!-- /autoplan restore point: /home/pieter/.gstack/projects/cyrus-za-annlin-website/main-autoplan-restore-20260915-140117.md -->
-# Terugvoer- en versoekstelsel
+# Taak- en voorstelstelsel
+
+> Die geïmplementeerde domein heet `Task`; ’n voorstel is slegs een bron van ’n taak. Gebruik die huidige `tasks`-kode en Prisma-skema as gesaghebbend wanneer hierdie oorspronklike ontwerpnotas en die implementering verskil.
 
 ## Doel
 
@@ -19,21 +21,21 @@ Gee aangemelde gebruikers 'n eenvoudige plek om verbeterings voor te stel, met '
 ## Adminervaring
 
 - Voeg `Voorstelle` by die adminsybalk, slegs vir administrateurs.
-- Wys 'n responsiewe Kanban-bord met die fases `Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`, `Voltooi` en `Nie beplan nie`.
+- Wys 'n responsiewe Kanban-bord met die fases `Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`, `Voltooi` en `Gekanselleer`.
 - Elke kaart wys opskrif, indiener, prioriteit, laaste aktiwiteit en boodskaptelling.
 - 'n Detaildialoog wys die volledige gesprek en laat die admin antwoord, prioriteit/verantwoordelike persoon kies en die status verander.
 - Gebruik eksplisiete statuskeuses en skuifaksies eerder as slegs sleep-en-los, sodat sleutelbord-, raakskerm- en ouer gebruikers dieselfde funksionaliteit kry.
-- Hou geslote versoeke deur filters beskikbaar, maar vou `Voltooi` en `Nie beplan nie` by verstek uit die aktiewe werkbeeld. Geen harde verwydering in die eerste weergawe nie.
-- Gebruik vier aktiewe kolomme (`Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`) en 'n afsonderlike `Gesluit`-aansig vir `Voltooi` en `Nie beplan nie`. Op nouer skerms word dit 'n gefiltreerde vertikale lys; op wye skerms kan die admin tussen `Bord` en `Lys` kies.
+- Hou geslote versoeke deur filters beskikbaar, maar vou `Voltooi` en `Gekanselleer` by verstek uit die aktiewe werkbeeld. Geen harde verwydering in die eerste weergawe nie.
+- Gebruik vier aktiewe kolomme (`Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`) en 'n afsonderlike `Gesluit`-aansig vir `Voltooi` en `Gekanselleer`. Op nouer skerms word dit 'n gefiltreerde vertikale lys; op wye skerms kan die admin tussen `Bord` en `Lys` kies.
 
 ## Datamodel en magtiging
 
 ### Modelle
 
-- `FeatureRequest`: `requesterId`, opsionele admin-`assigneeId`, titel, beskrywing, opsionele relatiewe `pagePath`, status, prioriteit, opsionele `nextAction`, `workflowVersion`, `activitySeq`, `lastActivityAt`, opsionele `closedAt`, `creationKey` en `creationPayloadHash`.
-- `FeatureRequestActivity`: onveranderlike gebruiker-sigbare tydlyn met `requestId`, `actorId`, per-versoek `seq`, soort `CREATED | MESSAGE | WORKFLOW`, opsionele gewone teks, opsionele gestruktureerde werkvloeiverskil, `operationKey`, `payloadHash` en tydstempel. Die aanvanklike beskrywing tel nie as 'n boodskap nie; die boodskaptelling tel slegs `MESSAGE`-inskrywings.
-- `FeatureRequestReadReceipt`: `requestId`, `userId` en monotone `lastReadSeq`, uniek per gebruiker en versoek.
-- Statusse: `NEW`, `PLANNED`, `IN_PROGRESS`, `WAITING_FOR_FEEDBACK`, `DONE`, `NOT_PLANNED`. Prioriteite: `LOW`, `NORMAL`, `HIGH`, `URGENT`; nuwe versoeke begin by `NORMAL`.
+- `Task`: `requesterId`, opsionele admin-`assigneeId`, titel, beskrywing, opsionele relatiewe `pagePath`, bron, status, prioriteit, `workflowVersion`, `activitySeq`, `lastActivityAt`, opsionele `closedAt`, `creationKey` en `creationPayloadHash`.
+- `TaskActivity`: onveranderlike gebruiker-sigbare tydlyn met `requestId`, `actorId`, per-taak `seq`, soort `CREATED | MESSAGE | WORKFLOW`, opsionele gewone teks, opsionele gestruktureerde werkvloeiverskil, `operationKey`, `payloadHash` en tydstempel. Die aanvanklike beskrywing tel nie as 'n boodskap nie; die boodskaptelling tel slegs `MESSAGE`-inskrywings.
+- `TaskReadReceipt`: `requestId`, `userId` en monotone `lastReadSeq`, uniek per gebruiker en taak.
+- Statusse: `NEW`, `PLANNED`, `IN_PROGRESS`, `WAITING_FOR_FEEDBACK`, `DONE`, `CANCELLED`. Prioriteite: `LOW`, `NORMAL`, `HIGH`, `URGENT`; nuwe take begin by `NORMAL`.
 - Uniekheid: `(requesterId, creationKey)`, `(requestId, seq)`, `(requestId, actorId, kind, operationKey)` en `(requestId, userId)`.
 - Indekse: versoeke op `(requesterId, lastActivityAt, id)`, `(status, lastActivityAt, id)` en `(lastActivityAt, id)`; aktiwiteit op `(requestId, seq)`; kwitansies op `(userId, requestId)`.
 - Gebruik eksplisiete vreemde-sleutelaksies. Versoeker-, outeur- en verantwoordelike geskiedenis mag nie deur harde gebruikersverwydering verdwyn nie; bestaande sagte anonimisering bly die gebruikerslewensiklus. Slegs aktiewe `ADMIN`-gebruikers is in die eerste proeflopie geldige verantwoordelike persone.
@@ -52,8 +54,8 @@ Gee aangemelde gebruikers 'n eenvoudige plek om verbeterings voor te stel, met '
 - Bind aktiwiteit- en kwitansie-identifiseerders aan die reeds gemagtigde ouerversoek, en filtreer aggregasies vóór telling. Afwesige en ontoeganklike rekords lewer dieselfde `404` sonder metadata.
 - Beskerm `/admin/voorstelle` bedienerkant met `requireAdmin`; sybalksigbaarheid is nie magtiging nie. API-roetes gebruik 'n API-geskikte sessiehelper wat `401/403/503` onderskei eerder as 'n redirect.
 - Persoonlike response is `private, no-store`. Mutasies vereis dieselfde-oorsprong `Origin` wanneer teenwoordig en `application/json`; Better Auth se auth-roetebeskerming word nie as CSRF-beskerming vir pasgemaakte roetes aanvaar nie.
-- Valideer bedienerkant: titel 1-160 getrimde karakters; beskrywing/boodskap/werkvloeinoot 1-10 000; opsionele `pagePath` is 'n relatiewe pad van hoogstens 500 sonder query/hash; bladsygroottes is positiewe heelgetalle met harde maksimums; weergawes/volgordes is nie-negatief; mutasies aanvaar slegs eksplisiet toegelate velde en onderskei `null` van weggelaat.
-- Valideer die resulterende werkvloei: `PLANNED`/`IN_PROGRESS` behou 'n geldige verantwoordelike persoon en volgende stap; sluitingsfases behou hul vereiste rede/uitkoms. Render alle gebruikerinhoud as gewone teks, nooit uitvoerbare HTML of Markdown nie.
+- Valideer bedienerkant: titel 1-160 getrimde karakters; beskrywing/boodskap 1-10 000; opsionele `pagePath` is 'n relatiewe pad van hoogstens 500 sonder query/hash; bladsygroottes is positiewe heelgetalle met harde maksimums; weergawes/volgordes is nie-negatief; mutasies aanvaar slegs eksplisiet toegelate velde en onderskei `null` van weggelaat.
+- Valideer die resulterende werkvloei: `PLANNED`/`IN_PROGRESS` behou 'n geldige verantwoordelike persoon. Render alle gebruikerinhoud as gewone teks, nooit uitvoerbare HTML of Markdown nie.
 
 ### Ongelees-kontrak
 
@@ -74,7 +76,7 @@ Clarissa se laat ack vir seq 2      -> Clarissa: steeds ongelees vir seq 3
 
 ## Tegniese vorm
 
-- Hou databasislogika en toegangsreels in `lib/services/feature-requests.ts`; API-roetes bly dun.
+- Hou databasislogika en toegangsreels in `lib/services/tasks.ts`; API-roetes bly dun.
 - Gebruik bestaande Better Auth, Prisma, Radix Dialog, knoppies, badges, selects, textareas en toast-patrone; voeg geen produksie-afhanklikheid by nie.
 - Plaas dieselfde gebruiker-widget in die publieke en adminlayouts. Die sessiekontrole is die bron van waarheid; moenie enige terugvoerdata in die publieke HTML bedien wanneer daar geen sessie is nie.
 - Gebruik gefokusde API-roetes vir opsomming/lyste, skep, detail/tydlyn, werkvloei, boodskappe en leeskwitansies. Alle response gebruik stabiele Afrikaanse foutkodes/boodskappe en begrensde DTO's; geen rou Prisma-rekords nie.
@@ -112,13 +114,13 @@ Voorstelle-knoppie
 
 Adminbord (wyd): Nuut | Beplan | Besig | Wag vir terugvoer
 Adminbord (nou): Statusfilter + vertikale lys
-Gesluit: Voltooi | Nie beplan nie
+Gesluit: Voltooi | Gekanselleer
 ```
 
 - Die lys prioritiseer titel, status, `Ongelees`/nuutste antwoord en laaste aktiwiteit. Prioriteit, verantwoordelike persoon en boodskaptelling is sekondêr.
-- Die gesprek wys titel en status, sigbare volgende stap, oorspronklike beskrywing, chronologiese boodskappe/werkvloei-inskrywings en die antwoordveld. `Enter` skep 'n nuwe reël; slegs die sigbare knoppie stuur.
+- Die gesprek wys titel en status, oorspronklike beskrywing, chronologiese boodskappe/werkvloei-inskrywings en die antwoordveld. `Enter` skep 'n nuwe reël; slegs die sigbare knoppie stuur.
 - Terugkeer behou die vorige filter en rolposisie. 'n `Nuwe antwoorde`-skeiding en sprongknoppie voorkom geforseerde rol wanneer iemand ouer boodskappe lees.
-- `Beplan` vereis 'n verantwoordelike persoon en sigbare volgende stap. `Wag vir terugvoer` vereis 'n vraag aan die indiener. `Voltooi` vereis 'n uitkomsnota. `Nie beplan nie` vereis 'n rede en lyk neutraal, nie destruktief nie.
+- `Beplan` en `Besig` vereis 'n verantwoordelike persoon. Ander beplanningsveranderinge stoor onmiddellik en die stelsel skryf self die werkvloei-inskrywing. `Gekanselleer` lyk neutraal, nie destruktief nie.
 - 'n Vierde item na `Besig` wys 'n WIP-waarskuwing en verg eksplisiete bevestiging; dit skuif geen ander item outomaties nie. 'n Antwoord op 'n geslote gesprek heropen dit nie outomaties nie, maar stel admins in kennis.
 - Onder 640 px is die paneel volskerm met veilige-area-spasiëring, vaste kop, een rolbare inhoudsgebied en 'n bereikbare antwoordvoet bo die sagte sleutelbord. Vanaf 640 px is dit 'n begrensde paneel van ongeveer 560 px.
 - Alle kontroles het minstens 44 x 44 px raakareas. Fokus beweeg na die nuwe skerm se opskrif, keer betekenisvol terug, en dinamiese laai-/stuur-/foutstate word bondig aangekondig sonder om die hele gesprek te herlees.
@@ -163,10 +165,10 @@ Terugrol beteken dat die vorige toepassingcommit herontplooi word terwyl die nuw
 ## Proeflopie en bedryfsooreenkoms
 
 - Hierdie eerste uitrol toets uitsluitlik die werkvloei tussen genooide webwerfadmins/redigeerders, aanvanklik Pieter en Clarissa. Dit bewys niks oor gemeentelede se behoefte aan 'n publieke terugvoerstelsel nie.
-- Nuwe versoeke begin in `Nuut`. Pieter hersien die bord minstens weekliks; 'n item beweeg eers na `Beplan` wanneer 'n verantwoordelike persoon en volgende stap vasgelê is.
-- Hou hoogstens drie items gelyk in `Besig`. Gebruik `Nie beplan nie` met 'n verduidelikende boodskap wanneer die span 'n versoek afwys of as duplikaat sluit.
+- Nuwe take begin in `Nuut`. ’n Item beweeg eers na `Beplan` wanneer ’n verantwoordelike persoon toegewys is.
+- Hou hoogstens drie items gelyk in `Besig`. Gebruik `Gekanselleer` wanneer die span 'n taak afwys of as duplikaat sluit.
 - Hersien die proeflopie ná vier weke: gebruik, tyd tot eerste antwoord, tyd tot besluit, gesprekke wat steeds handmatig elders gejaag moes word, en administrasietyd. Brei slegs uit indien opvolg aantoonbaar beter is.
-- `Eerste antwoord` is die eerste boodskap deur iemand anders as die indiener; `eerste besluit` is die eerste skuif na `PLANNED`, `DONE` of `NOT_PLANNED`. Rapporteer onbeantwoorde/onbesliste versoeke apart eerder as om hulle uit gemiddeldes te laat.
+- `Eerste antwoord` is die eerste boodskap deur iemand anders as die indiener; `eerste besluit` is die eerste skuif na `PLANNED`, `DONE` of `CANCELLED`. Rapporteer onbeantwoorde/onbesliste versoeke apart eerder as om hulle uit gemiddeldes te laat.
 - Die proef slaag wanneer elke versoek teen die volgende weeklikse triage hersien is; Clarissa sonder afrigting kan indien, 'n antwoord vind en antwoord; geen versoek/boodskap verlore of gedupliseer is nie; handmatige opvolg teenoor die aanvangsbasis afneem; en albei gebruikers die administrasielas as aanvaarbaar beoordeel. Handmatige opvolg en administrasietyd word tydens die proef kortliks met die hand aangeteken.
 
 ## Autoplan: CEO-premisetoets
@@ -178,7 +180,7 @@ Pieter het hierdie premisse op `2026-09-15` goedgekeur, met die eksplisiete beve
 1. **Interne proeflopie eerste:** geldig. Die eksplisiete beperking tot aangemelde gebruikers hou die eerste datamodel en misbruikoppervlak klein sonder om 'n latere publieke uitrol te verhinder.
 2. **'n Gesprek, nie net 'n vorm nie:** geldig en noodsaaklik. Die doel is deurlopende kommunikasie en sigbare vordering; 'n eenrigtingvorm sou die kernprobleem net na e-pos of WhatsApp terugskuif.
 3. **Kanban vir administratiewe triage:** geldig vir die huidige lae volume. Die statuskolomme gee onmiddellik 'n gedeelde werkbeeld, maar mobiele gebruikers moet 'n gefiltreerde vertikale lys kry eerder as vyf saamgepersde kolomme.
-4. **Ses fases is genoeg:** geldig. `Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`, `Voltooi` en `Nie beplan nie` onderskei ontvangs, prioritisering, uitvoering, blokkering en 'n eerlike negatiewe besluit sonder projekbestuur-oormaat.
+4. **Ses fases is genoeg:** geldig. `Nuut`, `Beplan`, `Besig`, `Wag vir terugvoer`, `Voltooi` en `Gekanselleer` onderskei ontvangs, prioritisering, uitvoering, blokkering en 'n eerlike negatiewe besluit sonder projekbestuur-oormaat.
 5. **Geen e-pos/WhatsApp in weergawe een:** aanvaarbaar mits die produk ongelees-aanwysers het en die klein personeelproef 'n weeklikse hersieningsritme volg. Sonder enige aanduiding of ritme sou die gesprek maklik stilval.
 6. **Adminbeheer, eie sigbaarheid:** geldig. Alle aangemelde rolle mag voorstel en hul eie gesprekke sien; slegs `ADMIN` mag die globale bord, prioriteit, toewysing en status bestuur.
 7. **Geen sleep-en-los afhanklikheid:** geldig. Eksplisiete statuskeuses werk op sleutelbord, raakskerm en vir nie-tegniese gebruikers; sleep-en-los kan later as 'n gerief bykom.
@@ -212,18 +214,18 @@ Die plan lewer die kernlus volledig, maar laat kanaalkennisgewings, publieke mod
 |---|---|---|---|---|---|---|
 | 1 | CEO | Bou 'n tweerigtinggesprek per versoek | Mechanical | Completeness | Dit is nodig vir die gebruiker se kommunikasiedoel | Eenrigting indieningsvorm |
 | 2 | CEO | Voeg per-gebruiker leesstatus by | Mechanical | Completeness | In-app gesprekke sonder e-pos benodig 'n betroubare nuwe-antwoordsein | Geen kennisgewingsaanwyser |
-| 3 | CEO | Gebruik ses eenvoudige fases | Taste | Explicit over clever | `Wag vir terugvoer` en `Nie beplan nie` onderskei blokkering van 'n negatiewe besluit | Slegs drie fases |
+| 3 | CEO | Gebruik ses eenvoudige fases | Taste | Explicit over clever | `Wag vir terugvoer` en `Gekanselleer` onderskei blokkering van 'n negatiewe besluit | Slegs drie fases |
 | 4 | CEO | Gebruik statuskeuses voor sleep-en-los | Taste | Pragmatic | Dieselfde funksie met beter toegang en minder kompleksiteit | Sleep-en-los in weergawe een |
 | 5 | CEO | Bêre onafhanklike leeskwitansies per gebruiker | Mechanical | Completeness | Een admin se leesaksie mag nooit 'n ander admin se ongelees-aanwyser skoonmaak nie | Een gedeelde `isRead`-vlag |
 | 6 | CEO | Maak die widget ook binne admin beskikbaar | Mechanical | Completeness | Die proefgebruikers werk hoofsaaklik in admin en moet die korrekte bladsykonteks kan rapporteer | Slegs publieke layout |
-| 7 | CEO | Voeg `Nie beplan nie` en geslote filters by | Mechanical | Explicit over clever | Die werkvloei moet eerlik kan sê nee sonder om `Voltooi` te verdraai | Alle versoeke eindig as `Voltooi` |
+| 7 | CEO | Voeg `Gekanselleer` en geslote filters by | Mechanical | Explicit over clever | Die werkvloei moet eerlik kan sê nee sonder om `Voltooi` te verdraai | Alle versoeke eindig as `Voltooi` |
 | 8 | CEO | Behou 'n afsonderlike feature-domein | Taste | DRY | Kontaknavrae het geen gesprek/eienaar/ontwikkelingsvloei nie; hergebruik UI- en auth-patrone, nie die verkeerde datamodel nie | Brei `ContactSubmission` uit |
 | 9 | CEO | Vierweke personeelproef met 'n weeklikse triageritme | Mechanical | Bias toward action | Dit laat ons lewer én meet sonder om 'n toekomstige publieke uitrol voor te gee | Oop-einde uitrol |
 | 10 | Design | Laat admin-ongelees alle toeganklike gesprekke dek | Mechanical | Completeness | Nuwe Clarissa-versoeke moet vir Pieter uitvoerbaar sigbaar wees sonder om kontaknavrae te vermeng | Slegs eie versoeke in die knoppie |
 | 11 | Design | Erken slegs werklik gerenderde aktiwiteit as gelees | Mechanical | Correctness | 'n Lys-oopmaak of laat netwerkantwoord mag nie ongesiene werk uitvee nie | Merk hele gesprek by lys-oopmaak gelees |
 | 12 | Design | Gebruik drie aparte paneelskerms | Mechanical | Explicit over clever | Skepping, lys en gesprek kry elk een duidelike primêre taak | Alles gelyk in een klein paneel |
 | 13 | Design | Bewaar konsepte per gebruiker in oortjiesessie | Mechanical | Completeness | Sluit, navigasie en heraanmelding is normale paaie en mag geen teks verloor nie | Slegs geheue- of foutbehoud |
-| 14 | Design | Maak werkvloeivereistes sigbaar en atomies | Mechanical | Completeness | Verantwoordelike persoon, volgende stap en sluitingsrede moet saam met status verstaanbaar wees | Slegs ouditlog of los statuskeuse |
+| 14 | Design | Maak werkvloeiveranderinge onmiddellik en verstaanbaar | Mechanical | Completeness | Verantwoordelike persoon en status word sonder ’n aparte stoorknoppie bewaar | Slegs ouditlog of los statuskeuse |
 | 15 | Design | Gebruik vier aktiewe kolomme en 'n aparte geslote aansig | Taste | Subtraction | Ses gelyke kolomme verswak skandering en maak aktiewe werk te nou | Alle statusse altyd op een bord |
 | 16 | Design | Minimum 44 px teikens en 16 px kernteks | Mechanical | Accessibility | Dit pas die personeelgehoor en maak portaal-tipografie onafhanklik van layout-erfenis | Vertrou op bestaande standaardklasse |
 | 17 | Eng | Gebruik 'n geordende aktiwiteitstroom en per-gebruiker hoëwatermerk | Mechanical | Correctness | Eie latere aktiwiteit mag nie 'n ander persoon se vroeëre ongeleesde aktiwiteit versteek nie | Tydstempel of jongste-akteur alleen |
@@ -356,12 +358,12 @@ Die afsonderlike domein pas die repository, maar die bestaande `createAuditLog` 
 
 ```text
 Publieke layout / Admin layout
-  -> FeatureRequestController (sessie, konsepte, polling, deduplisering)
+  -> TaskController (sessie, konsepte, polling, deduplisering)
        -> Widget: lys -> skep -> gedeelde gesprek
        -> Adminbord -> gedeelde gesprek + werkvloeiredigeerder
-            -> Dun /api/feature-requests roetes
+            -> Dun /api/tasks roetes
                  -> API-sessie + origin/content-type + no-store
-                 -> feature-requests diens
+                 -> tasks-diens
                       -> toegangsmatriks en resulterende-toestandreëls
                       -> idempotensie en cursorprojeksies
                       -> Prisma-transaksie
@@ -458,14 +460,14 @@ Modus: `FULL_REVIEW` (`CEO -> DESIGN -> ENG`; DX korrek oorgeslaan)
 ### Smaakkeuses by die hek
 
 1. Behou 'n afsonderlike interne voorstelle-domein; moenie kontaknavrae met produkwerk meng nie.
-2. Gebruik ses statusse, insluitend `Wag vir terugvoer` en die eerlike sluiting `Nie beplan nie`.
+2. Gebruik ses statusse, insluitend `Wag vir terugvoer` en die eerlike sluiting `Gekanselleer`.
 3. Gebruik eksplisiete statusaksies en geen drag-and-drop in die eerste weergawe nie.
 4. Hou drie `Besig`-items as 'n waarskuwing/werkritme, nie 'n harde globale databasisperk nie.
 
 ### Implementeringstake
 
 - [ ] Voeg Prisma-modelle, enumwaardes, relasies, unieke sleutels en indekse by.
-- [ ] Bou gedeelde kontrakte en die gemagtigde/transaksionele feature-request-diens.
+- [x] Bou gedeelde kontrakte en die gemagtigde/transaksionele taakdiens.
 - [ ] Bou private API-roetes vir opsomming, lyste, detail/tydlyn, skep, boodskappe, werkvloei en leeskwitansies.
 - [ ] Bou die sessiebewuste beheerder, `Voorstelle`-widget en gedeelde gesprek-UI in publieke en adminlayouts.
 - [ ] Bou `/admin/voorstelle` met responsiewe bord/lys, geslote aansig en werkvloeiredigeerder.

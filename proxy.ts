@@ -105,7 +105,7 @@ export async function proxy(request: NextRequest) {
         const adminApiRoutes = [
           '/api/invitations',
           '/api/users',
-          '/api/feature-requests/assignees'
+          '/api/tasks/assignees'
         ]
 
         if (adminApiRoutes.some(route => pathname.startsWith(route)) && !isAdmin) {
