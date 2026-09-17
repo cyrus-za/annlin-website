@@ -7,18 +7,20 @@ import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth-client'
 import { FeatureRequestWidget } from '@/components/feature-requests/FeatureRequestWidget'
 import { FEATURE_REQUEST_DRAFT_STORAGE_PREFIX } from '@/lib/feature-requests'
+import type { AdminNotification } from '@/lib/admin-notifications'
 
 interface AdminLayoutClientProps {
   children: React.ReactNode
-  notificationCount: number
+  notifications: AdminNotification[]
   user: {
+    id: string
     name: string
     email: string
     role: 'ADMIN' | 'EDITOR'
   }
 }
 
-export function AdminLayoutClient({ children, user, notificationCount }: AdminLayoutClientProps) {
+export function AdminLayoutClient({ children, user, notifications }: AdminLayoutClientProps) {
   const router = useRouter()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false)
@@ -94,7 +96,7 @@ export function AdminLayoutClient({ children, user, notificationCount }: AdminLa
           {/* Header */}
           <AdminHeader
             user={user}
-            notificationCount={notificationCount}
+            notifications={notifications}
             onMenuToggle={handleMobileSidebarToggle}
             onLogout={handleLogout}
           />

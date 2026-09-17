@@ -15,6 +15,7 @@ import {
   Inbox,
   FileText,
   MessageSquarePlus,
+  History,
   Menu,
   X
 } from 'lucide-react'
@@ -75,6 +76,11 @@ const navigationItems: NavigationItem[] = [
     href: '/admin/bladsye',
     icon: FileText,
     adminOnly: true,
+  },
+  {
+    name: 'Veranderingslogboek',
+    href: '/admin/veranderingslogboek',
+    icon: History,
   },
 ]
 

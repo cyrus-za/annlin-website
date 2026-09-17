@@ -49,6 +49,7 @@ export type FeatureRequestSummary = {
   createdAt: string
   requester: { id: string; name: string }
   assignee: { id: string; name: string } | null
+  coverImage: { url: string; filename: string } | null
   messageCount: number
   unread: boolean
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AlertTriangle, MessageSquare, Plus, RefreshCw } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
 import {
@@ -23,26 +24,30 @@ function shortDate(value: string) {
   return new Intl.DateTimeFormat('af-ZA', { day: 'numeric', month: 'short' }).format(new Date(value))
 }
 
-function BoardCard({ request, onOpen, onDragStart }: {
+function BoardCard({ request, currentUserId, onOpen, onDragStart }: {
   request: FeatureRequestSummary
+  currentUserId?: string
   onOpen: () => void
   onDragStart: (event: React.DragEvent) => void
 }) {
   return <button type="button" draggable onDragStart={onDragStart} onClick={onOpen} className="w-full cursor-grab rounded-xl border bg-white p-4 text-left shadow-sm transition hover:border-primary/50 hover:shadow-md active:cursor-grabbing">
+    {request.coverImage && <div className="-mx-4 -mt-4 mb-4 overflow-hidden rounded-t-xl border-b bg-stone-100">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={request.coverImage.url} alt={`Aanhangsel: ${request.coverImage.filename}`} className="aspect-video h-auto w-full object-cover" /></div>}
     <div className="flex items-start gap-2">{request.unread && <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-primary" aria-label="Ongelees" />}<strong className="min-w-0 flex-1 text-sm leading-5 text-stone-900">{request.title}</strong></div>
     <p className="mt-3 text-xs text-muted-foreground">{request.requester.name} · {shortDate(request.lastActivityAt)}</p>
-    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><span className={cn('rounded-full px-2 py-1 font-semibold', request.priority === 'URGENT' ? 'bg-red-100 text-red-800' : request.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' : 'bg-stone-100 text-stone-700')}>{FEATURE_REQUEST_PRIORITY_LABELS[request.priority]}</span>{request.assignee && <span className="truncate text-muted-foreground">{request.assignee.name}</span>}<span className="ml-auto flex items-center gap-1 text-muted-foreground"><MessageSquare className="h-3.5 w-3.5" />{request.messageCount}</span></div>
+    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><span className={cn('rounded-full px-2 py-1 font-semibold', request.priority === 'URGENT' ? 'bg-red-100 text-red-800' : request.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' : 'bg-stone-100 text-stone-700')}>{FEATURE_REQUEST_PRIORITY_LABELS[request.priority]}</span>{request.assignee && <span className={cn('truncate rounded-full px-2 py-1 font-semibold', request.assignee.id === currentUserId ? 'bg-primary text-primary-foreground' : 'bg-stone-100 text-stone-700')}>{request.assignee.id === currentUserId ? 'Aan my' : request.assignee.name}</span>}<span className="ml-auto flex items-center gap-1 text-muted-foreground"><MessageSquare className="h-3.5 w-3.5" />{request.messageCount}</span></div>
   </button>
 }
 
 export function FeatureRequestBoard() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
   const [requests, setRequests] = React.useState<FeatureRequestSummary[]>([])
   const [assignees, setAssignees] = React.useState<Assignee[]>([])
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [selectedSummary, setSelectedSummary] = React.useState<FeatureRequestSummary | null>(null)
   const [detail, setDetail] = React.useState<FeatureRequestDetail | null>(null)
   const [showClosed, setShowClosed] = React.useState(false)
+  const [assignedToMe, setAssignedToMe] = React.useState(false)
   const [mobileStatus, setMobileStatus] = React.useState<FeatureRequestStatusValue>('NEW')
   const [loading, setLoading] = React.useState(true)
   const [saving, setSaving] = React.useState(false)
@@ -64,7 +69,9 @@ export function FeatureRequestBoard() {
   const [createOperationKey, setCreateOperationKey] = React.useState('')
   const workflowOperationKey = React.useRef('')
   const replyOperationKey = React.useRef('')
+  const handledDeepLink = React.useRef('')
   const visibleStatuses = showClosed ? CLOSED_FEATURE_REQUEST_STATUSES : ACTIVE_FEATURE_REQUEST_STATUSES
+  const displayedRequests = assignedToMe ? requests.filter((request) => request.assignee?.id === session?.user.id) : requests
 
   const loadBoard = React.useCallback(async (quiet = false) => {
     if (!quiet) setLoading(true)
@@ -103,6 +110,19 @@ export function FeatureRequestBoard() {
       setRequests((current) => current.map((item) => item.id === request.id ? { ...item, unread: false } : item))
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Voorstel kon nie gelaai word nie') }
   }
+
+  const openDeepLinkedRequest = React.useEffectEvent((request: FeatureRequestSummary) => {
+    void openRequest(request)
+  })
+
+  React.useEffect(() => {
+    const requestId = searchParams.get('voorstel') || ''
+    if (loading || !requestId || handledDeepLink.current === requestId) return
+    const request = requests.find((item) => item.id === requestId)
+    if (!request) return
+    handledDeepLink.current = requestId
+    openDeepLinkedRequest(request)
+  }, [loading, requests, searchParams])
 
   async function moveRequest(request: FeatureRequestSummary, nextStatus: FeatureRequestStatusValue) {
     if (request.status === nextStatus) return
@@ -159,12 +179,12 @@ export function FeatureRequestBoard() {
   const needsWipConfirmation = detail?.status !== 'IN_PROGRESS' && status === 'IN_PROGRESS' && inProgressCount >= 3
 
   return <div className="space-y-6">
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-3xl font-bold text-gray-900">Voorstelle</h1><p className="mt-1 text-gray-600">Prioritiseer idees en hou terugvoer in een gesprek.</p></div><div className="flex flex-wrap gap-2"><Button type="button" onClick={() => { setCreateOperationKey(crypto.randomUUID()); setCreateOpen(true) }}><Plus className="mr-1.5 h-4 w-4" />Nuwe voorstel</Button><Button type="button" variant={showClosed ? 'outline' : 'default'} onClick={() => setShowClosed(false)}>Aktief</Button><Button type="button" variant={showClosed ? 'default' : 'outline'} onClick={() => setShowClosed(true)}>Afgehandel</Button><Button type="button" variant="outline" size="icon" onClick={() => void loadBoard()} aria-label="Verfris"><RefreshCw className="h-4 w-4" /></Button></div></div>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="text-3xl font-bold text-gray-900">Voorstelle</h1><p className="mt-1 text-gray-600">Prioritiseer idees en hou terugvoer in een gesprek.</p></div><div className="flex flex-wrap gap-2"><Button type="button" onClick={() => { setCreateOperationKey(crypto.randomUUID()); setCreateOpen(true) }}><Plus className="mr-1.5 h-4 w-4" />Nuwe voorstel</Button><Button type="button" variant={assignedToMe ? 'default' : 'outline'} onClick={() => setAssignedToMe((value) => !value)}>Aan my toegewys</Button><Button type="button" variant={showClosed ? 'outline' : 'default'} onClick={() => setShowClosed(false)}>Aktief</Button><Button type="button" variant={showClosed ? 'default' : 'outline'} onClick={() => setShowClosed(true)}>Afgehandel</Button><Button type="button" variant="outline" size="icon" onClick={() => void loadBoard()} aria-label="Verfris"><RefreshCw className="h-4 w-4" /></Button></div></div>
     {error && <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</div>}
     <p className="hidden text-sm text-muted-foreground lg:block">Sleep ’n kaart na ’n ander kolom om sy status te verander. Maak die kaart oop vir volledige beplanning.</p>
     {!showClosed && <div className="hidden grid-cols-2 gap-3 lg:grid">{(['DONE', 'NOT_PLANNED'] as const).map((value) => <div key={value} onDragEnter={() => setDragTarget(value)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => dropRequest(event, value)} className={cn('rounded-xl border-2 border-dashed px-4 py-3 text-center text-sm font-medium transition', dragTarget === value ? 'border-primary bg-primary/10 text-primary' : 'border-stone-300 text-muted-foreground')}>Sleep hier vir {FEATURE_REQUEST_STATUS_LABELS[value]}</div>)}</div>}
     <div className="lg:hidden"><label htmlFor="mobile-status" className="mb-1 block text-sm font-medium">Wys status</label><select id="mobile-status" value={mobileStatus} onChange={(event) => setMobileStatus(event.target.value as FeatureRequestStatusValue)} className="h-11 w-full rounded-lg border bg-white px-3">{visibleStatuses.map((value) => <option key={value} value={value}>{FEATURE_REQUEST_STATUS_LABELS[value]}</option>)}</select></div>
-    {loading ? <div className="grid gap-4 lg:grid-cols-4">{[0, 1, 2, 3].map((item) => <div key={item} className="h-44 animate-pulse rounded-2xl bg-stone-100" />)}</div> : <><div className="space-y-3 lg:hidden">{requests.filter((request) => request.status === mobileStatus).map((request) => <BoardCard key={request.id} request={request} onOpen={() => void openRequest(request)} onDragStart={() => undefined} />)}{!requests.some((request) => request.status === mobileStatus) && <p className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">Geen voorstelle nie.</p>}</div><div className={cn('hidden gap-4 lg:grid', showClosed ? 'lg:grid-cols-2' : 'lg:grid-cols-4')}>{visibleStatuses.map((value) => { const column = requests.filter((request) => request.status === value); return <section key={value} onDragEnter={() => setDragTarget(value)} onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragTarget(null) }} onDragOver={(event) => event.preventDefault()} onDrop={(event) => dropRequest(event, value)} className={cn('min-w-0 rounded-2xl p-3 transition', dragTarget === value ? 'bg-primary/10 ring-2 ring-primary/30' : 'bg-stone-100/80')}><header className="mb-3 flex items-center justify-between px-1"><h2 className="font-semibold text-stone-800">{FEATURE_REQUEST_STATUS_LABELS[value]}</h2><span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-stone-600">{column.length}</span></header><div className="space-y-3">{column.map((request) => <BoardCard key={request.id} request={request} onOpen={() => void openRequest(request)} onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', request.id) }} />)}{column.length === 0 && <p className="rounded-xl border border-dashed border-stone-300 p-5 text-center text-sm text-stone-500">Sleep ’n voorstel hierheen</p>}</div></section> })}</div></>}
+    {loading ? <div className="grid gap-4 lg:grid-cols-4">{[0, 1, 2, 3].map((item) => <div key={item} className="h-44 animate-pulse rounded-2xl bg-stone-100" />)}</div> : <><div className="space-y-3 lg:hidden">{displayedRequests.filter((request) => request.status === mobileStatus).map((request) => <BoardCard key={request.id} request={request} currentUserId={session?.user.id} onOpen={() => void openRequest(request)} onDragStart={() => undefined} />)}{!displayedRequests.some((request) => request.status === mobileStatus) && <p className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">Geen voorstelle nie.</p>}</div><div className={cn('hidden gap-4 lg:grid', showClosed ? 'lg:grid-cols-2' : 'lg:grid-cols-4')}>{visibleStatuses.map((value) => { const column = displayedRequests.filter((request) => request.status === value); return <section key={value} onDragEnter={() => setDragTarget(value)} onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragTarget(null) }} onDragOver={(event) => event.preventDefault()} onDrop={(event) => dropRequest(event, value)} className={cn('min-w-0 rounded-2xl p-3 transition', dragTarget === value ? 'bg-primary/10 ring-2 ring-primary/30' : 'bg-stone-100/80')}><header className="mb-3 flex items-center justify-between px-1"><h2 className="font-semibold text-stone-800">{FEATURE_REQUEST_STATUS_LABELS[value]}</h2><span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-stone-600">{column.length}</span></header><div className="space-y-3">{column.map((request) => <BoardCard key={request.id} request={request} currentUserId={session?.user.id} onOpen={() => void openRequest(request)} onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', request.id) }} />)}{column.length === 0 && <p className="rounded-xl border border-dashed border-stone-300 p-5 text-center text-sm text-stone-500">Sleep ’n voorstel hierheen</p>}</div></section> })}</div></>}
 
     <Dialog open={createOpen} onOpenChange={setCreateOpen}><DialogContent className="flex max-h-[92dvh] max-w-2xl flex-col overflow-hidden p-5 sm:p-6"><DialogHeader><DialogTitle>Nuwe voorstel</DialogTitle><DialogDescription>Skep ’n voorstel direk op die volledige bord.</DialogDescription></DialogHeader><form onSubmit={createRequest} className="min-h-0 space-y-4 overflow-y-auto pr-1"><div><label htmlFor="board-create-title" className="mb-1 block text-sm font-medium">Opskrif</label><input id="board-create-title" value={createTitle} onChange={(event) => setCreateTitle(event.target.value)} maxLength={160} required className="h-11 w-full rounded-lg border px-3" /></div><div><label htmlFor="board-create-description" className="mb-1 block text-sm font-medium">Beskrywing</label><textarea id="board-create-description" value={createDescription} onChange={(event) => setCreateDescription(event.target.value)} rows={7} maxLength={10000} required className="w-full resize-none rounded-lg border p-3" /></div><FeatureRequestImageAttachments value={createAttachments} onChange={setCreateAttachments} disabled={saving} /><Button type="submit" disabled={saving || !createTitle.trim() || !createDescription.trim()}>Skep voorstel</Button></form></DialogContent></Dialog>
 

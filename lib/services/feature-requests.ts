@@ -83,6 +83,7 @@ function toSummary(request: Awaited<ReturnType<typeof getRequestRows>>[number]):
     createdAt: request.createdAt.toISOString(),
     requester: request.requester,
     assignee: request.assignee,
+    coverImage: request.attachments[0] ?? null,
     messageCount: request._count.activities,
     unread: latestOtherSeq > lastReadSeq,
   }
@@ -95,6 +96,11 @@ async function getRequestRows(ids: string[], actorId: string) {
     include: {
       requester: { select: { id: true, name: true } },
       assignee: { select: { id: true, name: true } },
+      attachments: {
+        select: { url: true, filename: true },
+        orderBy: { createdAt: 'asc' },
+        take: 1,
+      },
       receipts: { where: { userId: actorId }, select: { lastReadSeq: true }, take: 1 },
       activities: {
         where: { actorId: { not: actorId } },

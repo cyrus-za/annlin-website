@@ -4,6 +4,8 @@ import * as React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/public/ThemeSwitcher'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { ADMIN_NOTIFICATION_STORAGE_PREFIX, type AdminNotification } from '@/lib/admin-notifications'
 import { 
   Menu,
   Bell,
@@ -11,22 +13,54 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  GitCommitHorizontal,
+  Inbox,
+  MessageSquarePlus,
 } from 'lucide-react'
 
 interface AdminHeaderProps {
   user: {
+    id: string
     name: string
     email: string
     role: 'ADMIN' | 'EDITOR'
   }
   onMenuToggle?: () => void
   onLogout?: () => void
-  notificationCount: number
+  notifications: AdminNotification[]
 }
 
-export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }: AdminHeaderProps) {
+export function AdminHeader({ user, onMenuToggle, onLogout, notifications }: AdminHeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false)
+  const [seenIds, setSeenIds] = React.useState<Set<string>>(new Set())
+  const [notificationsReady, setNotificationsReady] = React.useState(false)
+  const storageKey = `${ADMIN_NOTIFICATION_STORAGE_PREFIX}:${user.id}`
+  const unreadNotifications = notifications.filter((notification) => !seenIds.has(notification.id))
+
+  React.useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(storageKey) || '[]') as unknown
+      setSeenIds(new Set(Array.isArray(stored) ? stored.filter((value): value is string => typeof value === 'string') : []))
+    } catch {
+      window.localStorage.removeItem(storageKey)
+    } finally {
+      setNotificationsReady(true)
+    }
+  }, [storageKey])
+
+  function persistSeen(next: Set<string>) {
+    setSeenIds(next)
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify([...next].slice(-500)))
+    } catch {
+      // The in-memory state remains useful when browser storage is unavailable.
+    }
+  }
+
+  function markSeen(id: string) {
+    persistSeen(new Set([...seenIds, id]))
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3">
@@ -56,18 +90,30 @@ export function AdminHeader({ user, onMenuToggle, onLogout, notificationCount }:
             </Link>
           </Button>
 
-          {user.role === 'ADMIN' && (
-            <Button asChild variant="ghost" size="icon" className="relative" title="Kontaknavrae">
-              <Link href="/admin/indienings" aria-label={`${notificationCount} nuwe kontaknavrae`}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative" aria-label={`${notificationsReady ? unreadNotifications.length : 0} ongeleesde kennisgewings`}>
                 <Bell className="h-5 w-5" />
-                {notificationCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">
-                    {notificationCount > 99 ? '99+' : notificationCount}
-                  </span>
-                )}
-              </Link>
-            </Button>
-          )}
+                {notificationsReady && unreadNotifications.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-semibold text-white">{unreadNotifications.length > 99 ? '99+' : unreadNotifications.length}</span>}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[min(24rem,calc(100vw-2rem))] p-2">
+              <div className="flex items-center justify-between gap-3 px-2 py-1">
+                <DropdownMenuLabel className="px-0">Kennisgewings</DropdownMenuLabel>
+                {unreadNotifications.length > 0 && <button type="button" onClick={() => persistSeen(new Set([...seenIds, ...unreadNotifications.map((item) => item.id)]))} className="text-xs font-medium text-primary hover:underline">Merk alles as gelees</button>}
+              </div>
+              <DropdownMenuSeparator />
+              <div className="max-h-96 overflow-y-auto">
+                {unreadNotifications.map((notification) => {
+                  const Icon = notification.kind === 'CONTACT' ? Inbox : notification.kind === 'FEATURE_REQUEST' ? MessageSquarePlus : GitCommitHorizontal
+                  return <DropdownMenuItem key={notification.id} asChild className="items-start p-0"><Link href={notification.href} onClick={() => markSeen(notification.id)} className="flex w-full gap-3 rounded-md px-3 py-3"><Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span className="min-w-0"><strong className="block truncate text-sm text-foreground">{notification.title}</strong><span className="mt-0.5 block text-xs text-muted-foreground">{notification.description}</span></span></Link></DropdownMenuItem>
+                })}
+                {notificationsReady && unreadNotifications.length === 0 && <p className="px-3 py-8 text-center text-sm text-muted-foreground">Geen nuwe kennisgewings nie.</p>}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild><Link href="/admin/veranderingslogboek" className="justify-center font-medium">Bekyk veranderingslogboek</Link></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <ThemeSwitcher />
 
