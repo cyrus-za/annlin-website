@@ -37,7 +37,10 @@ async function main() {
     prisma.user.create({ data: { email: `admin-two-${marker}@example.invalid`, name: 'Test Admin Two', role: 'ADMIN' } }),
     prisma.user.create({ data: { email: `outsider-${marker}@example.invalid`, name: 'Test Outsider', role: 'EDITOR' } }),
   ])
-  const [requester, adminOne, adminTwo, outsider] = users.map((user) => ({ id: user.id, role: user.role }))
+  const requester = { id: users[0].id, role: users[0].role }
+  const adminOne = { id: users[1].id, role: users[1].role }
+  const adminTwo = { id: users[2].id, role: users[2].role }
+  const outsider = { id: users[3].id, role: users[3].role }
 
   try {
     const adminOneBaseline = await getFeatureRequestUnreadCount(adminOne)
