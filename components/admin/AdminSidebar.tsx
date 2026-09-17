@@ -22,6 +22,7 @@ import {
 
 interface AdminSidebarProps {
   userRole: 'ADMIN' | 'EDITOR'
+  showMemberPilot?: boolean
   isCollapsed?: boolean
   onToggle?: () => void
 }
@@ -31,6 +32,7 @@ interface NavigationItem {
   href: string
   icon: React.ComponentType<{ className?: string }>
   adminOnly?: boolean
+  memberPilotOnly?: boolean
 }
 
 const navigationItems: NavigationItem[] = [
@@ -66,6 +68,12 @@ const navigationItems: NavigationItem[] = [
     adminOnly: true,
   },
   {
+    name: 'Lidmate',
+    href: '/admin/lidmate',
+    icon: Users,
+    memberPilotOnly: true,
+  },
+  {
     name: 'Navraag',
     href: '/admin/indienings',
     icon: Inbox,
@@ -84,11 +92,11 @@ const navigationItems: NavigationItem[] = [
   },
 ]
 
-export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminSidebarProps) {
+export function AdminSidebar({ userRole, showMemberPilot = false, isCollapsed = false, onToggle }: AdminSidebarProps) {
   const pathname = usePathname()
   
   const filteredItems = navigationItems.filter(item => 
-    !item.adminOnly || userRole === 'ADMIN'
+    (!item.adminOnly || userRole === 'ADMIN') && (!item.memberPilotOnly || showMemberPilot)
   )
 
   return (
@@ -178,10 +186,12 @@ export function AdminSidebar({ userRole, isCollapsed = false, onToggle }: AdminS
 // Mobile sidebar overlay
 export function MobileAdminSidebar({ 
   userRole, 
+  showMemberPilot,
   isOpen, 
   onClose 
 }: { 
   userRole: 'ADMIN' | 'EDITOR'
+  showMemberPilot?: boolean
   isOpen: boolean
   onClose: () => void 
 }) {
@@ -199,7 +209,7 @@ export function MobileAdminSidebar({
       
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden">
-        <AdminSidebar userRole={userRole} onToggle={onClose} />
+        <AdminSidebar userRole={userRole} showMemberPilot={showMemberPilot} onToggle={onClose} />
       </div>
     </>
   )

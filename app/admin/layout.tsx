@@ -4,6 +4,7 @@ import type { UserRole } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { listTasks } from '@/lib/services/tasks'
 import type { AdminNotification } from '@/lib/admin-notifications'
+import { requireMemberCapability } from '@/lib/members/authorization'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,12 +15,13 @@ interface AdminLayoutProps {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = await requireAuth()
   const actor = { id: user.id, role: user.role as UserRole }
-  const [contacts, taskPage, changes] = await Promise.all([
+  const [contacts, taskPage, changes, memberAccess] = await Promise.all([
     user.role === 'ADMIN'
       ? prisma.contactSubmission.findMany({ where: { status: 'NEW' }, select: { id: true, subject: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 100 })
       : Promise.resolve([]),
     listTasks(actor, { scope: 'unread', limit: 100 }),
     prisma.changelogEntry.findMany({ select: { id: true, title: true, category: true, publishedAt: true }, orderBy: { publishedAt: 'desc' }, take: 100 }),
+    requireMemberCapability(user.id, 'MEMBER_READ').then(() => true).catch(() => false),
   ])
   const notifications: AdminNotification[] = [
     ...contacts.map((contact) => ({
@@ -57,6 +59,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         role: user.role as UserRole
       }}
       notifications={notifications}
+      showMemberPilot={memberAccess}
     >
       {children}
     </AdminLayoutClient>

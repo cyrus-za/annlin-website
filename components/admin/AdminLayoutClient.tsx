@@ -12,6 +12,7 @@ import type { AdminNotification } from '@/lib/admin-notifications'
 interface AdminLayoutClientProps {
   children: React.ReactNode
   notifications: AdminNotification[]
+  showMemberPilot: boolean
   user: {
     id: string
     name: string
@@ -20,7 +21,7 @@ interface AdminLayoutClientProps {
   }
 }
 
-export function AdminLayoutClient({ children, user, notifications }: AdminLayoutClientProps) {
+export function AdminLayoutClient({ children, user, notifications, showMemberPilot }: AdminLayoutClientProps) {
   const router = useRouter()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false)
@@ -76,6 +77,7 @@ export function AdminLayoutClient({ children, user, notifications }: AdminLayout
       {/* Mobile sidebar */}
       <MobileAdminSidebar
         userRole={user.role}
+        showMemberPilot={showMemberPilot}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
@@ -86,6 +88,7 @@ export function AdminLayoutClient({ children, user, notifications }: AdminLayout
         <div className="hidden lg:block">
           <AdminSidebar
             userRole={user.role}
+            showMemberPilot={showMemberPilot}
             isCollapsed={isSidebarCollapsed}
             onToggle={handleSidebarToggle}
           />
