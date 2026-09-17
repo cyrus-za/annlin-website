@@ -86,6 +86,14 @@ export async function updateMember(actorId: string, memberId: string, input: Upd
       if (current.version !== input.version) {
         throw new MemberCommandError('CONFLICT', 'Iemand het hierdie rekord intussen verander')
       }
+      if (
+        current.firstNames === normalized.firstNames &&
+        current.preferredName === normalized.preferredName &&
+        current.lastName === normalized.lastName &&
+        current.status === normalized.status
+      ) {
+        return current
+      }
 
       const changed = await tx.member.updateMany({
         where: { id: memberId, version: input.version },

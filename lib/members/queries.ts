@@ -270,5 +270,5 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
         fields: summarizeMemberAuditChanges(event.changes),
       })),
     }
-  })
+  }, { timeout: 30_000 })
 }
