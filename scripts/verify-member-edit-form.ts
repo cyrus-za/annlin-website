@@ -36,6 +36,7 @@ const valid = {
   firstNames: '  Toets   Lid  ',
   preferredName: '',
   lastName: 'Sinteties',
+  birthDate: '1980-02-29',
   status: 'ACTIVE',
 }
 
@@ -46,6 +47,7 @@ if (parsed.ok) {
   check('first names are normalised', parsed.value.input.firstNames === 'Toets Lid')
   check('empty preferred name becomes null', parsed.value.input.preferredName === null)
   check('last name is kept', parsed.value.input.lastName === 'Sinteties')
+  check('birth date is parsed', parsed.value.input.birthDate?.toISOString().slice(0, 10) === '1980-02-29')
   check('status is typed', parsed.value.input.status === 'ACTIVE')
   check('version is an integer', parsed.value.version === 3)
   check('member id is passed through unchanged', parsed.value.memberId === valid.memberId)
@@ -80,6 +82,10 @@ const badStatus = parseMemberEditForm(form({ ...valid, status: 'DROP TABLE' }))
 check('unknown status is rejected on the field', !badStatus.ok && badStatus.state.status === 'error' && badStatus.state.field === 'status')
 const lowerStatus = parseMemberEditForm(form({ ...valid, status: 'active' }))
 check('status comparison is exact', !lowerStatus.ok)
+const badBirthDate = parseMemberEditForm(form({ ...valid, birthDate: '2025-02-29' }))
+check('invalid calendar date is rejected', !badBirthDate.ok && badBirthDate.state.status === 'error' && badBirthDate.state.field === 'birthDate')
+const emptyBirthDate = parseMemberEditForm(form({ ...valid, birthDate: '' }))
+check('empty birth date is accepted', emptyBirthDate.ok && emptyBirthDate.value.input.birthDate === null)
 check('messages are Afrikaans and free of internals', !noFirst.ok && noFirst.state.status === 'error' && /verpligtend/.test(noFirst.state.message) && !/prisma|sql|undefined/i.test(noFirst.state.message))
 
 // Failure mapping never leaks internals and keeps conflicts actionable.
@@ -104,12 +110,13 @@ check('archived stays selectable for an archived record', archivedOptions.includ
 check('options carry Afrikaans labels', memberStatusOptions('ACTIVE').every((option) => option.label.length > 0 && option.label !== option.value))
 
 // Dirty check mirrors storage normalisation so a no-op save is not offered.
-const current = { firstNames: 'Toets Lid', preferredName: '', lastName: 'Sinteties', status: 'ACTIVE' as const }
+const current = { firstNames: 'Toets Lid', preferredName: '', lastName: 'Sinteties', birthDate: '1980-02-29', status: 'ACTIVE' as const }
 check('identical values are not dirty', !hasMemberEditChanges({ ...current }, current))
 check('whitespace-only edits are not dirty', !hasMemberEditChanges({ ...current, firstNames: '  Toets   Lid ' }, current))
 check('name change is dirty', hasMemberEditChanges({ ...current, lastName: 'Ander' }, current))
 check('status change is dirty', hasMemberEditChanges({ ...current, status: 'INACTIVE' }, current))
 check('preferred name change is dirty', hasMemberEditChanges({ ...current, preferredName: 'Alfa' }, current))
+check('birth date change is dirty', hasMemberEditChanges({ ...current, birthDate: '1981-02-28' }, current))
 check('normalizeName collapses internal whitespace', normalizeName(' a \t b\n c ') === 'a b c')
 
 if (failures.length > 0) {

@@ -9,13 +9,14 @@ import { MEMBER_STATUS_LABELS } from './labels'
  * validation, authorization and optimistic concurrency.
  */
 
-export const MEMBER_EDIT_FIELDS = ['firstNames', 'preferredName', 'lastName', 'status'] as const
+export const MEMBER_EDIT_FIELDS = ['firstNames', 'preferredName', 'lastName', 'birthDate', 'status'] as const
 export type MemberEditField = (typeof MEMBER_EDIT_FIELDS)[number]
 
 export type MemberEditValues = {
   firstNames: string
   preferredName: string
   lastName: string
+  birthDate: string
   status: MemberStatus
 }
 
@@ -35,6 +36,7 @@ export type ParsedMemberEdit = {
     firstNames: string
     preferredName: string | null
     lastName: string
+    birthDate: Date | null
     status: MemberStatus
   }
 }
@@ -62,6 +64,14 @@ export function normalizeName(value: string): string {
 
 export function isMemberStatus(value: unknown): value is MemberStatus {
   return typeof value === 'string' && (MEMBER_STATUSES as string[]).includes(value)
+}
+
+export function parseOptionalDate(value: string): Date | null | undefined {
+  const cleaned = value.trim()
+  if (!cleaned) return null
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(cleaned)) return undefined
+  const parsed = new Date(`${cleaned}T00:00:00.000Z`)
+  return Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== cleaned ? undefined : parsed
 }
 
 function fieldError(field: MemberEditField, message: string): { ok: false; state: MemberEditState } {
@@ -97,6 +107,11 @@ export function parseMemberEditForm(formData: FormData): { ok: true; value: Pars
   if (!lastName) return fieldError('lastName', 'Van is verpligtend.')
   if (lastName.length > MEMBER_NAME_MAX_LENGTH) return fieldError('lastName', `Van mag hoogstens ${MEMBER_NAME_MAX_LENGTH} karakters wees.`)
 
+  const birthDate = parseOptionalDate(formText(formData, 'birthDate'))
+  if (birthDate === undefined || (birthDate && birthDate > new Date())) {
+    return fieldError('birthDate', 'Vul ’n geldige geboortedatum in wat nie in die toekoms is nie.')
+  }
+
   const status = formText(formData, 'status')
   if (!isMemberStatus(status)) return fieldError('status', 'Kies ’n geldige status.')
 
@@ -105,7 +120,7 @@ export function parseMemberEditForm(formData: FormData): { ok: true; value: Pars
     value: {
       memberId,
       version,
-      input: { firstNames, preferredName: preferredName || null, lastName, status },
+      input: { firstNames, preferredName: preferredName || null, lastName, birthDate, status },
     },
   }
 }
@@ -126,6 +141,7 @@ export function hasMemberEditChanges(draft: MemberEditValues, current: MemberEdi
     normalizeName(draft.firstNames) !== normalizeName(current.firstNames) ||
     normalizeName(draft.preferredName) !== normalizeName(current.preferredName) ||
     normalizeName(draft.lastName) !== normalizeName(current.lastName) ||
+    draft.birthDate !== current.birthDate ||
     draft.status !== current.status
   )
 }

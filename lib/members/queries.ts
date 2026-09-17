@@ -90,6 +90,7 @@ const personSelect = {
   firstNames: true,
   preferredName: true,
   lastName: true,
+  birthDate: true,
   status: true,
 } satisfies Prisma.MemberSelect
 
@@ -114,6 +115,49 @@ async function tryMemberCapability(
     if (error instanceof MemberAuthorizationError) return null
     throw error
   }
+}
+
+export async function getMemberCreateOptions(userId: string) {
+  const access = await requireMemberCapability(userId, 'MEMBER_WRITE')
+  const now = new Date()
+  const wards = await prisma.ward.findMany({
+    where: {
+      ...(access.scope.kind === 'WARDS' ? { id: { in: access.scope.wardIds } } : {}),
+      activeFrom: { lte: now },
+      OR: [{ activeTo: null }, { activeTo: { gte: now } }],
+    },
+    select: { id: true, code: true, name: true },
+    orderBy: [{ code: 'asc' }, { name: 'asc' }],
+  })
+  return { wards, wardRequired: access.scope.kind === 'WARDS' }
+}
+
+export async function getMemberManagementOptions(userId: string, memberId: string) {
+  const access = await requireMemberCapability(userId, 'MEMBER_WRITE')
+  const member = await prisma.member.findFirst({ where: { AND: [{ id: memberId }, scopeWhere(access.scope)] }, select: { id: true } })
+  if (!member) return null
+  const now = new Date()
+  const [wards, households] = await Promise.all([
+    prisma.ward.findMany({
+      where: {
+        ...(access.scope.kind === 'WARDS' ? { id: { in: access.scope.wardIds } } : {}),
+        activeFrom: { lte: now },
+        OR: [{ activeTo: null }, { activeTo: { gte: now } }],
+      },
+      select: { id: true, code: true, name: true },
+      orderBy: [{ code: 'asc' }, { name: 'asc' }],
+    }),
+    prisma.household.findMany({
+      where: {
+        archivedAt: null,
+        ...(access.scope.kind === 'WARDS' ? { wardAssignments: { some: { endDate: null, wardId: { in: access.scope.wardIds } } } } : {}),
+      },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+      take: 500,
+    }),
+  ])
+  return { wards, households, wardRequired: access.scope.kind === 'WARDS', canCreateHousehold: access.scope.kind === 'GLOBAL' }
 }
 
 /**
@@ -224,6 +268,7 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
       firstNames: member.firstNames,
       preferredName: member.preferredName,
       lastName: member.lastName,
+      birthDate: member.birthDate,
       status: member.status,
       version: member.version,
       archivedAt: member.archivedAt,

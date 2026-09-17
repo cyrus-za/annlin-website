@@ -5,7 +5,7 @@ import type { UserRole } from '@prisma/client'
 import { requireAuth } from '@/lib/auth-config'
 import { MemberAuthorizationError } from '@/lib/members/authorization'
 import type { MemberDetail, MemberDetailFieldChange } from '@/lib/members/detail-view'
-import { getMemberDetail } from '@/lib/members/queries'
+import { getMemberDetail, getMemberManagementOptions } from '@/lib/members/queries'
 import {
   CONTACT_TYPE_LABELS,
   HOUSEHOLD_ROLE_LABELS,
@@ -18,6 +18,12 @@ import { listOpenTasksForMember } from '@/lib/services/tasks'
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS } from '@/lib/tasks'
 import { cn } from '@/lib/utils'
 import { MemberEditPanel } from '@/components/admin/members/MemberEditPanel'
+import {
+  ContactEditor,
+  EventEditor,
+  HouseholdEditor,
+  WardEditor,
+} from '@/components/admin/members/MemberRelatedEditors'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,6 +36,12 @@ const AUDIT_ACTION_LABELS: Record<string, string> = {
   RESTORE: 'Heraktiveer',
   UNARCHIVE: 'Heraktiveer',
   VIEW_DETAIL: 'Besigtig',
+  WARD_UPDATE: 'Wyk verander',
+  HOUSEHOLD_UPDATE: 'Huishouding verander',
+  CONTACT_ADD: 'Kontakpunt bygevoeg',
+  CONTACT_UPDATE: 'Kontakpunt verander',
+  CONTACT_END: 'Kontakpunt verwyder',
+  EVENT_ADD: 'Gebeurtenis bygevoeg',
 }
 
 const dateFormatter = new Intl.DateTimeFormat('af-ZA', { dateStyle: 'long', timeZone: 'Africa/Johannesburg' })
@@ -150,6 +162,7 @@ function CoreDetailsSection({ member }: { member: MemberDetail }) {
       <Field label="Voorname">{member.firstNames}</Field>
       <Field label="Noemnaam">{member.preferredName || <span className="text-gray-500">Geen</span>}</Field>
       <Field label="Van">{member.lastName}</Field>
+      <Field label="Geboortedatum">{member.birthDate ? <DateOnly date={member.birthDate} /> : <span className="text-gray-500">Geen</span>}</Field>
       <Field label="Status">{MEMBER_STATUS_LABELS[member.status]}</Field>
     </dl>
   )
@@ -168,6 +181,7 @@ function CoreDetailsSection({ member }: { member: MemberDetail }) {
             firstNames: member.firstNames,
             preferredName: member.preferredName ?? '',
             lastName: member.lastName,
+            birthDate: member.birthDate?.toISOString().slice(0, 10) ?? '',
             status: member.status,
           }}
           statusOptions={memberStatusOptions(member.status)}
@@ -180,12 +194,15 @@ function CoreDetailsSection({ member }: { member: MemberDetail }) {
   )
 }
 
-function HouseholdSection({ member, listParams }: { member: MemberDetail; listParams: RegisterListParams }) {
+type ManagementOptions = NonNullable<Awaited<ReturnType<typeof getMemberManagementOptions>>>
+
+function HouseholdSection({ member, listParams, options }: { member: MemberDetail; listParams: RegisterListParams; options: ManagementOptions | null }) {
   const household = member.household
   if (!household) {
     return (
       <Section id="huishouding" title="Huishouding">
         <Notice>Geen huidige huishouding nie. Hierdie lidmaat is nie tans aan ’n huishouding of besoekpunt gekoppel nie.</Notice>
+        {options && <HouseholdEditor memberId={member.id} version={member.version} currentHouseholdId={null} currentRole="OTHER" currentIsHead={false} households={options.households} canCreateHousehold={options.canCreateHousehold} />}
       </Section>
     )
   }
@@ -233,16 +250,18 @@ function HouseholdSection({ member, listParams }: { member: MemberDetail; listPa
       {member.scopeKind === 'WARDS' && (
         <p className="mt-3 text-sm text-gray-600">Slegs lede binne jou toegelate wyke word hier gewys.</p>
       )}
+      {options && <HouseholdEditor memberId={member.id} version={member.version} currentHouseholdId={household.id} currentRole={household.role} currentIsHead={household.isHead} households={options.households} canCreateHousehold={options.canCreateHousehold} />}
     </Section>
   )
 }
 
-function WardSection({ member }: { member: MemberDetail }) {
+function WardSection({ member, options }: { member: MemberDetail; options: ManagementOptions | null }) {
   const ward = member.ward
   if (!ward) {
     return (
       <Section id="wyk" title="Wyk">
         <Notice>Geen huidige wyk nie. Daar is nie ’n individuele wyktoewysing of ’n huishoudingswyk nie.</Notice>
+        {options && <WardEditor memberId={member.id} version={member.version} currentWardId={null} wards={options.wards} wardRequired={options.wardRequired} />}
       </Section>
     )
   }
@@ -264,11 +283,12 @@ function WardSection({ member }: { member: MemberDetail }) {
           Hierdie individuele toewysing oorheers die huishouding se wyk ({ward.overriddenHouseholdWard.code}: {ward.overriddenHouseholdWard.name}).
         </p>
       )}
+      {options && <WardEditor memberId={member.id} version={member.version} currentWardId={ward.source === 'INDIVIDUAL' ? ward.id : null} wards={options.wards} wardRequired={options.wardRequired} />}
     </Section>
   )
 }
 
-function ContactsSection({ member }: { member: MemberDetail }) {
+function ContactsSection({ member, options }: { member: MemberDetail; options: ManagementOptions | null }) {
   return (
     <Section id="kontak" title="Kontakpunte" description="Slegs huidige kontakpunte word gewys.">
       {member.contacts.length === 0 ? (
@@ -291,6 +311,7 @@ function ContactsSection({ member }: { member: MemberDetail }) {
           ))}
         </ul>
       )}
+      {options && <ContactEditor memberId={member.id} version={member.version} contacts={member.contacts.map(({ id, type, value, isPreferred, verifiedAt }) => ({ id, type, value, isPreferred, isVerified: Boolean(verifiedAt) }))} />}
     </Section>
   )
 }
@@ -338,7 +359,7 @@ function TasksSection({ tasks }: { tasks: LinkedTasks }) {
   )
 }
 
-function EventsSection({ member }: { member: MemberDetail }) {
+function EventsSection({ member, options }: { member: MemberDetail; options: ManagementOptions | null }) {
   return (
     <Section id="gebeure" title="Lidmaatskapgebeure" description="Kerklike lewensiklusgebeure, nuutste eerste.">
       {member.events.length === 0 ? (
@@ -364,6 +385,7 @@ function EventsSection({ member }: { member: MemberDetail }) {
           )}
         />
       )}
+      {options && <EventEditor memberId={member.id} version={member.version} />}
     </Section>
   )
 }
@@ -438,10 +460,18 @@ export default async function MemberDetailPage({
   if (!member) notFound()
 
   let tasks: LinkedTasks = null
+  let managementOptions: ManagementOptions | null = null
   try {
     tasks = await listOpenTasksForMember({ id: user.id, role: user.role as UserRole }, member.id)
   } catch (error) {
     console.error('Gekoppelde take kon nie vir die lidmaatdetail gelaai word nie:', error instanceof Error ? error.name : 'onbekende fout')
+  }
+  if (member.canEdit) {
+    try {
+      managementOptions = await getMemberManagementOptions(user.id, member.id)
+    } catch (error) {
+      if (!(error instanceof MemberAuthorizationError)) throw error
+    }
   }
 
   const backHref = registerHref(listParams, member.id)
@@ -476,13 +506,13 @@ export default async function MemberDetailPage({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
         <div className="min-w-0 space-y-6">
           <CoreDetailsSection member={member} />
-          <HouseholdSection member={member} listParams={listParams} />
-          <WardSection member={member} />
-          <ContactsSection member={member} />
+          <HouseholdSection member={member} listParams={listParams} options={managementOptions} />
+          <WardSection member={member} options={managementOptions} />
+          <ContactsSection member={member} options={managementOptions} />
         </div>
         <div className="min-w-0 space-y-6">
           <TasksSection tasks={tasks} />
-          <EventsSection member={member} />
+          <EventsSection member={member} options={managementOptions} />
           <HistorySection member={member} />
         </div>
       </div>

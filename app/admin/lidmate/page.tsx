@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { requireAuth } from '@/lib/auth-config'
 import { MemberAuthorizationError } from '@/lib/members/authorization'
 import { MEMBER_STATUS_LABELS } from '@/lib/members/labels'
-import { listMembers } from '@/lib/members/queries'
+import { getMemberCreateOptions, listMembers } from '@/lib/members/queries'
 import { memberDetailHref, memberRowId } from '@/lib/members/register-links'
 
 export const dynamic = 'force-dynamic'
@@ -16,11 +16,18 @@ export default async function MembersPage({
   const { user } = await requireAuth()
   const params = await searchParams
   let result
+  let canCreate = false
   try {
     result = await listMembers(user.id, {
       search: params.soek,
       page: Number(params.bladsy || 1),
     })
+    try {
+      await getMemberCreateOptions(user.id)
+      canCreate = true
+    } catch (error) {
+      if (!(error instanceof MemberAuthorizationError)) throw error
+    }
   } catch (error) {
     if (error instanceof MemberAuthorizationError) notFound()
     throw error
@@ -34,7 +41,14 @@ export default async function MembersPage({
           <h1 className="text-3xl font-bold text-gray-900">Lidmaatregister</h1>
           <p className="mt-1 text-base text-gray-600">Sintetiese proefdata. Winkerk bly tans die amptelike register.</p>
         </div>
-        <span className="text-sm text-gray-600">{result.total} rekord{result.total === 1 ? '' : 's'}</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-sm text-gray-600">{result.total} rekord{result.total === 1 ? '' : 's'}</span>
+          {canCreate && (
+            <Link href="/admin/lidmate/nuut" className="inline-flex min-h-11 items-center rounded-md bg-amber-800 px-5 text-base font-semibold text-white hover:bg-amber-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2">
+              Voeg lidmaat by
+            </Link>
+          )}
+        </div>
       </header>
 
       <form className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm" method="get">

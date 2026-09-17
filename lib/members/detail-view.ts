@@ -13,6 +13,7 @@ export type MemberDetailPerson = {
   firstNames: string
   preferredName: string | null
   lastName: string
+  birthDate: Date | null
   status: MemberStatus
 }
 
@@ -115,9 +116,17 @@ const AUDITED_MEMBER_FIELDS: Record<string, string> = {
   firstNames: 'Voorname',
   preferredName: 'Noemnaam',
   lastName: 'Van',
+  birthDate: 'Geboortedatum',
   status: 'Status',
+  ward: 'Wyk',
+  household: 'Huishouding',
+  type: 'Kontaksoort',
+  value: 'Kontakbesonderhede',
+  isPreferred: 'Voorkeurkontakpunt',
+  isVerified: 'Geverifieer',
+  ended: 'Verwyder',
 }
-const HIDDEN_AUDIT_FIELDS: ReadonlySet<string> = new Set(['version', 'id', 'createdAt', 'updatedAt'])
+const HIDDEN_AUDIT_FIELDS: ReadonlySet<string> = new Set(['version', 'id', 'eventId', 'createdAt', 'updatedAt'])
 
 const MAX_NOTE_LENGTH = 500
 const MAX_VALUE_LENGTH = 200

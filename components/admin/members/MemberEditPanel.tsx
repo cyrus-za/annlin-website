@@ -185,6 +185,20 @@ export function MemberEditPanel({ memberId, version, values, statusOptions, read
                 className={controlClassName}
               />
             </FieldShell>
+            <FieldShell id={fieldId('birthDate')} label="Geboortedatum" error={fieldError('birthDate')} optional>
+              <input
+                id={fieldId('birthDate')}
+                name="birthDate"
+                type="date"
+                value={draft.birthDate}
+                onChange={(event) => updateDraft('birthDate', event.target.value)}
+                max={new Date().toISOString().slice(0, 10)}
+                aria-invalid={fieldError('birthDate') ? true : undefined}
+                aria-describedby={describedBy('birthDate')}
+                disabled={pending}
+                className={controlClassName}
+              />
+            </FieldShell>
             <FieldShell id={fieldId('status')} label="Status" error={fieldError('status')}>
               <select
                 id={fieldId('status')}
