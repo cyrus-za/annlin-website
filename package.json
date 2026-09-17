@@ -22,7 +22,8 @@
     "invitations:test": "tsx scripts/test-invitation-system.ts",
     "feature-requests:audit": "tsx scripts/audit-feature-request-system.ts",
     "feature-requests:test": "tsx scripts/test-feature-request-system.ts",
-    "changelog:add": "tsx scripts/add-changelog-entry.ts"
+    "changelog:add": "tsx scripts/add-changelog-entry.ts",
+    "hooks:install": "sh scripts/install-git-hooks.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

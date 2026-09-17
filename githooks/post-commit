@@ -1,0 +1,6 @@
+#!/bin/sh
+
+short_sha="$(git rev-parse --short HEAD)"
+
+printf '\n%s\n' "REMINDER: Voeg commit ${short_sha} by die Veranderingslogboek voordat dit gepush word."
+printf '%s\n\n' 'Gebruik: npm run changelog:add -- --title="..." --description="..." --category="..."'
