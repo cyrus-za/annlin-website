@@ -26,6 +26,7 @@
     "tasks:test": "tsx scripts/test-task-system.ts",
     "tasks:migrate": "tsx scripts/migrate-tasks-schema.ts",
     "changelog:add": "tsx scripts/add-changelog-entry.ts",
+    "changelog:migrate": "tsx scripts/migrate-changelog-entries.ts",
     "hooks:install": "sh scripts/install-git-hooks.sh"
   },
   "dependencies": {

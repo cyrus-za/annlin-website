@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { Prisma } from '@prisma/client'
 import { prisma } from '../lib/db'
 
@@ -25,14 +26,14 @@ async function main() {
   const publishedAt = publishedAtValue ? new Date(publishedAtValue) : new Date()
   if (Number.isNaN(publishedAt.getTime())) throw new Error('Ongeldige --published-at datum')
 
-  const id = `changelog-${commitSha.slice(0, 12)}`
+  const titleHash = createHash('sha256').update(title).digest('hex').slice(0, 12)
+  const id = `changelog-${commitSha.slice(0, 12)}-${titleHash}`
   await prisma.$executeRaw(Prisma.sql`
     INSERT INTO "changelog_entries"
       ("id", "commitSha", "title", "description", "category", "publishedAt", "createdAt")
     VALUES
       (${id}, ${commitSha}, ${title}, ${description}, ${category}, ${publishedAt}, CURRENT_TIMESTAMP)
-    ON CONFLICT ("commitSha") DO UPDATE SET
-      "title" = EXCLUDED."title",
+    ON CONFLICT ("commitSha", "title") DO UPDATE SET
       "description" = EXCLUDED."description",
       "category" = EXCLUDED."category",
       "publishedAt" = EXCLUDED."publishedAt"
