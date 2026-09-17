@@ -100,13 +100,18 @@ const currentWardSelect = {
   take: 1,
 } satisfies Prisma.Member$wardAssignmentsArgs
 
-/** True when the capability check passes; only authorization failures are swallowed. */
-async function hasMemberCapability(db: Prisma.TransactionClient, userId: string, capability: MemberCapability) {
+type MemberAccess = Awaited<ReturnType<typeof requireMemberCapability>>
+
+/** The caller's access for a capability, or null when it is not granted; other failures propagate. */
+async function tryMemberCapability(
+  db: Prisma.TransactionClient,
+  userId: string,
+  capability: MemberCapability,
+): Promise<MemberAccess | null> {
   try {
-    await requireMemberCapability(userId, capability, db)
-    return true
+    return await requireMemberCapability(userId, capability, db)
   } catch (error) {
-    if (error instanceof MemberAuthorizationError) return false
+    if (error instanceof MemberAuthorizationError) return null
     throw error
   }
 }
@@ -137,6 +142,7 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
       where: { AND: [{ id: memberId }, scope] },
       select: {
         ...personSelect,
+        version: true,
         archivedAt: true,
         updatedAt: true,
         wardAssignments: currentWardSelect,
@@ -180,7 +186,12 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
     })
     if (!member) return null
 
-    const historyAvailable = await hasMemberCapability(tx, userId, 'MEMBER_AUDIT_READ')
+    const historyAvailable = (await tryMemberCapability(tx, userId, 'MEMBER_AUDIT_READ')) !== null
+    const writeAccess = await tryMemberCapability(tx, userId, 'MEMBER_WRITE')
+    const canEdit = writeAccess !== null && (
+      writeAccess.scope.kind === 'GLOBAL' ||
+      (await tx.member.count({ where: { AND: [{ id: member.id }, scopeWhere(writeAccess.scope)] } })) > 0
+    )
     const auditEvents = historyAvailable
       ? await tx.memberAuditEvent.findMany({
           where: { entityType: 'Member', entityId: member.id, action: { notIn: [...VIEW_AUDIT_ACTIONS] } },
@@ -214,10 +225,12 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
       preferredName: member.preferredName,
       lastName: member.lastName,
       status: member.status,
+      version: member.version,
       archivedAt: member.archivedAt,
       updatedAt: member.updatedAt,
       scopeKind: access.scope.kind,
       historyAvailable,
+      canEdit,
       household: membership
         ? {
             id: membership.household.id,

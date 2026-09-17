@@ -12,10 +12,12 @@ import {
   MEMBER_STATUS_LABELS,
   MEMBERSHIP_EVENT_LABELS,
 } from '@/lib/members/labels'
+import { memberStatusOptions } from '@/lib/members/edit-form'
 import { memberDetailHref, registerHref, type RegisterListParams } from '@/lib/members/register-links'
 import { listOpenTasksForMember } from '@/lib/services/tasks'
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS } from '@/lib/tasks'
 import { cn } from '@/lib/utils'
+import { MemberEditPanel } from '@/components/admin/members/MemberEditPanel'
 
 export const dynamic = 'force-dynamic'
 
@@ -139,6 +141,42 @@ function LongList<T>({
         </details>
       )}
     </>
+  )
+}
+
+function CoreDetailsSection({ member }: { member: MemberDetail }) {
+  const readView = (
+    <dl className="grid gap-4 sm:grid-cols-2">
+      <Field label="Voorname">{member.firstNames}</Field>
+      <Field label="Noemnaam">{member.preferredName || <span className="text-gray-500">Geen</span>}</Field>
+      <Field label="Van">{member.lastName}</Field>
+      <Field label="Status">{MEMBER_STATUS_LABELS[member.status]}</Field>
+    </dl>
+  )
+
+  return (
+    <Section
+      id="kern"
+      title="Kernbesonderhede"
+      description={member.canEdit ? 'Wysigings word eers gestoor wanneer jy dit uitdruklik bevestig en word in die rekordgeskiedenis aangeteken.' : undefined}
+    >
+      {member.canEdit ? (
+        <MemberEditPanel
+          memberId={member.id}
+          version={member.version}
+          values={{
+            firstNames: member.firstNames,
+            preferredName: member.preferredName ?? '',
+            lastName: member.lastName,
+            status: member.status,
+          }}
+          statusOptions={memberStatusOptions(member.status)}
+          readView={readView}
+        />
+      ) : (
+        readView
+      )}
+    </Section>
   )
 }
 
@@ -429,13 +467,15 @@ export default async function MemberDetailPage({
           <p className="mt-1 break-words text-base text-gray-700">Volle name: {member.firstNames} {member.lastName}</p>
         )}
         <p className="mt-3 text-base text-gray-600">
-          Leesalleen-aansig van sintetiese proefdata. Winkerk bly die amptelike register.
+          {member.canEdit ? 'Sintetiese proefdata. ' : 'Leesalleen-aansig van sintetiese proefdata. '}
+          Winkerk bly die amptelike register.
         </p>
         <p className="mt-1 text-sm text-gray-600">Rekord laas gewysig <DateTime date={member.updatedAt} /></p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
         <div className="min-w-0 space-y-6">
+          <CoreDetailsSection member={member} />
           <HouseholdSection member={member} listParams={listParams} />
           <WardSection member={member} />
           <ContactsSection member={member} />

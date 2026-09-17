@@ -26,11 +26,15 @@ export type MemberDetailFieldChange = {
 }
 
 export type MemberDetail = MemberDetailPerson & {
+  /** Optimistic concurrency token echoed back by the edit form. */
+  version: number
   archivedAt: Date | null
   updatedAt: Date
   scopeKind: 'GLOBAL' | 'WARDS'
   /** False when the caller lacks MEMBER_AUDIT_READ; `history` is then empty and was never queried. */
   historyAvailable: boolean
+  /** True only when the caller holds MEMBER_WRITE and this record falls inside that grant's scope. */
+  canEdit: boolean
   household: {
     id: string
     name: string
