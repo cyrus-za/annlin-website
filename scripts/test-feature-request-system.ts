@@ -11,7 +11,7 @@ import {
   updateFeatureRequestWorkflow,
 } from '../lib/services/feature-requests'
 
-if (process.env.FEATURE_REQUEST_TEST_DATABASE !== '1') {
+if (process.env['FEATURE_REQUEST_TEST_DATABASE'] !== '1') {
   throw new Error('Set FEATURE_REQUEST_TEST_DATABASE=1 only for an isolated test database')
 }
 
