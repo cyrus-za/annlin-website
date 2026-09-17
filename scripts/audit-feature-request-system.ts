@@ -26,7 +26,13 @@ async function main() {
   `
 
   if (!totals) throw new Error('Feature request audit returned no result')
-  const summary = Object.fromEntries(Object.entries(totals).map(([key, value]) => [key, Number(value)]))
+  const summary = {
+    requests: Number(totals.requests),
+    activities: Number(totals.activities),
+    receipts: Number(totals.receipts),
+    sequence_errors: Number(totals.sequence_errors),
+    receipt_errors: Number(totals.receipt_errors),
+  }
   console.log(JSON.stringify(summary, null, 2))
 
   if (summary.sequence_errors !== 0 || summary.receipt_errors !== 0) {
