@@ -36,7 +36,7 @@ check('invalid dates are rejected', !parseMemberCreateForm(form({ ...valid, birt
 check('invalid ward ids are rejected', !parseMemberCreateForm(form({ ...valid, wardId: '../ward' })).ok)
 check('archived cannot be selected on creation', !parseMemberCreateForm(form({ ...valid, status: 'ARCHIVED' })).ok)
 check('unknown status is rejected', !parseMemberCreateForm(form({ ...valid, status: 'UNKNOWN' })).ok)
-check('creation options exclude archived', !memberCreateStatusOptions().some(({ value }) => value === 'ARCHIVED'))
+check('creation options exclude archived', !memberCreateStatusOptions().map(({ value }) => String(value)).includes('ARCHIVED'))
 const hidden = describeMemberCreateFailure('NOT_FOUND', 'secret database detail')
 check('not found hides internals', hidden.status === 'error' && hidden.message !== 'secret database detail')
 
