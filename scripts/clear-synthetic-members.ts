@@ -60,7 +60,7 @@ async function main() {
       households: householdResult.count,
       wards: wardResult.count,
     }
-  }, { isolationLevel: 'Serializable' })
+  }, { isolationLevel: 'Serializable', timeout: 60_000 })
 
   const retainedAuditEvents = await prisma.memberAuditEvent.count({
     where: { entityId: { startsWith: PREFIX } },

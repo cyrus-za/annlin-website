@@ -95,7 +95,7 @@ async function main() {
         update: {},
       })
     }
-  }, { isolationLevel: 'Serializable' })
+  }, { isolationLevel: 'Serializable', timeout: 60_000 })
 
   const [memberCount, householdCount, wardCount] = await Promise.all([
     prisma.member.count({ where: { id: { startsWith: PREFIX } } }),
