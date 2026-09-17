@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Calendar, Mail, MapPin, Phone, Radio, Youtube } from 'lucide-react'
-import { APP_CONFIG } from '@/lib/constants'
+import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -92,11 +93,21 @@ export function Footer() {
               </div>
               
               <a
-                href="tel:012-567-1492"
+                href={CONTACT_DETAILS.phone.href}
                 className="flex min-h-11 items-center space-x-3 text-sm text-amber-200 transition-colors hover:text-white"
               >
                 <Phone className="h-4 w-4 text-amber-400" />
-                <span>012 567 1492</span>
+                <span>{CONTACT_DETAILS.phone.label}</span>
+              </a>
+
+              <a
+                href={CONTACT_DETAILS.whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 items-center space-x-3 text-sm text-amber-200 transition-colors hover:text-white"
+              >
+                <WhatsAppIcon className="h-4 w-4 text-emerald-400" />
+                <span>WhatsApp: {CONTACT_DETAILS.whatsapp.label}</span>
               </a>
               
               <a

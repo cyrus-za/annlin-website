@@ -15,7 +15,7 @@ interface Event {
   location?: string
   categoryId: string
   isRecurring: boolean
-  recurringPattern?: 'WEEKLY' | 'MONTHLY' | 'YEARLY'
+  recurringPattern?: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY' | 'FIRST_WEEKDAY_MONTHLY' | 'YEARLY'
   sermonUrl?: string
   category: {
     id: string

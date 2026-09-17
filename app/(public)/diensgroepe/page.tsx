@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { HandHeart } from 'lucide-react'
 import { PageHero } from '@/components/public/PageHero'
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
+import { CONTACT_DETAILS } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,10 +58,19 @@ export default async function DiensgroepePage() {
                 Kontak Ons
               </Link>
               <a
-                href="tel:012-567-1492"
+                href={CONTACT_DETAILS.phone.href}
                 className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-6 py-3 text-center text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-primary sm:w-auto"
               >
-                Bel Ons: 012 567 1492
+                Bel Ons: {CONTACT_DETAILS.phone.label}
+              </a>
+              <a
+                href={CONTACT_DETAILS.whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-6 py-3 text-center text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-primary sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-5 w-5" />
+                WhatsApp Ons
               </a>
             </div>
           </div>

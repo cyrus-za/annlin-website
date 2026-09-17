@@ -4,6 +4,20 @@ import { format } from 'date-fns'
 import type { Event, EventCategory, Prisma } from '@prisma/client'
 import { requireAuth } from '@/lib/auth-config'
 import { EventsService, type RecurringEventData } from '@/lib/services/events'
+import { z } from 'zod'
+
+const recurringEventSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().min(1).max(2000),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().optional(),
+  location: z.string().max(300).optional(),
+  categoryId: z.string().min(1),
+  recurringPattern: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'FIRST_WEEKDAY_MONTHLY', 'YEARLY']),
+  sermonUrl: z.string().url().or(z.string().regex(/^\/[^\s]*$/)).optional().or(z.literal('')),
+  endRecurrence: z.string().datetime(),
+  maxOccurrences: z.number().int().min(1).max(366).optional(),
+})
 
 type ExportEvent = Event & { category: Pick<EventCategory, 'id' | 'name' | 'color'> }
 
@@ -39,14 +53,20 @@ function generateICalEvent(event: ExportEvent): string {
   icalEvent.push(`CATEGORIES:${event.category.name}`)
 
   // Add recurring rule if applicable
-  if (event.isRecurring && event.recurringPattern) {
+  if (event.isRecurring && event.recurringPattern && !event.recurrenceGroupId) {
     let rrule = 'RRULE:FREQ='
     switch (event.recurringPattern) {
       case 'WEEKLY':
         rrule += 'WEEKLY'
         break
+      case 'BIWEEKLY':
+        rrule += 'WEEKLY;INTERVAL=2'
+        break
       case 'MONTHLY':
         rrule += 'MONTHLY'
+        break
+      case 'FIRST_WEEKDAY_MONTHLY':
+        rrule += 'MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1'
         break
       case 'YEARLY':
         rrule += 'YEARLY'
@@ -156,18 +176,25 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const body = await request.json()
+    const body = recurringEventSchema.parse(await request.json())
+
+    const startDate = new Date(body.startDate)
+    const endDate = body.endDate ? new Date(body.endDate) : undefined
+    const endRecurrence = new Date(body.endRecurrence)
+    if ((endDate && endDate <= startDate) || endRecurrence < startDate) {
+      return NextResponse.json({ error: 'Die herhalingsdatums is ongeldig' }, { status: 400 })
+    }
     
     const recurringEventData: RecurringEventData = {
       title: body.title,
       description: body.description,
-      startDate: new Date(body.startDate),
-      endDate: body.endDate ? new Date(body.endDate) : undefined,
+      startDate,
+      endDate,
       location: body.location,
       categoryId: body.categoryId,
       recurringPattern: body.recurringPattern,
       sermonUrl: body.sermonUrl,
-      endRecurrence: body.endRecurrence ? new Date(body.endRecurrence) : undefined,
+      endRecurrence,
       maxOccurrences: body.maxOccurrences,
     }
     
@@ -186,6 +213,9 @@ export async function POST(request: NextRequest) {
     })
     
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Die herhalende gebeurtenis se besonderhede is ongeldig' }, { status: 400 })
+    }
     console.error('Recurring events generation error:', error)
     return NextResponse.json(
       { error: 'Ongemagtigde toegang' },

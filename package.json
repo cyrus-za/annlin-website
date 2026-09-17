@@ -18,6 +18,8 @@
     "content:audit": "tsx scripts/audit-content-integrity.ts --check-urls",
     "content:test": "tsx scripts/test-wordpress-assets.ts",
     "editor:test": "tsx scripts/test-tiptap-markdown.ts",
+    "events:test": "tsx scripts/test-event-recurrence.ts",
+    "events:migrate": "tsx scripts/migrate-event-recurrence.ts",
     "r2-upload:test": "tsx scripts/test-r2-upload-worker.ts",
     "invitations:test": "tsx scripts/test-invitation-system.ts",
     "tasks:audit": "tsx scripts/audit-task-system.ts",

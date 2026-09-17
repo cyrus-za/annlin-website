@@ -18,11 +18,13 @@ import {
   MapPin, 
   Edit, 
   Eye,
+  Trash2,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
 import { af } from 'date-fns/locale'
+import { RECURRENCE_LABELS, type RecurrencePatternValue } from '@/lib/event-recurrence'
 
 interface Event {
   id: string
@@ -184,7 +186,7 @@ export default function CalendarAdminPage() {
           <StatusBadge status={value ? 'Herhalend' : 'Eenmalig'} />
           {value && row.recurringPattern && (
             <Badge variant="outline" className="text-xs">
-              {row.recurringPattern}
+              {RECURRENCE_LABELS[row.recurringPattern as RecurrencePatternValue] ?? row.recurringPattern}
             </Badge>
           )}
         </div>
@@ -349,6 +351,8 @@ export default function CalendarAdminPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleEventView(event)}
+                              aria-label={`Bekyk ${event.title}`}
+                              title="Bekyk"
                             >
                               <Eye className="h-3 w-3" />
                             </Button>
@@ -356,8 +360,20 @@ export default function CalendarAdminPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleEventEdit(event)}
+                              aria-label={`Redigeer ${event.title}`}
+                              title="Redigeer"
                             >
                               <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => showDeleteConfirmationToast(event.title, () => handleEventDelete(event))}
+                              aria-label={`Verwyder ${event.title}`}
+                              title="Verwyder"
+                            >
+                              <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
@@ -499,7 +515,7 @@ export default function CalendarAdminPage() {
                   </Badge>
                   {selectedEvent.isRecurring && (
                     <Badge variant="outline">
-                      Herhalend - {selectedEvent.recurringPattern}
+                      Herhalend - {RECURRENCE_LABELS[selectedEvent.recurringPattern as RecurrencePatternValue] ?? selectedEvent.recurringPattern}
                     </Badge>
                   )}
                 </div>

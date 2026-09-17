@@ -1,6 +1,8 @@
 import { prisma, safeDatabaseOperation } from '@/lib/db'
 import { Prisma } from '@prisma/client'
-import { addWeeks, addMonths, addYears, isBefore, format } from 'date-fns'
+import { randomUUID } from 'node:crypto'
+import { addYears, format, isAfter } from 'date-fns'
+import { nextRecurringDate, type RecurrencePatternValue } from '@/lib/event-recurrence'
 
 export interface RecurringEventData {
   title: string
@@ -9,7 +11,7 @@ export interface RecurringEventData {
   endDate?: Date
   location?: string
   categoryId: string
-  recurringPattern: 'WEEKLY' | 'MONTHLY' | 'YEARLY'
+  recurringPattern: RecurrencePatternValue
   sermonUrl?: string
   endRecurrence?: Date // When to stop generating recurring events
   maxOccurrences?: number // Maximum number of occurrences
@@ -27,49 +29,33 @@ export class EventsService {
       const eventsToCreate: Prisma.EventCreateManyInput[] = []
       const maxOccurrences = baseEventData.maxOccurrences || 52 // Default to 1 year of weekly events
       const endRecurrence = baseEventData.endRecurrence || addYears(baseEventData.startDate, 2) // Default to 2 years
+      const recurrenceGroupId = randomUUID()
+      const duration = baseEventData.endDate
+        ? baseEventData.endDate.getTime() - baseEventData.startDate.getTime()
+        : null
       
       let currentStartDate = new Date(baseEventData.startDate)
-      let currentEndDate = baseEventData.endDate ? new Date(baseEventData.endDate) : undefined
       let occurrenceCount = 0
 
       // Generate recurring events
       while (
-        isBefore(currentStartDate, endRecurrence) && 
+        !isAfter(currentStartDate, endRecurrence) &&
         occurrenceCount < maxOccurrences
       ) {
         eventsToCreate.push({
           title: baseEventData.title,
           description: baseEventData.description,
           startDate: new Date(currentStartDate),
-          endDate: currentEndDate ? new Date(currentEndDate) : null,
+          endDate: duration === null ? null : new Date(currentStartDate.getTime() + duration),
           location: baseEventData.location,
           categoryId: baseEventData.categoryId,
           isRecurring: true,
           recurringPattern: baseEventData.recurringPattern,
+          recurrenceGroupId,
           sermonUrl: baseEventData.sermonUrl,
         })
 
-        // Calculate next occurrence
-        switch (baseEventData.recurringPattern) {
-          case 'WEEKLY':
-            currentStartDate = addWeeks(currentStartDate, 1)
-            if (currentEndDate) {
-              currentEndDate = addWeeks(currentEndDate, 1)
-            }
-            break
-          case 'MONTHLY':
-            currentStartDate = addMonths(currentStartDate, 1)
-            if (currentEndDate) {
-              currentEndDate = addMonths(currentEndDate, 1)
-            }
-            break
-          case 'YEARLY':
-            currentStartDate = addYears(currentStartDate, 1)
-            if (currentEndDate) {
-              currentEndDate = addYears(currentEndDate, 1)
-            }
-            break
-        }
+        currentStartDate = nextRecurringDate(currentStartDate, baseEventData.recurringPattern)
         
         occurrenceCount++
       }
@@ -206,9 +192,11 @@ export class EventsService {
         throw new Error('Gebeurtenis is nie deel van \'n herhalende reeks nie')
       }
 
-      // Find all events in the series (same title, category, and recurring pattern)
+      // New series have a stable group ID; the fallback keeps older generated data manageable.
       const seriesEvents = await prisma.event.findMany({
-        where: {
+        where: baseEvent.recurrenceGroupId ? {
+          recurrenceGroupId: baseEvent.recurrenceGroupId,
+        } : {
           title: baseEvent.title,
           categoryId: baseEvent.categoryId,
           isRecurring: true,

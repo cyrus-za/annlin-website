@@ -14,7 +14,7 @@ const updateEventSchema = z.object({
   location: z.string().optional(),
   categoryId: z.string().min(1, "Kategorie is verplig").optional(),
   isRecurring: z.boolean().optional(),
-  recurringPattern: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']).optional(),
+  recurringPattern: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'FIRST_WEEKDAY_MONTHLY', 'YEARLY']).optional(),
   sermonUrl: linkSchema.optional().or(z.literal("")),
 })
 

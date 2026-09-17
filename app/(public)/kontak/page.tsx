@@ -26,6 +26,7 @@ import { APP_CONFIG, CONTACT_DETAILS } from '@/lib/constants'
 import { usePublicContentPage } from '@/hooks/use-public-content-page'
 import { readContentText } from '@/lib/content-page-definitions'
 import { PageHero } from '@/components/public/PageHero'
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -388,12 +389,20 @@ export default function ContactPage() {
                     >
                       {CONTACT_DETAILS.phone.label}
                     </a>
-                    <br />
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <WhatsAppIcon className="mt-1 h-5 w-5 text-emerald-600" />
+                  <div>
+                    <h4 className="font-medium text-foreground">WhatsApp</h4>
                     <a
-                      href={CONTACT_DETAILS.mobile.href}
+                      href={CONTACT_DETAILS.whatsapp.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-amber-800 hover:text-amber-950"
                     >
-                      {CONTACT_DETAILS.mobile.label}
+                      {CONTACT_DETAILS.whatsapp.label}
                     </a>
                   </div>
                 </div>

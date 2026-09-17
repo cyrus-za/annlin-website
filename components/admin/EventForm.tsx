@@ -11,14 +11,17 @@ import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessa
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { CalendarIcon, Clock, MapPin, Link as LinkIcon } from 'lucide-react'
-import { format } from 'date-fns'
+import { addYears, format } from 'date-fns'
 import { af } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import { useWatch } from 'react-hook-form'
+import { RECURRENCE_LABELS, type RecurrencePatternValue } from '@/lib/event-recurrence'
 
 const linkSchema = z.string().url("Ongeldige URL").or(z.string().regex(/^\/[^\s]*$/, "Ongeldige skakel"))
 
 // Validation schema
+const recurrencePatternSchema = z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY', 'FIRST_WEEKDAY_MONTHLY', 'YEARLY'])
+
 const eventSchema = z.object({
   title: z.string().min(1, "Titel is verplig").max(200, "Titel mag nie langer as 200 karakters wees nie"),
   description: z.string().min(10, "Beskrywing moet ten minste 10 karakters wees").max(2000, "Beskrywing mag nie langer as 2000 karakters wees nie"),
@@ -29,8 +32,16 @@ const eventSchema = z.object({
   location: z.string().optional(),
   categoryId: z.string().min(1, "Kategorie is verplig"),
   isRecurring: z.boolean().default(false),
-  recurringPattern: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']).optional(),
+  recurringPattern: recurrencePatternSchema.optional(),
+  recurrenceEndDate: z.date().optional(),
   sermonUrl: linkSchema.optional().or(z.literal("")),
+}).superRefine((data, context) => {
+  if (data.isRecurring && !data.recurringPattern) {
+    context.addIssue({ code: 'custom', path: ['recurringPattern'], message: 'Kies ’n herhalende patroon' })
+  }
+  if (data.isRecurring && (!data.recurrenceEndDate || data.recurrenceEndDate < data.startDate)) {
+    context.addIssue({ code: 'custom', path: ['recurrenceEndDate'], message: 'Kies ’n einddatum ná die eerste gebeurtenis' })
+  }
 })
 
 type EventFormData = z.infer<typeof eventSchema>
@@ -54,7 +65,7 @@ function RecurringPatternField({
   options,
 }: {
   isLoading: boolean
-  options: Array<{ value: 'WEEKLY' | 'MONTHLY' | 'YEARLY'; label: string }>
+  options: Array<{ value: RecurrencePatternValue; label: string }>
 }) {
   const isRecurring = useWatch<EventFormData>({ name: 'isRecurring' })
 
@@ -89,6 +100,38 @@ function RecurringPatternField({
   )
 }
 
+function RecurrenceEndDateField() {
+  const isRecurring = useWatch<EventFormData>({ name: 'isRecurring' })
+
+  if (!isRecurring) return null
+
+  return (
+    <FormField
+      name="recurrenceEndDate"
+      render={({ field }) => (
+        <FormItem className="flex flex-col">
+          <FormLabel>Herhaal tot</FormLabel>
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button variant="outline" className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                  {field.value ? format(field.value, 'dd MMMM yyyy', { locale: af }) : <span>Kies einddatum</span>}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+            </PopoverContent>
+          </Popover>
+          <FormDescription>Alle voorkomste tot en met hierdie datum word geskep.</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+}
+
 export function EventForm({
   initialData,
   eventId,
@@ -115,6 +158,7 @@ export function EventForm({
         categoryId: initialData.categoryId || '',
         isRecurring: initialData.isRecurring || false,
         recurringPattern: initialData.recurringPattern || undefined,
+        recurrenceEndDate: initialData.recurrenceEndDate || addYears(startDate, 1),
         sermonUrl: initialData.sermonUrl || '',
       }
     }
@@ -130,6 +174,7 @@ export function EventForm({
       categoryId: '',
       isRecurring: false,
       recurringPattern: undefined,
+      recurrenceEndDate: addYears(new Date(), 1),
       sermonUrl: '',
     }
   }, [initialData])
@@ -175,12 +220,13 @@ export function EventForm({
       categoryId: data.categoryId,
       isRecurring: data.isRecurring,
       recurringPattern: data.isRecurring ? data.recurringPattern : undefined,
+      endRecurrence: data.isRecurring ? data.recurrenceEndDate?.toISOString() : undefined,
       sermonUrl: data.sermonUrl,
     }
 
-    const url = eventId 
+    const url = eventId
       ? `/api/events/${eventId}`
-      : '/api/events'
+      : data.isRecurring ? '/api/events/export' : '/api/events'
     
     const method = eventId ? 'PUT' : 'POST'
     
@@ -211,14 +257,10 @@ export function EventForm({
     label: cat.name,
   }))
 
-  const recurringOptions: Array<{
-    value: 'WEEKLY' | 'MONTHLY' | 'YEARLY'
-    label: string
-  }> = [
-    { value: 'WEEKLY', label: 'Weekliks' },
-    { value: 'MONTHLY', label: 'Maandeliks' },
-    { value: 'YEARLY', label: 'Jaarliks' },
-  ]
+  const recurringOptions = Object.entries(RECURRENCE_LABELS).map(([value, label]) => ({
+    value: value as RecurrencePatternValue,
+    label,
+  }))
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -445,6 +487,7 @@ export function EventForm({
                   isLoading={loadingCategories}
                   options={recurringOptions}
                 />
+                <RecurrenceEndDateField />
               </CardContent>
             </Card>
 

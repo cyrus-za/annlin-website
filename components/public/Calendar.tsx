@@ -33,6 +33,7 @@ import {
 import { af } from 'date-fns/locale'
 import { motion, AnimatePresence } from 'framer-motion'
 import { eventCategoryColor, eventCategoryTint } from '@/lib/event-colors'
+import { RECURRENCE_LABELS, type RecurrencePatternValue } from '@/lib/event-recurrence'
 
 function isInternalHref(href: string) {
   return href.startsWith('/')
@@ -147,9 +148,9 @@ function EventDetailDialog({
                     <CalendarIcon className="h-4 w-4 text-muted-foreground/50" />
                     <span className="text-sm font-medium">Herhalend:</span>
                     <Badge variant="outline" className="text-xs">
-                      {event.recurringPattern === 'WEEKLY' && 'Weekliks'}
-                      {event.recurringPattern === 'MONTHLY' && 'Maandeliks'}
-                      {event.recurringPattern === 'YEARLY' && 'Jaarliks'}
+                      {event.recurringPattern
+                        ? RECURRENCE_LABELS[event.recurringPattern as RecurrencePatternValue] ?? event.recurringPattern
+                        : 'Herhalend'}
                     </Badge>
                   </div>
                 )}

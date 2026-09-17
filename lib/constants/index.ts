@@ -19,6 +19,10 @@ export const CONTACT_DETAILS = {
     label: '079 162 3453',
     href: 'tel:+27791623453',
   },
+  whatsapp: {
+    label: '079 162 3453',
+    href: 'https://wa.me/27791623453',
+  },
   address: [
     'Gereformeerde Kerk Pretoria-Annlin',
     'H/v Braam Pretoriusstraat en Kaneelbaslaan',
