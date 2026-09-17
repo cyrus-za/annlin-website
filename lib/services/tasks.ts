@@ -15,6 +15,7 @@ import {
   type TaskSourceValue,
 } from '@/lib/tasks'
 import { isAllowedR2Upload, isAllowedR2UploadFilename, isAllowedR2UploadKey } from '@/lib/r2-upload-policy'
+import { MemberAuthorizationError, requireMemberCapability } from '@/lib/members/authorization'
 
 export type TaskActor = { id: string; role: UserRole }
 
@@ -52,11 +53,49 @@ function canAccess(actor: TaskActor, requesterId: string): boolean {
 }
 
 async function requireAccessibleTask(actor: TaskActor, id: string) {
-  const task = await prisma.task.findUnique({ where: { id } })
-  if (!task || !canAccess(actor, task.requesterId)) {
+  const task = await prisma.task.findUnique({
+    where: { id },
+    include: { _count: { select: { subjects: true } } },
+  })
+  if (!task) throw new TaskError('NOT_FOUND', 'Taak nie gevind nie')
+  if (task._count.subjects > 0) {
+    try {
+      const access = await requireMemberCapability(actor.id, 'MEMBER_READ')
+      if (access.scope.kind !== 'GLOBAL') throw new MemberAuthorizationError()
+    } catch {
+      throw new TaskError('NOT_FOUND', 'Taak nie gevind nie')
+    }
+  } else if (!canAccess(actor, task.requesterId)) {
     throw new TaskError('NOT_FOUND', 'Taak nie gevind nie')
   }
   return task
+}
+
+function taskAccessSql(actor: TaskActor, onlyMine: boolean) {
+  const ordinaryAccess = actor.role === 'ADMIN' && !onlyMine
+    ? Prisma.sql`TRUE`
+    : Prisma.sql`r."requesterId" = ${actor.id}`
+  const linkedAccess = process.env['MEMBER_PILOT_ENABLED'] === 'true'
+    ? Prisma.sql`EXISTS (
+        SELECT 1
+        FROM "member_pilot_access" mpa
+        JOIN "member_capability_grants" mcg ON mcg."userId" = mpa."userId"
+        JOIN "users" mu ON mu.id = mpa."userId"
+        WHERE mpa."userId" = ${actor.id}
+          AND mu."disabledAt" IS NULL
+          AND (mpa."expiresAt" IS NULL OR mpa."expiresAt" > NOW())
+          AND mcg.capability = 'MEMBER_READ'::"MemberCapability"
+          AND mcg.scope = 'GLOBAL'::"MemberAccessScope"
+          AND (mcg."expiresAt" IS NULL OR mcg."expiresAt" > NOW())
+      )`
+    : Prisma.sql`FALSE`
+  const linkedScope = onlyMine ? Prisma.sql`r."requesterId" = ${actor.id}` : Prisma.sql`TRUE`
+
+  return Prisma.sql`(
+    (NOT EXISTS (SELECT 1 FROM "task_subjects" ts WHERE ts."taskId" = r.id) AND (${ordinaryAccess}))
+    OR
+    (EXISTS (SELECT 1 FROM "task_subjects" ts WHERE ts."taskId" = r.id) AND (${linkedScope}) AND (${linkedAccess}))
+  )`
 }
 
 function encodeCursor(request: { id: string; lastActivityAt: Date }): string {
@@ -124,8 +163,7 @@ export async function listTasks(
   options: { scope: 'mine' | 'all' | 'unread'; status?: TaskStatusValue; source?: TaskSourceValue; cursor?: string; limit: number },
 ) {
   const cursor = decodeCursor(options.cursor)
-  const allAccessible = actor.role === 'ADMIN' && options.scope !== 'mine'
-  const access = allAccessible ? Prisma.sql`TRUE` : Prisma.sql`r."requesterId" = ${actor.id}`
+  const access = taskAccessSql(actor, options.scope === 'mine')
   const status = options.status ? Prisma.sql`AND r.status::text = ${options.status}` : Prisma.empty
   const source = options.source ? Prisma.sql`AND r.source = ${options.source}` : Prisma.empty
   const unread = options.scope === 'unread'
@@ -161,7 +199,7 @@ export async function listTasks(
 }
 
 export async function getTaskUnreadCount(actor: TaskActor, source?: TaskSourceValue): Promise<number> {
-  const access = actor.role === 'ADMIN' ? Prisma.sql`TRUE` : Prisma.sql`r."requesterId" = ${actor.id}`
+  const access = taskAccessSql(actor, false)
   const sourceFilter = source ? Prisma.sql`AND r.source = ${source}` : Prisma.empty
   const [row] = await prisma.$queryRaw<Array<{ count: bigint }>>(Prisma.sql`
     SELECT COUNT(*)::bigint AS count
@@ -273,8 +311,11 @@ export async function addTaskMessage(
   id: string,
   input: CreateTaskMessageInput,
 ) {
-  await requireAccessibleTask(actor, id)
+  const accessibleTask = await requireAccessibleTask(actor, id)
   const attachments = input.attachments ?? []
+  if (accessibleTask._count.subjects > 0 && attachments.length > 0) {
+    throw new TaskError('INVALID', 'Lidmaatgekoppelde take ondersteun nog nie private aanhangsels nie')
+  }
   const attachmentRows = attachments.map((attachment) => attachmentData(actor.id, attachment))
   const hash = payloadHash({ body: input.body, attachments })
   const unique = { requestId: id, actorId: actor.id, kind: 'MESSAGE' as const, operationKey: input.operationKey }
@@ -315,6 +356,7 @@ export async function updateTaskWorkflow(
   input: UpdateTaskWorkflowInput,
 ) {
   if (actor.role !== 'ADMIN') throw new TaskError('FORBIDDEN', 'Onvoldoende regte')
+  await requireAccessibleTask(actor, id)
   const hash = payloadHash(input)
   const unique = { requestId: id, actorId: actor.id, kind: 'WORKFLOW' as const, operationKey: input.operationKey }
   const replay = await prisma.taskActivity.findUnique({ where: { requestId_actorId_kind_operationKey: unique } })

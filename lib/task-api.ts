@@ -18,7 +18,7 @@ export function privateJson(body: unknown, init?: ResponseInit) {
 
 export async function getTaskActor(request: NextRequest): Promise<TaskActor> {
   const session = await auth.api.getSession({ headers: request.headers })
-  if (!session?.user) throw new TaskError('UNAUTHORIZED', 'Meld asseblief aan')
+  if (!session?.user || session.user.disabledAt) throw new TaskError('UNAUTHORIZED', 'Meld asseblief aan')
   return { id: session.user.id, role: session.user.role as UserRole }
 }
 
