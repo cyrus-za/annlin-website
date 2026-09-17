@@ -33,6 +33,7 @@ model User {
   featureRequestsAssigned  FeatureRequest[]            @relation("FeatureRequestAssignee")
   featureRequestActivities FeatureRequestActivity[]
   featureRequestReceipts   FeatureRequestReadReceipt[]
+  featureRequestAttachments FeatureRequestAttachment[]
 
   @@map("users")
 }
@@ -379,6 +380,7 @@ model FeatureRequest {
   assignee   User?                       @relation("FeatureRequestAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   activities FeatureRequestActivity[]
   receipts   FeatureRequestReadReceipt[]
+  attachments FeatureRequestAttachment[]
 
   @@unique([requesterId, creationKey])
   @@index([requesterId, lastActivityAt, id])
@@ -401,11 +403,34 @@ model FeatureRequestActivity {
 
   request FeatureRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   actor   User           @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  attachments FeatureRequestAttachment[]
 
   @@unique([requestId, seq])
   @@unique([requestId, actorId, kind, operationKey])
   @@index([requestId, seq])
   @@map("feature_request_activities")
+}
+
+model FeatureRequestAttachment {
+  id         String   @id @default(cuid())
+  requestId  String
+  activityId String?
+  uploaderId String
+  url        String
+  pathname   String
+  filename   String
+  mimeType   String
+  size       Int
+  createdAt  DateTime @default(now())
+
+  request  FeatureRequest          @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  activity FeatureRequestActivity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  uploader User                    @relation(fields: [uploaderId], references: [id], onDelete: Restrict)
+
+  @@unique([requestId, pathname])
+  @@index([activityId])
+  @@index([uploaderId])
+  @@map("feature_request_attachments")
 }
 
 model FeatureRequestReadReceipt {

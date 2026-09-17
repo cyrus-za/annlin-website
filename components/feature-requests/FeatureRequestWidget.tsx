@@ -10,12 +10,14 @@ import {
   FEATURE_REQUEST_PRIORITY_LABELS,
   FEATURE_REQUEST_STATUS_LABELS,
   type FeatureRequestDetail,
+  type PendingFeatureRequestAttachment,
   type FeatureRequestSummary,
 } from '@/lib/feature-requests'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import { featureRequestJson as requestJson, loadCompleteFeatureRequest } from '@/lib/feature-request-client'
+import { FeatureRequestAttachmentGallery, FeatureRequestImageAttachments } from '@/components/feature-requests/FeatureRequestImageAttachments'
 
 type Screen = { name: 'list' | 'new' } | { name: 'thread'; id: string }
 type Scope = 'mine' | 'all' | 'unread'
@@ -36,15 +38,17 @@ function Thread({ detail, currentUserId, busy, onReply }: {
   detail: FeatureRequestDetail
   currentUserId: string
   busy: boolean
-  onReply: (body: string) => Promise<void>
+  onReply: (body: string, attachments: PendingFeatureRequestAttachment[]) => Promise<void>
 }) {
   const [body, setBody] = React.useState('')
+  const [attachments, setAttachments] = React.useState<PendingFeatureRequestAttachment[]>([])
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
     if (!body.trim()) return
-    await onReply(body.trim())
+    await onReply(body.trim(), attachments)
     setBody('')
+    setAttachments([])
   }
 
   return (
@@ -53,6 +57,7 @@ function Thread({ detail, currentUserId, busy, onReply }: {
         <div className="rounded-xl bg-amber-50 p-4 text-sm leading-6 text-stone-800">
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-800">Oorspronklike voorstel</p>
           <p className="whitespace-pre-wrap">{detail.description}</p>
+          <div className="mt-3"><FeatureRequestAttachmentGallery attachments={detail.attachments} /></div>
         </div>
         {detail.activities.filter((activity) => activity.kind !== 'CREATED').map((activity) => {
           const mine = activity.actor.id === currentUserId
@@ -65,12 +70,14 @@ function Thread({ detail, currentUserId, busy, onReply }: {
                 </div>
                 {activity.kind === 'WORKFLOW' && <p className="mb-1 text-xs font-semibold uppercase tracking-wide">Status opgedateer</p>}
                 <p className="whitespace-pre-wrap">{activity.body}</p>
+                <div className="mt-3"><FeatureRequestAttachmentGallery attachments={activity.attachments} /></div>
               </div>
             </div>
           )
         })}
       </div>
-      <form onSubmit={submit} className="border-t bg-white pt-4">
+      <form onSubmit={submit} className="space-y-3 border-t bg-white pt-4">
+        <FeatureRequestImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
         <label htmlFor={`feature-reply-${detail.id}`} className="sr-only">Skryf ’n antwoord</label>
         <div className="flex items-end gap-2">
           <textarea
@@ -106,6 +113,7 @@ export function FeatureRequestWidget() {
   const [error, setError] = React.useState('')
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
+  const [attachments, setAttachments] = React.useState<PendingFeatureRequestAttachment[]>([])
   const [operationKey, setOperationKey] = React.useState('')
   const replyOperationKey = React.useRef('')
   const user = session?.user
@@ -172,10 +180,11 @@ export function FeatureRequestWidget() {
     const saved = window.sessionStorage.getItem(draftKey)
     if (!saved) return
     try {
-      const draft = JSON.parse(saved) as { title?: string; description?: string; operationKey?: string }
+      const draft = JSON.parse(saved) as { title?: string; description?: string; operationKey?: string; attachments?: PendingFeatureRequestAttachment[] }
       setTitle(draft.title ?? '')
       setDescription(draft.description ?? '')
       setOperationKey(draft.operationKey ?? crypto.randomUUID())
+      setAttachments(draft.attachments ?? [])
     } catch {
       window.sessionStorage.removeItem(draftKey)
       setOperationKey(crypto.randomUUID())
@@ -188,9 +197,9 @@ export function FeatureRequestWidget() {
 
   React.useEffect(() => {
     if (!draftKey) return
-    if (!title && !description) window.sessionStorage.removeItem(draftKey)
-    else window.sessionStorage.setItem(draftKey, JSON.stringify({ title, description, operationKey }))
-  }, [description, draftKey, operationKey, title])
+    if (!title && !description && attachments.length === 0) window.sessionStorage.removeItem(draftKey)
+    else window.sessionStorage.setItem(draftKey, JSON.stringify({ title, description, operationKey, attachments }))
+  }, [attachments, description, draftKey, operationKey, title])
 
   async function createRequest(event: React.FormEvent) {
     event.preventDefault()
@@ -200,11 +209,12 @@ export function FeatureRequestWidget() {
       const created = await requestJson<FeatureRequestDetail>('/api/feature-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title.trim(), description: description.trim(), pagePath: pathname, operationKey }),
+        body: JSON.stringify({ title: title.trim(), description: description.trim(), pagePath: pathname, operationKey, attachments }),
       })
       setTitle('')
       setDescription('')
       setOperationKey(crypto.randomUUID())
+      setAttachments([])
       window.sessionStorage.removeItem(draftKey)
       setDetail(created)
       setScreen({ name: 'thread', id: created.id })
@@ -216,13 +226,13 @@ export function FeatureRequestWidget() {
     }
   }
 
-  async function reply(body: string) {
+  async function reply(body: string, replyAttachments: PendingFeatureRequestAttachment[]) {
     if (screen.name !== 'thread') return
     setBusy(true)
     try {
       if (!replyOperationKey.current) replyOperationKey.current = crypto.randomUUID()
       await requestJson<FeatureRequestDetail>(`/api/feature-requests/${screen.id}/messages`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body, operationKey: replyOperationKey.current }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body, operationKey: replyOperationKey.current, attachments: replyAttachments }),
       })
       replyOperationKey.current = ''
       setDetail(await loadCompleteFeatureRequest(screen.id))
@@ -300,6 +310,7 @@ export function FeatureRequestWidget() {
             <form onSubmit={createRequest} className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pt-5">
               <div><label htmlFor="feature-title" className="mb-1.5 block text-sm font-medium">Opskrif</label><input id="feature-title" value={title} onChange={(event) => setTitle(event.target.value)} maxLength={160} required className="h-11 w-full rounded-lg border border-stone-300 px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" /></div>
               <div className="flex min-h-0 flex-1 flex-col"><label htmlFor="feature-description" className="mb-1.5 block text-sm font-medium">Beskrywing</label><textarea id="feature-description" value={description} onChange={(event) => setDescription(event.target.value)} maxLength={10000} required className="min-h-52 flex-1 resize-none rounded-lg border border-stone-300 p-3 text-base leading-6 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Wat moet verander, en waarom?" /></div>
+              <FeatureRequestImageAttachments value={attachments} onChange={setAttachments} disabled={busy} />
               <p className="text-xs text-muted-foreground">Bladsykonteks: {pathname}</p>
               <Button type="submit" disabled={busy || !operationKey || !title.trim() || !description.trim()}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Stuur voorstel</Button>
             </form>

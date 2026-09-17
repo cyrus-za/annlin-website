@@ -44,6 +44,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/wordpress-media/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-01a6d5f65bcd4bc1aa7f7f9669e4b9e8.r2.dev',
+        port: '',
+        pathname: '/admin-uploads/**',
+      },
     ],
   },
 

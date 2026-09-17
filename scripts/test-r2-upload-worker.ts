@@ -4,7 +4,10 @@ import assert from 'node:assert/strict'
 import worker from '../cloudflare/r2-upload-worker'
 import {
   MAX_R2_UPLOAD_BYTES,
+  MAX_R2_IMAGE_UPLOAD_BYTES,
   R2_UPLOAD_SIGNATURE_TTL_SECONDS,
+  isAllowedR2Upload,
+  isAllowedR2UploadFilename,
   r2UploadSignaturePayload,
 } from '../lib/r2-upload-policy'
 
@@ -89,6 +92,11 @@ async function uploadRequest(options: {
 }
 
 async function main() {
+  assert.equal(isAllowedR2Upload('image/png', MAX_R2_IMAGE_UPLOAD_BYTES), true)
+  assert.equal(isAllowedR2Upload('image/png', MAX_R2_IMAGE_UPLOAD_BYTES + 1), false)
+  assert.equal(isAllowedR2UploadFilename('skermskoot.png', 'image/png'), true)
+  assert.equal(isAllowedR2UploadFilename('skermskoot.pdf', 'image/png'), false)
+
   {
     const { env, writes } = mockEnv()
     const response = await worker.fetch(await uploadRequest(), env)

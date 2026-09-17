@@ -4,9 +4,11 @@ import { prisma } from '@/lib/db'
 import type {
   CreateFeatureRequestInput,
   CreateFeatureRequestMessageInput,
+  FeatureRequestAttachmentInput,
   UpdateFeatureRequestWorkflowInput,
 } from '@/lib/validations/feature-requests'
 import type { FeatureRequestStatusValue, FeatureRequestSummary } from '@/lib/feature-requests'
+import { isAllowedR2Upload, isAllowedR2UploadFilename, isAllowedR2UploadKey } from '@/lib/r2-upload-policy'
 
 export type FeatureRequestActor = { id: string; role: UserRole }
 
@@ -18,6 +20,25 @@ export class FeatureRequestError extends Error {
 
 function payloadHash(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex')
+}
+
+function attachmentData(
+  actorId: string,
+  attachment: FeatureRequestAttachmentInput,
+) {
+  const publicBaseUrl = process.env['R2_PUBLIC_BASE_URL']?.replace(/\/+$/, '')
+  const encodedPath = attachment.pathname.split('/').map(encodeURIComponent).join('/')
+  if (
+    !publicBaseUrl ||
+    attachment.url !== `${publicBaseUrl}/${encodedPath}` ||
+    !isAllowedR2Upload(attachment.mimeType, attachment.size) ||
+    !attachment.mimeType.startsWith('image/') ||
+    !isAllowedR2UploadFilename(attachment.filename, attachment.mimeType) ||
+    !isAllowedR2UploadKey(attachment.pathname, attachment.mimeType)
+  ) {
+    throw new FeatureRequestError('INVALID', 'Ongeldige beeldaanhegsel')
+  }
+  return { ...attachment, uploaderId: actorId }
 }
 
 function canAccess(actor: FeatureRequestActor, requesterId: string): boolean {
@@ -146,7 +167,9 @@ export async function getFeatureRequestUnreadCount(actor: FeatureRequestActor): 
 
 export async function createFeatureRequest(actor: FeatureRequestActor, input: CreateFeatureRequestInput) {
   const normalized = { title: input.title, description: input.description, pagePath: input.pagePath ?? null }
-  const hash = payloadHash(normalized)
+  const attachments = input.attachments ?? []
+  const attachmentRows = attachments.map((attachment) => attachmentData(actor.id, attachment))
+  const hash = payloadHash({ ...normalized, attachments })
   const existing = await prisma.featureRequest.findUnique({
     where: { requesterId_creationKey: { requesterId: actor.id, creationKey: input.operationKey } },
   })
@@ -163,6 +186,7 @@ export async function createFeatureRequest(actor: FeatureRequestActor, input: Cr
           ...normalized,
           creationKey: input.operationKey,
           creationPayloadHash: hash,
+          attachments: { create: attachmentRows },
         },
       })
       await tx.featureRequestActivity.create({
@@ -190,13 +214,18 @@ export async function createFeatureRequest(actor: FeatureRequestActor, input: Cr
 
 export async function getFeatureRequestDetail(actor: FeatureRequestActor, id: string, afterSeq = 0) {
   const request = await requireAccessibleRequest(actor, id)
-  const [rows, activities] = await Promise.all([
+  const [rows, activities, attachments] = await Promise.all([
     getRequestRows([id], actor.id),
     prisma.featureRequestActivity.findMany({
       where: { requestId: id, seq: { gt: afterSeq } },
       include: { actor: { select: { id: true, name: true } } },
       orderBy: { seq: 'asc' },
       take: 101,
+    }),
+    prisma.featureRequestAttachment.findMany({
+      where: { requestId: id },
+      select: { id: true, url: true, filename: true, mimeType: true, size: true, activityId: true },
+      orderBy: { createdAt: 'asc' },
     }),
   ])
   const row = rows[0]
@@ -205,6 +234,7 @@ export async function getFeatureRequestDetail(actor: FeatureRequestActor, id: st
   return {
     ...toSummary(row),
     description: request.description,
+    attachments: attachments.filter((attachment) => attachment.activityId === null),
     activities: page.map((activity) => ({
       id: activity.id,
       seq: activity.seq,
@@ -213,6 +243,7 @@ export async function getFeatureRequestDetail(actor: FeatureRequestActor, id: st
       changes: activity.changes as Record<string, unknown> | null,
       createdAt: activity.createdAt.toISOString(),
       actor: activity.actor,
+      attachments: attachments.filter((attachment) => attachment.activityId === activity.id),
     })),
     throughSeq: page.at(-1)?.seq ?? afterSeq,
     hasMoreActivities: activities.length > 100,
@@ -225,7 +256,9 @@ export async function addFeatureRequestMessage(
   input: CreateFeatureRequestMessageInput,
 ) {
   await requireAccessibleRequest(actor, id)
-  const hash = payloadHash({ body: input.body })
+  const attachments = input.attachments ?? []
+  const attachmentRows = attachments.map((attachment) => attachmentData(actor.id, attachment))
+  const hash = payloadHash({ body: input.body, attachments })
   const unique = { requestId: id, actorId: actor.id, kind: 'MESSAGE' as const, operationKey: input.operationKey }
   const existing = await prisma.featureRequestActivity.findUnique({ where: { requestId_actorId_kind_operationKey: unique } })
   if (existing) {
@@ -239,9 +272,15 @@ export async function addFeatureRequestMessage(
         where: { id },
         data: { activitySeq: { increment: 1 }, lastActivityAt: new Date() },
       })
-      return tx.featureRequestActivity.create({
+      const activity = await tx.featureRequestActivity.create({
         data: { ...unique, seq: request.activitySeq, body: input.body, payloadHash: hash },
       })
+      if (attachmentRows.length > 0) {
+        await tx.featureRequestAttachment.createMany({
+          data: attachmentRows.map((attachment) => ({ ...attachment, requestId: id, activityId: activity.id })),
+        })
+      }
+      return activity
     })
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {

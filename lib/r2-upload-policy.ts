@@ -1,4 +1,5 @@
 export const MAX_R2_UPLOAD_BYTES = 100 * 1024 * 1024
+export const MAX_R2_IMAGE_UPLOAD_BYTES = 10 * 1024 * 1024
 export const R2_UPLOAD_SIGNATURE_TTL_SECONDS = 10 * 60
 export const MIN_R2_UPLOAD_SECRET_LENGTH = 32
 
@@ -9,6 +10,9 @@ export const ALLOWED_R2_UPLOAD_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   'application/vnd.ms-powerpoint',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
 ])
 
 const R2_UPLOAD_EXTENSIONS_BY_TYPE = new Map<string, ReadonlySet<string>>([
@@ -24,6 +28,9 @@ const R2_UPLOAD_EXTENSIONS_BY_TYPE = new Map<string, ReadonlySet<string>>([
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     new Set(['pptx']),
   ],
+  ['image/jpeg', new Set(['jpg', 'jpeg'])],
+  ['image/png', new Set(['png'])],
+  ['image/webp', new Set(['webp'])],
 ])
 
 export function isAllowedR2Upload(mimeType: string, size: number) {
@@ -31,7 +38,7 @@ export function isAllowedR2Upload(mimeType: string, size: number) {
     ALLOWED_R2_UPLOAD_TYPES.has(mimeType) &&
     Number.isSafeInteger(size) &&
     size > 0 &&
-    size <= MAX_R2_UPLOAD_BYTES
+    size <= (mimeType.startsWith('image/') ? MAX_R2_IMAGE_UPLOAD_BYTES : MAX_R2_UPLOAD_BYTES)
   )
 }
 

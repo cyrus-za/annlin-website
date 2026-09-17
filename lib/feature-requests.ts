@@ -53,6 +53,19 @@ export type FeatureRequestSummary = {
   unread: boolean
 }
 
+export type FeatureRequestAttachmentDto = {
+  id: string
+  url: string
+  filename: string
+  mimeType: string
+  size: number
+  activityId: string | null
+}
+
+export type PendingFeatureRequestAttachment = Omit<FeatureRequestAttachmentDto, 'id' | 'activityId'> & {
+  pathname: string
+}
+
 export type FeatureRequestActivityDto = {
   id: string
   seq: number
@@ -61,10 +74,12 @@ export type FeatureRequestActivityDto = {
   changes: Record<string, unknown> | null
   createdAt: string
   actor: { id: string; name: string }
+  attachments: FeatureRequestAttachmentDto[]
 }
 
 export type FeatureRequestDetail = FeatureRequestSummary & {
   description: string
+  attachments: FeatureRequestAttachmentDto[]
   activities: FeatureRequestActivityDto[]
   throughSeq: number
   hasMoreActivities: boolean
