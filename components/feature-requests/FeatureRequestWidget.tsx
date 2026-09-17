@@ -100,6 +100,7 @@ export function FeatureRequestWidget() {
   const [requests, setRequests] = React.useState<FeatureRequestSummary[]>([])
   const [detail, setDetail] = React.useState<FeatureRequestDetail | null>(null)
   const [unreadCount, setUnreadCount] = React.useState(0)
+  const [canManage, setCanManage] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState('')
@@ -108,16 +109,16 @@ export function FeatureRequestWidget() {
   const [operationKey, setOperationKey] = React.useState('')
   const replyOperationKey = React.useRef('')
   const user = session?.user
-  const isAdmin = user?.role === 'ADMIN'
   const draftKey = user ? `${FEATURE_REQUEST_DRAFT_STORAGE_PREFIX}:${user.id}:new` : ''
 
   const loadList = React.useCallback(async (quiet = false) => {
     if (!user) return
     if (!quiet) setLoading(true)
     try {
-      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number }>(`/api/feature-requests?scope=${scope}&limit=20`)
+      const data = await requestJson<{ requests: FeatureRequestSummary[]; unreadCount: number; canManage: boolean }>(`/api/feature-requests?scope=${scope}&limit=20`)
       setRequests(data.requests)
       setUnreadCount(data.unreadCount)
+      setCanManage(data.canManage)
       setError('')
     } catch (cause) {
       if (!quiet) setError(cause instanceof Error ? cause.message : 'Voorstelle kon nie gelaai word nie')
@@ -269,7 +270,7 @@ export function FeatureRequestWidget() {
           {screen.name === 'list' && (
             <div className="flex min-h-0 flex-1 flex-col pt-4">
               <div className="mb-3 flex flex-wrap items-center gap-2">
-                {(['mine', ...(isAdmin ? ['all', 'unread'] : ['unread'])] as Scope[]).map((value) => (
+                {(['mine', ...(canManage ? ['all', 'unread'] : ['unread'])] as Scope[]).map((value) => (
                   <Button key={value} type="button" size="sm" variant={scope === value ? 'default' : 'outline'} onClick={() => setScope(value)}>
                     {value === 'mine' ? 'My voorstelle' : value === 'all' ? 'Alles' : `Ongelees${unreadCount ? ` (${unreadCount})` : ''}`}
                   </Button>
@@ -278,7 +279,7 @@ export function FeatureRequestWidget() {
                   <Plus className="mr-1 h-4 w-4" /> Nuwe voorstel
                 </Button>
               </div>
-              {isAdmin && <Button asChild variant="link" className="mb-2 h-auto justify-start p-0"><Link href="/admin/voorstelle" onClick={() => setOpen(false)}>Maak die volledige voorstellebord oop</Link></Button>}
+              {canManage && <Button asChild variant="link" className="mb-2 h-auto justify-start p-0"><Link href="/admin/voorstelle" onClick={() => setOpen(false)}>Maak die volledige voorstellebord oop</Link></Button>}
               <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
                 {loading && <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}
                 {!loading && requests.length === 0 && <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Geen voorstelle in hierdie aansig nie.</p>}

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       listFeatureRequests(actor, query),
       getFeatureRequestUnreadCount(actor),
     ])
-    return privateJson({ ...page, unreadCount })
+    return privateJson({ ...page, unreadCount, canManage: actor.role === 'ADMIN' })
   } catch (error) {
     return featureRequestErrorResponse(error, 'list')
   }
