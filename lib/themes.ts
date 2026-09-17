@@ -2,10 +2,10 @@ export const THEME_STORAGE_KEY = 'annlin-theme'
 export const DEFAULT_THEME = 'stained-glass'
 
 export const themes = [
+  { id: 'stained-glass', name: 'Glasvenster' },
   { id: 'heritage', name: 'Annlin Erfenis' },
   { id: 'jacaranda', name: 'Jakaranda' },
   { id: 'olive', name: 'Olyftak' },
-  { id: 'stained-glass', name: 'Glasvenster' },
   { id: 'highveld', name: 'Hoëveld' },
 ] as const
 
