@@ -163,6 +163,7 @@ export async function deactivateUser(id: string, deactivatedBy: string): Promise
       prisma.session.deleteMany({ where: { userId: id } }),
       prisma.memberPilotAccess.deleteMany({ where: { userId: id } }),
       prisma.memberCapabilityGrant.deleteMany({ where: { userId: id } }),
+      prisma.memberWardScope.deleteMany({ where: { userId: id } }),
     ])
 
     // Log the deactivation

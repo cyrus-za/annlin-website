@@ -39,6 +39,9 @@ model User {
   memberPilotAccessGranted  MemberPilotAccess[]     @relation("MemberPilotGrantor")
   memberCapabilityGrants    MemberCapabilityGrant[] @relation("MemberCapabilityUser")
   memberCapabilitiesGranted MemberCapabilityGrant[] @relation("MemberCapabilityGrantor")
+  memberWardScopes          MemberWardScope[]       @relation("MemberWardScopeUser")
+  memberWardScopesGranted   MemberWardScope[]       @relation("MemberWardScopeGrantor")
+  memberAuditEvents         MemberAuditEvent[]      @relation("MemberAuditActor")
 
   @@map("users")
 }
@@ -57,6 +60,11 @@ enum MemberCapability {
   MEMBER_EXPORT
   MEMBER_IMPORT_PREVIEW
   MEMBER_AUDIT_READ
+}
+
+enum MemberAccessScope {
+  GLOBAL
+  WARDS
 }
 
 model MemberPilotAccess {
@@ -78,6 +86,7 @@ model MemberCapabilityGrant {
   id          String           @id @default(cuid())
   userId      String
   capability  MemberCapability
+  scope       MemberAccessScope @default(WARDS)
   grantedById String
   expiresAt   DateTime?
   createdAt   DateTime         @default(now())
@@ -89,6 +98,259 @@ model MemberCapabilityGrant {
   @@unique([userId, capability])
   @@index([capability, expiresAt])
   @@map("member_capability_grants")
+}
+
+model MemberWardScope {
+  id          String    @id @default(cuid())
+  userId      String
+  wardId      String
+  grantedById String
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User @relation("MemberWardScopeUser", fields: [userId], references: [id], onDelete: Cascade)
+  ward      Ward @relation(fields: [wardId], references: [id], onDelete: Cascade)
+  grantedBy User @relation("MemberWardScopeGrantor", fields: [grantedById], references: [id], onDelete: Restrict)
+
+  @@unique([userId, wardId])
+  @@index([wardId, expiresAt])
+  @@map("member_ward_scopes")
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  DEPARTED
+  DECEASED
+  ARCHIVED
+}
+
+enum MemberContactType {
+  MOBILE
+  PHONE
+  EMAIL
+  WHATSAPP
+  OTHER
+}
+
+enum HouseholdRole {
+  HEAD
+  SPOUSE
+  CHILD
+  DEPENDANT
+  OTHER
+}
+
+enum MembershipEventType {
+  ARRIVAL
+  BAPTISM
+  PROFESSION
+  CERTIFICATE_REQUESTED
+  CERTIFICATE_RECEIVED
+  DEPARTURE
+  RETURNED
+  DEATH
+  STATUS_CHANGED
+  OTHER
+}
+
+model Member {
+  id            String       @id @default(cuid())
+  firstNames    String
+  preferredName String?
+  lastName      String
+  birthDate     DateTime?    @db.Date
+  status        MemberStatus @default(ACTIVE)
+  version       Int          @default(1)
+  archivedAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  contacts          MemberContactPoint[]
+  householdHistory HouseholdMember[]
+  wardAssignments  WardAssignment[]
+  events            MembershipEvent[]
+  sourceRecords     MemberSourceRecord[]
+  taskSubjects      TaskSubject[]
+
+  @@index([lastName, firstNames])
+  @@index([status, archivedAt])
+  @@map("members")
+}
+
+model Household {
+  id         String    @id @default(cuid())
+  name       String
+  version    Int       @default(1)
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  memberHistory   HouseholdMember[]
+  addresses       HouseholdAddress[]
+  wardAssignments WardAssignment[]
+  taskSubjects    TaskSubject[]
+
+  @@index([name])
+  @@index([archivedAt])
+  @@map("households")
+}
+
+model HouseholdMember {
+  id          String        @id @default(cuid())
+  householdId String
+  memberId    String
+  role        HouseholdRole @default(OTHER)
+  isHead      Boolean       @default(false)
+  startDate   DateTime      @db.Date
+  endDate     DateTime?     @db.Date
+  version     Int           @default(1)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Restrict)
+  member    Member    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@index([householdId, endDate])
+  @@index([memberId, endDate])
+  @@map("household_members")
+}
+
+model HouseholdAddress {
+  id          String    @id @default(cuid())
+  householdId String
+  line1       String
+  line2       String?
+  suburb      String?
+  city        String?
+  postalCode  String?
+  countryCode String    @default("ZA")
+  normalized  String?
+  source      String?
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Restrict)
+
+  @@index([householdId, endDate])
+  @@index([normalized])
+  @@map("household_addresses")
+}
+
+model MemberContactPoint {
+  id              String            @id @default(cuid())
+  memberId        String
+  type            MemberContactType
+  value           String
+  normalizedValue String
+  isPreferred     Boolean           @default(false)
+  verifiedAt      DateTime?
+  startDate       DateTime          @db.Date
+  endDate         DateTime?         @db.Date
+  version         Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@index([memberId, endDate])
+  @@index([type, normalizedValue])
+  @@map("member_contact_points")
+}
+
+model Ward {
+  id         String    @id @default(cuid())
+  code       String    @unique
+  name       String
+  activeFrom DateTime  @db.Date
+  activeTo   DateTime? @db.Date
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  assignments WardAssignment[]
+  scopes      MemberWardScope[]
+  taskSubjects TaskSubject[]
+
+  @@index([activeTo])
+  @@map("wards")
+}
+
+model WardAssignment {
+  id          String    @id @default(cuid())
+  memberId    String?
+  householdId String?
+  wardId      String
+  startDate   DateTime  @db.Date
+  endDate     DateTime? @db.Date
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  member    Member?    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  household Household? @relation(fields: [householdId], references: [id], onDelete: Restrict)
+  ward      Ward       @relation(fields: [wardId], references: [id], onDelete: Restrict)
+
+  @@index([memberId, endDate])
+  @@index([householdId, endDate])
+  @@index([wardId, endDate])
+  @@map("ward_assignments")
+}
+
+model MembershipEvent {
+  id            String              @id @default(cuid())
+  memberId      String
+  type          MembershipEventType
+  effectiveDate DateTime            @db.Date
+  details       Json?
+  source        String?
+  createdAt     DateTime            @default(now())
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@index([memberId, effectiveDate])
+  @@map("membership_events")
+}
+
+model MemberSourceRecord {
+  id             String   @id @default(cuid())
+  memberId       String
+  sourceSystem   String
+  sourceRecordId String
+  batchId        String
+  sourceHash     String
+  comparison     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@unique([sourceSystem, sourceRecordId])
+  @@index([batchId])
+  @@index([memberId])
+  @@map("member_source_records")
+}
+
+model MemberAuditEvent {
+  id                String   @id @default(cuid())
+  entityType        String
+  entityId          String
+  action            String
+  actorId           String?
+  actorNameSnapshot String
+  actorRoleSnapshot String
+  source            String
+  changes           Json
+  createdAt         DateTime @default(now())
+
+  actor User? @relation("MemberAuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("member_audit_events")
 }
 
 // Authentication models required by better-auth
@@ -447,6 +709,7 @@ model Task {
   activities TaskActivity[]
   receipts   TaskReadReceipt[]
   attachments TaskAttachment[]
+  subjects    TaskSubject[]
 
   @@unique([requesterId, creationKey])
   @@index([requesterId, lastActivityAt, id])
@@ -512,6 +775,26 @@ model TaskReadReceipt {
   @@id([requestId, userId])
   @@index([userId, requestId])
   @@map("task_read_receipts")
+}
+
+model TaskSubject {
+  id          String   @id @default(cuid())
+  taskId      String
+  memberId    String?
+  householdId String?
+  wardId      String?
+  createdAt   DateTime @default(now())
+
+  task      Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  member    Member?    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  household Household? @relation(fields: [householdId], references: [id], onDelete: Restrict)
+  ward      Ward?      @relation(fields: [wardId], references: [id], onDelete: Restrict)
+
+  @@index([taskId])
+  @@index([memberId])
+  @@index([householdId])
+  @@index([wardId])
+  @@map("task_subjects")
 }
 
 enum TaskStatus {

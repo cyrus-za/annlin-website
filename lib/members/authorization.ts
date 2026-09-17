@@ -30,9 +30,35 @@ export async function requireMemberCapability(userId: string, capability: Member
         },
       },
     },
-    select: { id: true },
+    select: {
+      id: true,
+      memberCapabilityGrants: {
+        where: {
+          capability,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        },
+        select: { scope: true },
+        take: 1,
+      },
+      memberWardScopes: {
+        where: { OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
+        select: { wardId: true },
+      },
+    },
   })
 
   if (!user) throw new MemberAuthorizationError()
-  return { userId: user.id, capability }
+  const grant = user.memberCapabilityGrants[0]
+  if (!grant) throw new MemberAuthorizationError()
+  if (grant.scope === 'WARDS' && user.memberWardScopes.length === 0) {
+    throw new MemberAuthorizationError()
+  }
+
+  return {
+    userId: user.id,
+    capability,
+    scope: grant.scope === 'GLOBAL'
+      ? { kind: 'GLOBAL' as const }
+      : { kind: 'WARDS' as const, wardIds: user.memberWardScopes.map(({ wardId }) => wardId) },
+  }
 }
