@@ -10,7 +10,7 @@ import {
   summarizeMembershipEventDetails,
 } from './detail-view'
 
-function scopeWhere(scope: Awaited<ReturnType<typeof requireMemberCapability>>['scope']): Prisma.MemberWhereInput {
+export function memberScopeWhere(scope: Awaited<ReturnType<typeof requireMemberCapability>>['scope']): Prisma.MemberWhereInput {
   if (scope.kind === 'GLOBAL') return {}
   return {
     OR: [
@@ -42,7 +42,7 @@ export async function listMembers(
   const search = options.search?.trim()
   const where: Prisma.MemberWhereInput = {
     AND: [
-      scopeWhere(access.scope),
+      memberScopeWhere(access.scope),
       ...(options.status ? [{ status: options.status }] : []),
       ...(search ? [{
         OR: [
@@ -134,7 +134,7 @@ export async function getMemberCreateOptions(userId: string) {
 
 export async function getMemberManagementOptions(userId: string, memberId: string) {
   const access = await requireMemberCapability(userId, 'MEMBER_WRITE')
-  const member = await prisma.member.findFirst({ where: { AND: [{ id: memberId }, scopeWhere(access.scope)] }, select: { id: true } })
+  const member = await prisma.member.findFirst({ where: { AND: [{ id: memberId }, memberScopeWhere(access.scope)] }, select: { id: true } })
   if (!member) return null
   const now = new Date()
   const [wards, households] = await Promise.all([
@@ -180,7 +180,7 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
       select: { id: true, name: true, role: true, disabledAt: true },
     })
     if (!actor || actor.disabledAt) throw new MemberAuthorizationError()
-    const scope = scopeWhere(access.scope)
+    const scope = memberScopeWhere(access.scope)
 
     const member = await tx.member.findFirst({
       where: { AND: [{ id: memberId }, scope] },
@@ -190,6 +190,12 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
         archivedAt: true,
         updatedAt: true,
         wardAssignments: currentWardSelect,
+        elderAssignments: {
+          where: { endDate: null },
+          orderBy: { startDate: 'desc' },
+          take: 1,
+          select: { startDate: true, ward: { select: { id: true, code: true, name: true } } },
+        },
         householdHistory: {
           where: { endDate: null },
           orderBy: { startDate: 'desc' },
@@ -234,7 +240,7 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
     const writeAccess = await tryMemberCapability(tx, userId, 'MEMBER_WRITE')
     const canEdit = writeAccess !== null && (
       writeAccess.scope.kind === 'GLOBAL' ||
-      (await tx.member.count({ where: { AND: [{ id: member.id }, scopeWhere(writeAccess.scope)] } })) > 0
+      (await tx.member.count({ where: { AND: [{ id: member.id }, memberScopeWhere(writeAccess.scope)] } })) > 0
     )
     const auditEvents = historyAvailable
       ? await tx.memberAuditEvent.findMany({
@@ -303,6 +309,14 @@ export async function getMemberDetail(userId: string, memberId: string): Promise
               individualWard && householdWard && householdWard.ward.id !== individualWard.ward.id
                 ? { code: householdWard.ward.code, name: householdWard.ward.name }
                 : null,
+          }
+        : null,
+      elderOf: member.elderAssignments[0]
+        ? {
+            id: member.elderAssignments[0].ward.id,
+            code: member.elderAssignments[0].ward.code,
+            name: member.elderAssignments[0].ward.name,
+            since: member.elderAssignments[0].startDate,
           }
         : null,
       contacts: member.contacts.map(({ startDate, ...contact }) => ({ ...contact, since: startDate })),

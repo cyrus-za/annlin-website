@@ -13,6 +13,7 @@ interface AdminLayoutClientProps {
   children: React.ReactNode
   notifications: AdminNotification[]
   showMemberPilot: boolean
+  showWardManagement: boolean
   user: {
     id: string
     name: string
@@ -21,7 +22,7 @@ interface AdminLayoutClientProps {
   }
 }
 
-export function AdminLayoutClient({ children, user, notifications, showMemberPilot }: AdminLayoutClientProps) {
+export function AdminLayoutClient({ children, user, notifications, showMemberPilot, showWardManagement }: AdminLayoutClientProps) {
   const router = useRouter()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false)
@@ -78,6 +79,7 @@ export function AdminLayoutClient({ children, user, notifications, showMemberPil
       <MobileAdminSidebar
         userRole={user.role}
         showMemberPilot={showMemberPilot}
+        showWardManagement={showWardManagement}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
@@ -89,6 +91,7 @@ export function AdminLayoutClient({ children, user, notifications, showMemberPil
           <AdminSidebar
             userRole={user.role}
             showMemberPilot={showMemberPilot}
+            showWardManagement={showWardManagement}
             isCollapsed={isSidebarCollapsed}
             onToggle={handleSidebarToggle}
           />

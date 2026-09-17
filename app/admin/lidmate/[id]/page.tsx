@@ -42,6 +42,8 @@ const AUDIT_ACTION_LABELS: Record<string, string> = {
   CONTACT_UPDATE: 'Kontakpunt verander',
   CONTACT_END: 'Kontakpunt verwyder',
   EVENT_ADD: 'Gebeurtenis bygevoeg',
+  ELDER_ASSIGNMENT_ADD: 'As ouderling toegewys',
+  ELDER_ASSIGNMENT_END: 'Ouderlingdienstyd beëindig',
 }
 
 const dateFormatter = new Intl.DateTimeFormat('af-ZA', { dateStyle: 'long', timeZone: 'Africa/Johannesburg' })
@@ -255,12 +257,24 @@ function HouseholdSection({ member, listParams, options }: { member: MemberDetai
   )
 }
 
+function WardService({ member }: { member: MemberDetail }) {
+  return member.elderOf ? (
+    <div className="mt-5 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-base text-blue-950">
+      <span className="block text-xs font-semibold uppercase tracking-wide text-blue-700">Ouderling van</span>
+      <span className="font-semibold">{member.elderOf.code}: {member.elderOf.name}</span>
+      <span className="ml-2 text-sm text-blue-800">sedert <DateOnly date={member.elderOf.since} /></span>
+      <p className="mt-1 text-sm text-blue-800">Hierdie dienstoewysing is apart van die wyk waaraan die lidmaat behoort.</p>
+    </div>
+  ) : null
+}
+
 function WardSection({ member, options }: { member: MemberDetail; options: ManagementOptions | null }) {
   const ward = member.ward
   if (!ward) {
     return (
       <Section id="wyk" title="Wyk">
         <Notice>Geen huidige wyk nie. Daar is nie ’n individuele wyktoewysing of ’n huishoudingswyk nie.</Notice>
+        <WardService member={member} />
         {options && <WardEditor memberId={member.id} version={member.version} currentWardId={null} wards={options.wards} wardRequired={options.wardRequired} />}
       </Section>
     )
@@ -283,6 +297,7 @@ function WardSection({ member, options }: { member: MemberDetail; options: Manag
           Hierdie individuele toewysing oorheers die huishouding se wyk ({ward.overriddenHouseholdWard.code}: {ward.overriddenHouseholdWard.name}).
         </p>
       )}
+      <WardService member={member} />
       {options && <WardEditor memberId={member.id} version={member.version} currentWardId={ward.source === 'INDIVIDUAL' ? ward.id : null} wards={options.wards} wardRequired={options.wardRequired} />}
     </Section>
   )

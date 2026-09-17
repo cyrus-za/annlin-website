@@ -95,6 +95,11 @@ async function main() {
         update: {},
       })
     }
+    await tx.wardElderAssignment.upsert({
+      where: { id: `${PREFIX}elder-beta` },
+      create: { id: `${PREFIX}elder-beta`, wardId: wards[1]!.id, memberId: members[0]!.id, startDate },
+      update: { wardId: wards[1]!.id, memberId: members[0]!.id },
+    })
   }, { isolationLevel: 'Serializable', timeout: 60_000 })
 
   const [memberCount, householdCount, wardCount] = await Promise.all([

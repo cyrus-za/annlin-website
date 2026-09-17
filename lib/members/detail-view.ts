@@ -54,6 +54,12 @@ export type MemberDetail = MemberDetailPerson & {
     /** Set when an individual assignment overrides a different current household ward. */
     overriddenHouseholdWard: { code: string; name: string } | null
   } | null
+  elderOf: {
+    id: string
+    code: string
+    name: string
+    since: Date
+  } | null
   contacts: Array<{
     id: string
     type: MemberContactType
@@ -125,6 +131,7 @@ const AUDITED_MEMBER_FIELDS: Record<string, string> = {
   isPreferred: 'Voorkeurkontakpunt',
   isVerified: 'Geverifieer',
   ended: 'Verwyder',
+  elderOf: 'Ouderling van',
 }
 const HIDDEN_AUDIT_FIELDS: ReadonlySet<string> = new Set(['version', 'id', 'eventId', 'createdAt', 'updatedAt'])
 

@@ -170,6 +170,7 @@ model Member {
   contacts          MemberContactPoint[]
   householdHistory HouseholdMember[]
   wardAssignments  WardAssignment[]
+  elderAssignments WardElderAssignment[]
   events            MembershipEvent[]
   sourceRecords     MemberSourceRecord[]
   taskSubjects      TaskSubject[]
@@ -268,15 +269,35 @@ model Ward {
   name       String
   activeFrom DateTime  @db.Date
   activeTo   DateTime? @db.Date
+  version    Int       @default(1)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
   assignments WardAssignment[]
+  elderAssignments WardElderAssignment[]
   scopes      MemberWardScope[]
   taskSubjects TaskSubject[]
 
   @@index([activeTo])
   @@map("wards")
+}
+
+model WardElderAssignment {
+  id        String    @id @default(cuid())
+  wardId    String
+  memberId  String
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
+  version   Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  ward   Ward   @relation(fields: [wardId], references: [id], onDelete: Restrict)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@index([wardId, endDate])
+  @@index([memberId, endDate])
+  @@map("ward_elder_assignments")
 }
 
 model WardAssignment {

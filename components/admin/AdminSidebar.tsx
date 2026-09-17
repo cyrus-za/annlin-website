@@ -16,6 +16,7 @@ import {
   FileText,
   ListTodo,
   History,
+  MapPinned,
   Menu,
   X
 } from 'lucide-react'
@@ -23,6 +24,7 @@ import {
 interface AdminSidebarProps {
   userRole: 'ADMIN' | 'EDITOR'
   showMemberPilot?: boolean
+  showWardManagement?: boolean
   isCollapsed?: boolean
   onToggle?: () => void
 }
@@ -33,6 +35,7 @@ interface NavigationItem {
   icon: React.ComponentType<{ className?: string }>
   adminOnly?: boolean
   memberPilotOnly?: boolean
+  wardManagementOnly?: boolean
 }
 
 const navigationItems: NavigationItem[] = [
@@ -74,6 +77,12 @@ const navigationItems: NavigationItem[] = [
     memberPilotOnly: true,
   },
   {
+    name: 'Wyke',
+    href: '/admin/wyke',
+    icon: MapPinned,
+    wardManagementOnly: true,
+  },
+  {
     name: 'Navraag',
     href: '/admin/indienings',
     icon: Inbox,
@@ -92,11 +101,11 @@ const navigationItems: NavigationItem[] = [
   },
 ]
 
-export function AdminSidebar({ userRole, showMemberPilot = false, isCollapsed = false, onToggle }: AdminSidebarProps) {
+export function AdminSidebar({ userRole, showMemberPilot = false, showWardManagement = false, isCollapsed = false, onToggle }: AdminSidebarProps) {
   const pathname = usePathname()
   
   const filteredItems = navigationItems.filter(item => 
-    (!item.adminOnly || userRole === 'ADMIN') && (!item.memberPilotOnly || showMemberPilot)
+    (!item.adminOnly || userRole === 'ADMIN') && (!item.memberPilotOnly || showMemberPilot) && (!item.wardManagementOnly || showWardManagement)
   )
 
   return (
@@ -187,11 +196,13 @@ export function AdminSidebar({ userRole, showMemberPilot = false, isCollapsed = 
 export function MobileAdminSidebar({ 
   userRole, 
   showMemberPilot,
+  showWardManagement,
   isOpen, 
   onClose 
 }: { 
   userRole: 'ADMIN' | 'EDITOR'
   showMemberPilot?: boolean
+  showWardManagement?: boolean
   isOpen: boolean
   onClose: () => void 
 }) {
@@ -209,7 +220,7 @@ export function MobileAdminSidebar({
       
       {/* Sidebar */}
       <div className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden">
-        <AdminSidebar userRole={userRole} showMemberPilot={showMemberPilot} onToggle={onClose} />
+        <AdminSidebar userRole={userRole} showMemberPilot={showMemberPilot} showWardManagement={showWardManagement} onToggle={onClose} />
       </div>
     </>
   )

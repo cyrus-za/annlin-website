@@ -14,6 +14,7 @@ const requiredTables = [
   'membership_events',
   'task_subjects',
   'ward_assignments',
+  'ward_elder_assignments',
   'wards',
 ]
 
@@ -29,6 +30,9 @@ const requiredConstraints = [
   'ward_assignments_member_no_overlap',
   'ward_assignments_valid_dates',
   'wards_valid_dates',
+  'ward_elder_assignments_valid_dates',
+  'ward_elder_assignments_ward_no_overlap',
+  'ward_elder_assignments_member_no_overlap',
 ]
 
 const requiredIndexes = [

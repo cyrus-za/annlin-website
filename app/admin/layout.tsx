@@ -15,13 +15,14 @@ interface AdminLayoutProps {
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const { user } = await requireAuth()
   const actor = { id: user.id, role: user.role as UserRole }
-  const [contacts, taskPage, changes, memberAccess] = await Promise.all([
+  const [contacts, taskPage, changes, memberAccess, wardManagement] = await Promise.all([
     user.role === 'ADMIN'
       ? prisma.contactSubmission.findMany({ where: { status: 'NEW' }, select: { id: true, subject: true, createdAt: true }, orderBy: { createdAt: 'desc' }, take: 100 })
       : Promise.resolve([]),
     listTasks(actor, { scope: 'unread', limit: 100 }),
     prisma.changelogEntry.findMany({ select: { id: true, title: true, category: true, publishedAt: true }, orderBy: { publishedAt: 'desc' }, take: 100 }),
     requireMemberCapability(user.id, 'MEMBER_READ').then(() => true).catch(() => false),
+    requireMemberCapability(user.id, 'WARD_WRITE').then(() => true).catch(() => false),
   ])
   const notifications: AdminNotification[] = [
     ...contacts.map((contact) => ({
@@ -60,6 +61,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       }}
       notifications={notifications}
       showMemberPilot={memberAccess}
+      showWardManagement={wardManagement}
     >
       {children}
     </AdminLayoutClient>

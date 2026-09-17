@@ -36,6 +36,7 @@ async function main() {
     const wards = { id: { startsWith: PREFIX } }
 
     await tx.memberSourceRecord.deleteMany({ where: { memberId: members.id } })
+    await tx.wardElderAssignment.deleteMany({ where: { OR: [{ memberId: members.id }, { wardId: wards.id }] } })
     await tx.membershipEvent.deleteMany({ where: { memberId: members.id } })
     await tx.memberContactPoint.deleteMany({ where: { memberId: members.id } })
     await tx.wardAssignment.deleteMany({
