@@ -1,31 +1,31 @@
 export const serviceGroupImages = {
   hospitaalbesoeke: {
-    thumbnailUrl: '/images/diensgroepe/hospitaalbesoeke-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/hospitaalbesoeke-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/hospitaalbesoeke-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/hospitaalbesoeke-banner-v6.webp',
   },
   'seniors-2': {
-    thumbnailUrl: '/images/diensgroepe/seniors-2-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/seniors-2-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/seniors-2-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/seniors-2-banner-v6.webp',
   },
   jeugbediening: {
-    thumbnailUrl: '/images/diensgroepe/jeugbediening-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/jeugbediening-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/jeugbediening-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/jeugbediening-banner-v6.webp',
   },
   'sosiale-dienste': {
-    thumbnailUrl: '/images/diensgroepe/sosiale-dienste-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/sosiale-dienste-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/sosiale-dienste-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/sosiale-dienste-banner-v6.webp',
   },
   'tradisionele-dienste': {
-    thumbnailUrl: '/images/diensgroepe/tradisionele-dienste-thumbnail-v7.webp',
-    bannerUrl: '/images/diensgroepe/tradisionele-dienste-banner-v7.webp',
+    thumbnailUrl: '/images/diensgroepe/tradisionele-dienste-thumbnail-v8.webp',
+    bannerUrl: '/images/diensgroepe/tradisionele-dienste-banner-v8.webp',
   },
   'versorging-en-barmhartigheid-2': {
     thumbnailUrl: '/images/diensgroepe/versorging-en-barmhartigheid-2-thumbnail-v5.webp',
     bannerUrl: '/images/diensgroepe/versorging-en-barmhartigheid-2-banner-v5.webp',
   },
   'vervoer-2': {
-    thumbnailUrl: '/images/diensgroepe/vervoer-2-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/vervoer-2-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/vervoer-2-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/vervoer-2-banner-v6.webp',
   },
   'verwelkoming-en-gasvryheid': {
     thumbnailUrl: '/images/diensgroepe/verwelkoming-en-gasvryheid-thumbnail-v5.webp',
