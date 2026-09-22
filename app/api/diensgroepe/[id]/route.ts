@@ -194,7 +194,7 @@ export async function PUT(
             action: 'UPDATE',
             entityType: 'ServiceGroup',
             entityId: id,
-            changes,
+            changes: JSON.parse(JSON.stringify(changes)),
           },
         })
 
