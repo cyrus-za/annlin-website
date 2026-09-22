@@ -11,6 +11,10 @@ export const serviceGroupImages = {
     thumbnailUrl: '/images/diensgroepe/jeugbediening-thumbnail-v6.webp',
     bannerUrl: '/images/diensgroepe/jeugbediening-banner-v6.webp',
   },
+  jeugdiensgroep: {
+    thumbnailUrl: '/images/diensgroepe/jeugdiensgroep-thumbnail-v1.webp',
+    bannerUrl: '/images/diensgroepe/jeugdiensgroep-banner-v1.webp',
+  },
   'sosiale-dienste': {
     thumbnailUrl: '/images/diensgroepe/sosiale-dienste-thumbnail-v7.webp',
     bannerUrl: '/images/diensgroepe/sosiale-dienste-banner-v7.webp',
@@ -36,8 +40,8 @@ export const serviceGroupImages = {
     bannerUrl: '/images/diensgroepe/gebedsgroepe-banner-v5.webp',
   },
   'evangelisasie-blad': {
-    thumbnailUrl: '/images/diensgroepe/evangelisasie-blad-thumbnail-v5.webp',
-    bannerUrl: '/images/diensgroepe/evangelisasie-blad-banner-v5.webp',
+    thumbnailUrl: '/images/diensgroepe/evangelisasie-blad-thumbnail-v6.webp',
+    bannerUrl: '/images/diensgroepe/evangelisasie-blad-banner-v6.webp',
   },
   'tweedehandse-goedere-verkopings': {
     thumbnailUrl: '/images/diensgroepe/tweedehandse-goedere-verkopings-thumbnail-v5.webp',
