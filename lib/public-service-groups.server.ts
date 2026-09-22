@@ -1,5 +1,6 @@
 import type { PublicServiceGroup } from '@/components/public/ServiceGroups'
 import { prisma } from '@/lib/db'
+import { getServiceGroupImages } from '@/lib/service-group-images'
 
 export async function getPublicServiceGroups(limit = 100): Promise<PublicServiceGroup[]> {
   const groups = await prisma.serviceGroup.findMany({
@@ -21,10 +22,14 @@ export async function getPublicServiceGroups(limit = 100): Promise<PublicService
     },
   })
 
-  return groups.map((group) => ({
-    ...group,
-    contactPhone: group.contactPhone ?? undefined,
-    thumbnailUrl: group.thumbnailUrl ?? undefined,
-    bannerUrl: group.bannerUrl ?? undefined,
-  }))
+  return groups.map((group) => {
+    const fallbackImages = getServiceGroupImages(group.slug)
+
+    return {
+      ...group,
+      contactPhone: group.contactPhone ?? undefined,
+      thumbnailUrl: group.thumbnailUrl || fallbackImages?.thumbnailUrl,
+      bannerUrl: group.bannerUrl || fallbackImages?.bannerUrl,
+    }
+  })
 }
