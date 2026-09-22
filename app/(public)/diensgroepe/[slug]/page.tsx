@@ -113,11 +113,11 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
 
       <section className="py-12">
         <div className="mx-auto grid max-w-5xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
-          <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
+          <article className="min-w-0 rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
             <MarkdownContent markdown={bodyContent} />
           </article>
 
-          <aside className="space-y-6">
+          <aside className="min-w-0 space-y-6">
             <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-foreground">Kontakpersoon</h2>
               <div className="mt-4 space-y-4 text-sm text-muted-foreground">
