@@ -133,10 +133,10 @@ async function main() {
     }
   }
 
-  const [{ count }] = await prisma.$queryRaw<Array<{ count: bigint }>>`
+  const summary = await prisma.$queryRaw<Array<{ count: bigint }>>`
     SELECT COUNT(*)::bigint AS count FROM "service_group_photos"
   `
-  console.log(JSON.stringify({ status: 'ok', considered: imported, galleryPhotos: Number(count || 0) }))
+  console.log(JSON.stringify({ status: 'ok', considered: imported, galleryPhotos: Number(summary[0]?.count || 0) }))
 }
 
 main()
