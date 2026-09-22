@@ -468,8 +468,30 @@ model ServiceGroup {
 
   // Relations
   contactSubmissions ContactSubmission[]
+  galleryPhotos      ServiceGroupPhoto[]
 
   @@map("service_groups")
+}
+
+model ServiceGroupPhoto {
+  id             String   @id @default(cuid())
+  serviceGroupId String
+  url            String
+  pathname       String?
+  filename       String
+  mimeType       String
+  size           Int      @default(0)
+  alt            String   @default("")
+  caption        String?
+  displayOrder   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  serviceGroup ServiceGroup @relation(fields: [serviceGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceGroupId, url])
+  @@index([serviceGroupId, displayOrder])
+  @@map("service_group_photos")
 }
 
 enum ServiceGroupCategory {

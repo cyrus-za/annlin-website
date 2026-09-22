@@ -7,6 +7,7 @@ import { ChevronLeft, Mail, Phone, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { MarkdownContent } from '@/components/content/MarkdownContent'
+import { ServiceGroupGallery } from '@/components/public/ServiceGroupGallery'
 import { prisma } from '@/lib/db'
 import {
   createServiceGroupExcerpt,
@@ -41,6 +42,7 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
 
   const serviceGroup = await prisma.serviceGroup.findUnique({
     where: { slug },
+    include: { galleryPhotos: { orderBy: { displayOrder: 'asc' } } },
   })
 
   if (!serviceGroup || !serviceGroup.isActive) {
@@ -51,8 +53,21 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
     serviceGroup.description,
     serviceGroup.name
   )
-  const { content: bodyContent, images: galleryImages } =
+  const { content: bodyContent, images: trailingImages } =
     extractTrailingMarkdownImageGallery(normalizedContent)
+  const galleryPhotos = serviceGroup.galleryPhotos.length > 0
+    ? serviceGroup.galleryPhotos.map((photo) => ({
+        id: photo.id,
+        url: photo.url,
+        alt: photo.alt,
+        caption: photo.caption,
+      }))
+    : trailingImages.map((photo, index) => ({
+        id: `legacy-${index}`,
+        url: photo.url,
+        alt: photo.alt,
+        caption: null,
+      }))
   const bannerUrl = serviceGroup.bannerUrl || serviceGroup.thumbnailUrl
 
   return (
@@ -100,29 +115,6 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
         <div className="mx-auto grid max-w-5xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-8">
           <article className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:p-10">
             <MarkdownContent markdown={bodyContent} />
-            {galleryImages.length > 0 ? (
-              <section className="mt-10 border-t border-stone-200 pt-8" aria-labelledby="foto-gallery-heading">
-                <h2 id="foto-gallery-heading" className="text-2xl font-semibold text-foreground">
-                  Foto&apos;s
-                </h2>
-                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-                  {galleryImages.map((image) => (
-                    <div
-                      key={image.url}
-                      className="relative aspect-[4/3] overflow-hidden rounded-md bg-stone-100"
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.alt || `${serviceGroup.name} foto`}
-                        fill
-                        sizes="(min-width: 640px) 18rem, 50vw"
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            ) : null}
           </article>
 
           <aside className="space-y-6">
@@ -152,6 +144,9 @@ export default async function ServiceGroupDetailPage({ params }: PageProps) {
                 <Link href="/kontak">Kontak kerkkantoor</Link>
               </Button>
             </div>
+            {galleryPhotos.length > 0 ? (
+              <ServiceGroupGallery photos={galleryPhotos} groupName={serviceGroup.name} />
+            ) : null}
           </aside>
         </div>
       </section>

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma, safeDatabaseOperation } from '@/lib/db'
-import { getCurrentUser, requireAuth } from '@/lib/auth-config'
+import { requireAuth } from '@/lib/auth-config'
 import { slugify } from '@/lib/slug'
 import { createContentRevision } from '@/lib/services/revisions'
+import { serviceGroupGalleryInputSchema } from '@/lib/service-group-gallery'
 
 // Validation schema
 const updateServiceGroupSchema = z.object({
@@ -18,6 +19,7 @@ const updateServiceGroupSchema = z.object({
   bannerUrl: z.string().optional(),
   displayOrder: z.number().int().optional(),
   isActive: z.boolean().optional(),
+  galleryPhotos: serviceGroupGalleryInputSchema.optional(),
 })
 
 // GET /api/diensgroepe/[id] - Get single service group
@@ -26,8 +28,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await getCurrentUser()
+    const { user } = await requireAuth()
     const { id } = await params
+
+    if (!['ADMIN', 'EDITOR'].includes(user.role)) {
+      return NextResponse.json({ error: 'Onvoldoende regte' }, { status: 403 })
+    }
     
     const result = await safeDatabaseOperation(async () => {
       const serviceGroup = await prisma.serviceGroup.findUnique({
@@ -50,6 +56,9 @@ export async function GET(
               createdAt: true,
             },
           },
+          galleryPhotos: {
+            orderBy: { displayOrder: 'asc' },
+          },
         },
       })
       
@@ -57,10 +66,6 @@ export async function GET(
         throw new Error('Diensgroep nie gevind nie')
       }
 
-      if (!serviceGroup.isActive && user?.role !== 'ADMIN') {
-        throw new Error('Diensgroep nie gevind nie')
-      }
-      
       return serviceGroup
     }, 'Fetch service group')
     
@@ -100,53 +105,106 @@ export async function PUT(
     
     const body = await request.json()
     const validatedData = updateServiceGroupSchema.parse(body)
+    const { galleryPhotos, ...serviceGroupFields } = validatedData
     const data = {
-      ...validatedData,
-      ...(validatedData.slug ? { slug: slugify(validatedData.slug) } : {}),
+      ...serviceGroupFields,
+      ...(serviceGroupFields.slug ? { slug: slugify(serviceGroupFields.slug) } : {}),
     }
     
     const result = await safeDatabaseOperation(async () => {
       // Get current service group for audit log
-      const currentServiceGroup = await prisma.serviceGroup.findUnique({
-        where: { id },
-      })
-      
-      if (!currentServiceGroup) {
-        throw new Error('Diensgroep nie gevind nie')
-      }
-      
-      // Update service group
-      const updatedServiceGroup = await prisma.serviceGroup.update({
-        where: { id },
-        data,
+      const updatedServiceGroup = await prisma.$transaction(async (tx) => {
+        const currentServiceGroup = await tx.serviceGroup.findUnique({
+          where: { id },
+          include: { galleryPhotos: { orderBy: { displayOrder: 'asc' } } },
+        })
+
+        if (!currentServiceGroup) {
+          throw new Error('Diensgroep nie gevind nie')
+        }
+
+        await tx.serviceGroup.update({ where: { id }, data })
+
+        if (galleryPhotos !== undefined) {
+          await tx.serviceGroupPhoto.deleteMany({ where: { serviceGroupId: id } })
+          if (galleryPhotos.length > 0) {
+            await tx.serviceGroupPhoto.createMany({
+              data: galleryPhotos.map((photo, displayOrder) => ({
+                id: photo.id || crypto.randomUUID(),
+                serviceGroupId: id,
+                url: photo.url,
+                pathname: photo.pathname || null,
+                filename: photo.filename,
+                mimeType: photo.mimeType,
+                size: photo.size,
+                alt: photo.alt,
+                caption: photo.caption || null,
+                displayOrder,
+              })),
+            })
+
+            for (const photo of galleryPhotos) {
+              if (!photo.pathname || photo.size <= 0) continue
+              const existingAsset = await tx.uploadedAsset.findFirst({
+                where: { pathname: photo.pathname },
+                select: { id: true },
+              })
+              if (!existingAsset) {
+                await tx.uploadedAsset.create({
+                  data: {
+                    url: photo.url,
+                    pathname: photo.pathname,
+                    filename: photo.filename,
+                    mimeType: photo.mimeType,
+                    size: photo.size,
+                    purpose: 'service-group-gallery',
+                  },
+                })
+              }
+            }
+          }
+        }
+
+        const refreshedServiceGroup = await tx.serviceGroup.findUnique({
+          where: { id },
+          include: { galleryPhotos: { orderBy: { displayOrder: 'asc' } } },
+        })
+        if (!refreshedServiceGroup) throw new Error('Diensgroep nie gevind nie')
+
+        const changes = Object.keys(data).reduce((acc, key) => {
+          const typedKey = key as keyof typeof data
+          if (data[typedKey] !== undefined) {
+            acc[key] = {
+              from: currentServiceGroup[typedKey as keyof typeof currentServiceGroup],
+              to: data[typedKey],
+            }
+          }
+          return acc
+        }, {} as Record<string, unknown>)
+        if (galleryPhotos !== undefined) {
+          changes.galleryPhotos = {
+            from: currentServiceGroup.galleryPhotos.map(({ url, alt, caption, displayOrder }) => ({ url, alt, caption, displayOrder })),
+            to: galleryPhotos.map(({ url, alt, caption, displayOrder }) => ({ url, alt, caption, displayOrder })),
+          }
+        }
+
+        await tx.auditLog.create({
+          data: {
+            userId: user.id,
+            action: 'UPDATE',
+            entityType: 'ServiceGroup',
+            entityId: id,
+            changes,
+          },
+        })
+
+        return refreshedServiceGroup
       })
       await createContentRevision({
         entityType: 'ServiceGroup',
         entityId: id,
         snapshot: updatedServiceGroup,
         createdBy: user.id,
-      })
-      
-      // Log the changes
-      const changes = Object.keys(data).reduce((acc, key) => {
-        const typedKey = key as keyof typeof data
-        if (data[typedKey] !== undefined) {
-          acc[key] = {
-            from: currentServiceGroup[typedKey as keyof typeof currentServiceGroup],
-            to: data[typedKey],
-          }
-        }
-        return acc
-      }, {} as Record<string, any>)
-      
-      await prisma.auditLog.create({
-        data: {
-          userId: user.id,
-          action: 'UPDATE',
-          entityType: 'ServiceGroup',
-          entityId: id,
-          changes,
-        },
       })
       
       return updatedServiceGroup

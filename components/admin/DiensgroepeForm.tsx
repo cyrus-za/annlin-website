@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form'
 import { Upload, X, Image } from 'lucide-react'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
+import { ServiceGroupGalleryEditor } from './ServiceGroupGalleryEditor'
+import { serviceGroupGalleryInputSchema } from '@/lib/service-group-gallery'
 
 // Validation schema
 const serviceGroupSchema = z.object({
@@ -26,6 +28,7 @@ const serviceGroupSchema = z.object({
   bannerUrl: z.string().optional(),
   displayOrder: z.coerce.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
+  galleryPhotos: serviceGroupGalleryInputSchema.default([]),
 })
 
 type ServiceGroupFormData = z.infer<typeof serviceGroupSchema>
@@ -59,6 +62,7 @@ export function DiensgroepeForm({
     bannerUrl: initialData?.bannerUrl || '',
     displayOrder: initialData?.displayOrder ?? 0,
     isActive: initialData?.isActive ?? true,
+    galleryPhotos: initialData?.galleryPhotos || [],
   }
 
   const handleSubmit = async (data: ServiceGroupFormData) => {
@@ -240,6 +244,31 @@ export function DiensgroepeForm({
                   label="Kontak Telefoon (Opsioneel)"
                   type="tel"
                   placeholder="012 345 6789"
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Fotogalery</CardTitle>
+                <CardDescription>
+                  Voeg foto’s by wat onder die kontakbesonderhede op die diensgroep se blad vertoon moet word.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  name="galleryPhotos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <ServiceGroupGalleryEditor
+                          value={field.value || []}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </CardContent>
             </Card>

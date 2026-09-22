@@ -19,6 +19,17 @@ interface ServiceGroup {
   bannerUrl?: string | null
   displayOrder: number
   isActive: boolean
+  galleryPhotos: Array<{
+    id: string
+    url: string
+    pathname?: string | null
+    filename: string
+    mimeType: 'image/jpeg' | 'image/png' | 'image/webp'
+    size: number
+    alt: string
+    caption?: string | null
+    displayOrder: number
+  }>
 }
 
 export default function EditServiceGroupPage({

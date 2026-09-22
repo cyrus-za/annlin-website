@@ -4,6 +4,7 @@ import { prisma, safeDatabaseOperation } from '@/lib/db'
 import { getCurrentUser, requireAuth } from '@/lib/auth-config'
 import { slugify } from '@/lib/slug'
 import { createContentRevision } from '@/lib/services/revisions'
+import { serviceGroupGalleryInputSchema } from '@/lib/service-group-gallery'
 
 // Validation schemas
 const createServiceGroupSchema = z.object({
@@ -18,6 +19,7 @@ const createServiceGroupSchema = z.object({
   bannerUrl: z.string().optional(),
   displayOrder: z.number().int().default(0),
   isActive: z.boolean().default(true),
+  galleryPhotos: serviceGroupGalleryInputSchema.default([]),
 })
 
 const updateServiceGroupSchema = createServiceGroupSchema.partial()
@@ -127,31 +129,69 @@ export async function POST(request: NextRequest) {
     
     const body = await request.json()
     const validatedData = createServiceGroupSchema.parse(body)
+    const { galleryPhotos, ...serviceGroupFields } = validatedData
     
     const result = await safeDatabaseOperation(async () => {
-      const slug = slugify(validatedData.slug || validatedData.name)
-      const serviceGroup = await prisma.serviceGroup.create({
-        data: {
-          ...validatedData,
-          slug,
-        },
+      const slug = slugify(serviceGroupFields.slug || serviceGroupFields.name)
+      const serviceGroup = await prisma.$transaction(async (tx) => {
+        const created = await tx.serviceGroup.create({
+          data: {
+            ...serviceGroupFields,
+            slug,
+            galleryPhotos: galleryPhotos.length > 0
+              ? {
+                  create: galleryPhotos.map((photo, displayOrder) => ({
+                    url: photo.url,
+                    pathname: photo.pathname || null,
+                    filename: photo.filename,
+                    mimeType: photo.mimeType,
+                    size: photo.size,
+                    alt: photo.alt,
+                    caption: photo.caption || null,
+                    displayOrder,
+                  })),
+                }
+              : undefined,
+          },
+          include: { galleryPhotos: { orderBy: { displayOrder: 'asc' } } },
+        })
+
+        for (const photo of galleryPhotos) {
+          if (!photo.pathname || photo.size <= 0) continue
+          const existingAsset = await tx.uploadedAsset.findFirst({
+            where: { pathname: photo.pathname },
+            select: { id: true },
+          })
+          if (!existingAsset) {
+            await tx.uploadedAsset.create({
+              data: {
+                url: photo.url,
+                pathname: photo.pathname,
+                filename: photo.filename,
+                mimeType: photo.mimeType,
+                size: photo.size,
+                purpose: 'service-group-gallery',
+              },
+            })
+          }
+        }
+
+        await tx.auditLog.create({
+          data: {
+            userId: user.id,
+            action: 'CREATE',
+            entityType: 'ServiceGroup',
+            entityId: created.id,
+            changes: created,
+          },
+        })
+        return created
       })
       await createContentRevision({
         entityType: 'ServiceGroup',
         entityId: serviceGroup.id,
         snapshot: serviceGroup,
         createdBy: user.id,
-      })
-      
-      // Log the action
-      await prisma.auditLog.create({
-        data: {
-          userId: user.id,
-          action: 'CREATE',
-          entityType: 'ServiceGroup',
-          entityId: serviceGroup.id,
-          changes: serviceGroup,
-        },
       })
       
       return serviceGroup
