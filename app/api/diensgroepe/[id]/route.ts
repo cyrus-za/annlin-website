@@ -182,7 +182,7 @@ export async function PUT(
           return acc
         }, {} as Record<string, unknown>)
         if (galleryPhotos !== undefined) {
-          changes.galleryPhotos = {
+          changes['galleryPhotos'] = {
             from: currentServiceGroup.galleryPhotos.map(({ url, alt, caption, displayOrder }) => ({ url, alt, caption, displayOrder })),
             to: galleryPhotos.map(({ url, alt, caption, displayOrder }) => ({ url, alt, caption, displayOrder })),
           }
