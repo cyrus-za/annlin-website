@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { markdownToHtml } from '../lib/markdown'
+import { createServiceGroupExcerpt } from '../lib/public-content'
 import { groupSlugs, reviseGroupDescription, revisePageCopy } from './lib/magda-language'
 
 const source = "Visie\n\nOns visie is 'n Gemeente wat volgelinge van Christus maak.\n\nMissie\n\nBeplan aksies\n\nOrganiseer\n\n1 Eie omgewing\n\nBid vir vyf: Bid saam.\n\n![Foto](/foto.jpg)\n\nOm vrymoedig te kan praat oor Jesus"
@@ -14,6 +15,10 @@ assert.ok(html.includes('<em>Om vrymoedig te kan praat oor Jesus</em>'))
 assert.ok(html.includes('src="/foto.jpg"'))
 assert.deepEqual(revisePageCopy({ title: 'Ons Roeping', other: 12, history: 'Gebou in 2023' }), { title: 'Ons roeping', other: 12, history: 'Gebou in 2023' })
 assert.equal(revisePageCopy('Predikant (vanaf Oktober 2023)'), 'Predikant')
+assert.equal(createServiceGroupExcerpt('### Visie\n\nOm te dien.', 'Seniors'), 'Visie: Om te dien.')
+assert.equal(createServiceGroupExcerpt('Ons Visie\n\nOm te dien.', 'Siekebesoeke'), 'Ons visie: Om te dien.')
+assert.equal(createServiceGroupExcerpt('Kleuterbediening\n\n### Visie\n\nOm te groei.', 'Jeugbediening'), 'Kleuterbediening Visie: Om te groei.')
+assert.equal(createServiceGroupExcerpt('Ons visie: Om te dien.', 'Seniors'), 'Ons visie: Om te dien.')
 
 // Optionally verify an uncommitted production snapshot without exposing personal data.
 const snapshot = process.argv.find((arg) => arg.startsWith('--snapshot='))?.slice('--snapshot='.length)

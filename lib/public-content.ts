@@ -325,7 +325,11 @@ export function normalizeServiceGroupContent(value: string, title: string) {
 }
 
 export function createServiceGroupExcerpt(value: string, title: string, maxLength = 180) {
-  return createExcerpt(normalizeServiceGroupContent(value, title), maxLength)
+  const content = normalizeServiceGroupContent(value, title).replace(
+    /^(?:#{1,4}\s+)?(Ons visie|Ons missie|Visie|Missie)[ \t]*\n+/gim,
+    (_match, heading: string) => `${heading.replace(/^Ons Visie$/i, 'Ons visie').replace(/^Ons Missie$/i, 'Ons missie')}: `
+  )
+  return createExcerpt(content, maxLength)
 }
 
 export type MarkdownImage = {
