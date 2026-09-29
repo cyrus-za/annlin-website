@@ -164,6 +164,7 @@ const replacements: Record<string, readonly Replacement[]> = {
     ['ongetetterdes', 'ongeletterdes'],
     ["'n selfoon toepassing is onwikkel", "'n Selfoontoepassing is ontwikkel"],
     ['Android selfoon', 'Android-selfoon'],
+    ['Android selfone', 'Android-selfone'],
     ['iPhone selfone', 'iPhone-selfone'],
     ['Appstore', 'App Store'],
     ['Playstore', 'Google Play'],
