@@ -113,8 +113,12 @@ export default async function Home() {
 
       <nav aria-label="Vind vinnig" className="relative z-10 -mt-8 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-5xl grid-cols-2 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg lg:grid-cols-4">
-          {quickLinks.map(({ href, label, icon: Icon }) => (
-            <Link key={href} href={href} className="flex min-h-24 items-center gap-3 border-stone-200 p-4 font-semibold text-foreground transition-colors hover:bg-stone-50 odd:border-r lg:border-r lg:last:border-r-0">
+          {quickLinks.map(({ href, label, icon: Icon }, index) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex min-h-24 items-center gap-3 border-stone-200 p-4 font-semibold text-foreground transition-colors hover:bg-stone-50 odd:border-r lg:border-r lg:last:border-r-0 ${index < 2 ? 'border-b lg:border-b-0' : ''}`}
+            >
               <Icon className="h-6 w-6 shrink-0 text-primary" />
               <span>{label}</span>
             </Link>
