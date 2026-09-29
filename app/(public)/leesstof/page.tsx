@@ -55,7 +55,7 @@ const resourceLinks = [
     href: '/migrated/leesstof/opleidingsmateriaal-vir-uitreike.pdf',
   },
   {
-    title: 'Verslae oor Uitreike na Mosambiek',
+    title: 'Verslae oor uitreike na Mosambiek',
     label: 'Uitreike',
     href: '/migrated/leesstof/verslae-oor-uitreike-na-die-buiteland.pdf',
   },

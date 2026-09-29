@@ -55,7 +55,7 @@ export default async function DiensgroepePage() {
                 href="/kontak"
                 className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-6 py-3 text-center text-base font-medium text-primary transition-colors duration-200 hover:bg-secondary sm:w-auto"
               >
-                Kontak Ons
+                Kontak ons
               </Link>
               <a
                 href={CONTACT_DETAILS.phone.href}

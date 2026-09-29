@@ -33,7 +33,7 @@ export default function JaarprogramPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div>
               <h2 className="mb-8 text-center text-3xl font-bold text-foreground sm:text-4xl">
-                Spesiale Gebeure
+                Spesiale gebeure
               </h2>
               <div className="grid gap-5 md:grid-cols-3">
                 <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
@@ -45,7 +45,7 @@ export default function JaarprogramPage() {
                 </div>
                 
                 <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
-                  <h4 className="font-semibold text-foreground mb-2">Gemeente Uitstappies</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Gemeente-uitstappies</h4>
                   <p className="text-muted-foreground text-sm">
                     Gereelde uitstappies en sosiale geleenthede vir die hele gemeente 
                     om saam te kom en verhoudings te bou.
@@ -53,7 +53,7 @@ export default function JaarprogramPage() {
                 </div>
                 
                 <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6 shadow-sm">
-                  <h4 className="font-semibold text-foreground mb-2">Spesiale Eredienste</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Spesiale eredienste</h4>
                   <p className="text-muted-foreground text-sm">
                     Kersfees, Paasfees en ander spesiale eredienste met 
                     besondere programme en gasspreker.
@@ -69,7 +69,7 @@ export default function JaarprogramPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
-              Sluit by Ons Aan
+              Sluit by ons aan
             </h2>
             <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
               Al ons gebeure is oop vir die publiek. Kom soos jy is - jy is altyd welkom!
@@ -79,13 +79,13 @@ export default function JaarprogramPage() {
                 href="/kontak"
                 className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-white px-6 py-3 text-center text-base font-medium text-amber-800 transition-colors duration-200 hover:bg-amber-50 sm:w-auto"
               >
-                Kontak Ons vir Meer Inligting
+                Kontak ons vir meer inligting
               </Link>
               <Link
                 href="/diensgroepe"
                 className="inline-flex w-full items-center justify-center rounded-md border-2 border-white px-6 py-3 text-center text-base font-medium text-white transition-colors duration-200 hover:bg-white hover:text-amber-800 sm:w-auto"
               >
-                Raak Betrokke
+                Raak betrokke
               </Link>
             </div>
           </div>

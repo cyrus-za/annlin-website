@@ -86,12 +86,12 @@ export default async function Home() {
               <Button asChild size="lg" className="bg-white text-amber-800 hover:bg-amber-50 border-0 w-full sm:w-auto">
                 <Link href="/uitsendings">
                   <PlayCircle className="mr-2 h-5 w-5" />
-                  Kyk na Uitsendings
+                  Kyk na uitsendings
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-amber-100 hover:bg-white hover:text-amber-800 bg-transparent w-full sm:w-auto">
                 <Link href="/oor-annlin-gemeente">
-                  Leer Meer Oor Ons
+                  Leer meer oor ons
                 </Link>
               </Button>
               </div>
@@ -125,7 +125,7 @@ export default async function Home() {
       <section className="bg-stone-50 pb-14 pt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl">
-            <p className="mb-3 font-semibold uppercase tracking-[0.16em] text-primary">Wie ons is en wat ons glo</p>
+            <p className="mb-3 font-semibold tracking-[0.16em] text-primary">Wie ons is en wat ons glo</p>
             <h2 className="mb-5 text-4xl font-bold text-foreground sm:text-5xl">
                 {copy('about.title')}
               </h2>

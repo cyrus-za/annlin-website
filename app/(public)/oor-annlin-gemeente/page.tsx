@@ -13,7 +13,7 @@ import { getPublicContentPage } from '@/lib/content-pages.server'
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: 'Oor Annlin Gemeente | Gereformeerde Kerk Pretoria-Annlin',
+  title: 'Oor Annlin-gemeente | Gereformeerde Kerk Pretoria-Annlin',
   description: 'Leer meer oor die roeping, geloof, leierskap en geskiedenis van Gereformeerde Kerk Pretoria-Annlin.',
 }
 
@@ -77,7 +77,7 @@ export default async function AboutPage() {
       <section id="identiteit" className="scroll-mt-20 bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-semibold uppercase tracking-[0.16em] text-primary">Wie ons is en wat ons glo</p>
+            <p className="font-semibold tracking-[0.16em] text-primary">Wie ons is en wat ons glo</p>
             <h2 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">{copy('calling.title')}</h2>
             <p className="mt-6 text-xl leading-9 text-muted-foreground">{copy('calling.body')}</p>
           </div>
@@ -202,7 +202,7 @@ export default async function AboutPage() {
       <section id="besoek-ons" className="scroll-mt-20 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2">
-            <div><h2 className="text-4xl font-bold text-foreground">{copy('visit.title')}</h2><p className="mt-4 text-xl text-muted-foreground">{copy('visit.body')}</p><p className="mt-6 leading-8 text-muted-foreground">{copy('visit.ministryArea')}</p><Button asChild className="mt-7"><a href={CONTACT_DETAILS.mapHref} target="_blank" rel="noopener noreferrer"><MapPin className="mr-2 h-5 w-5" />Bekyk op kaart</a></Button></div>
+            <div><h2 className="text-4xl font-bold text-foreground">{copy('visit.title')}</h2><p className="mt-4 text-xl text-muted-foreground">{copy('visit.body')}</p><p className="mt-6 leading-8 text-muted-foreground">{copy('visit.ministryArea')}</p><Button asChild className="mt-7"><a href={CONTACT_DETAILS.mapHref} target="_blank" rel="noopener noreferrer"><MapPin className="mr-2 h-5 w-5" />Vind ons op die kaart</a></Button></div>
             <Card><CardHeader><CardTitle className="text-2xl">Fasiliteite</CardTitle></CardHeader><CardContent className="grid gap-5 sm:grid-cols-2">{facilities.map(({ label, key }) => <div key={key}><h3 className="font-semibold text-foreground">{label}</h3><p className="mt-1 text-muted-foreground">{copy(`visit.${key}`)}</p></div>)}<p className="border-t border-stone-200 pt-5 leading-8 text-muted-foreground sm:col-span-2">{copy('visit.accessibilityBody')}</p></CardContent></Card>
           </div>
         </div>

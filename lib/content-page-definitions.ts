@@ -62,7 +62,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         body: "Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik.",
       },
       events: {
-        title: 'Komende Gebeure',
+        title: 'Komende gebeure',
         body: 'Sluit by ons aan vir hierdie spesiale geleenthede',
         empty: 'Geen komende gebeure geskeduleer nie.',
       },
@@ -75,11 +75,11 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         body: 'Vind alles wat jy nodig het om betrokke te raak by ons gemeente',
       },
       about: {
-        title: 'Oor Annlin Gemeente',
+        title: 'Oor Annlin-gemeente',
         body: "Ons is 'n lewendige gemeente wat toegewy is aan die verkondiging van God se Woord en die bou van 'n gemeenskap waar almal welkom is. Ons glo in die krag van geloof, hoop en liefde om lewens te transformeer.",
       },
       history: {
-        title: 'Ons Geskiedenis',
+        title: 'Ons geskiedenis',
         subtitle: 'Gestig in 1965',
         body: 'Lees meer oor die ontstaan van Gereformeerde Kerk Pretoria-Annlin en die ingebruikneming van ons kerkgebou.',
       },
@@ -125,26 +125,26 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
   {
     slug: 'oor-annlin-gemeente',
     route: '/oor-annlin-gemeente',
-    title: 'Oor Annlin Gemeente',
+    title: 'Oor Annlin-gemeente',
     description: 'Die gemeente se roeping, geskiedenis, leierskap, waardes en fasiliteite.',
     sections: {
       hero: {
-        title: 'Oor Annlin Gemeente',
+        title: 'Oor Annlin-gemeente',
         subtitle: 'Gereformeerde Kerk Pretoria-Annlin',
         body: "Geroep tot 'n lewende geloof in God-Drie-Enig waar almal hul gawes tot Sy eer gebruik",
       },
       calling: {
-        title: 'Ons Roeping',
+        title: 'Ons roeping',
         body: 'Ons wil die mense in ons omgewing en verder, aan Jesus en aan mekaar verbind om God se missie op aarde in opdrag van Jesus voort te sit.',
-        visionTitle: 'Ons Visie',
+        visionTitle: 'Ons visie',
         visionBody: "'n Eensgesinde gemeente wat mense ontwikkel en toerus tot verantwoordelike, produktiewe Christene vir hul bedieninge in die kerk en die wêreld tot die eer van God.",
-        faithTitle: 'Ons Geloof',
+        faithTitle: 'Ons geloof',
         faithBody: 'As kerk van Christus eer ons ons God en bedien ons mekaar met sy Woord en reik ook uit na buite. Ons doen dit omdat ons gedring word deur die liefde van God.',
-        communityTitle: 'Ons Gemeenskap',
+        communityTitle: 'Ons gemeenskap',
         communityBody: "Benewens die kerklike ampte, speel diensgroepe 'n belangrike rol om ons roeping as bruidsgemeente van Christus uit te leef.",
       },
       ministryAreas: {
-        title: 'Ons Diensterreine',
+        title: 'Ons diensterreine',
         body: 'Vier terreine gee praktiese gestalte aan ons roeping en missie.',
         spiritualTitle: 'Spiritueel',
         spiritualBody: 'Ons groei en word al meer soos Christus.',
@@ -162,7 +162,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         confessions: 'Ons onderskryf die Drie Formuliere van Eenheid: die Nederlandse Geloofsbelydenis, die Heidelbergse Kategismus en die Dordtse Leerreëls.',
       },
       emblem: {
-        title: 'Ons Embleem',
+        title: 'Ons embleem',
         body: 'Elke element van die gemeente-embleem getuig van God Drie-enig en die lewe wat ons in Christus ontvang.',
         crossTitle: 'Die kruis',
         crossBody: 'Die kruis simboliseer Jesus Christus se soenoffer waar Hy Homself vir ons sondes geoffer het (Kolossense 1:20).',
@@ -176,13 +176,13 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         peopleBody: 'Die twee mensfigure eer en prys die lewende God en simboliseer die bruidskerk waarvan Jesus Christus die Hoof is (Psalm 100:1-3; 1 Korintiërs 12:27).',
       },
       history: {
-        title: 'Ons Geskiedenis',
+        title: 'Ons geskiedenis',
         foundingTitle: '1965 - Stigting',
         foundingBody: "Die Gereformeerde Kerk Pretoria-Annlin is op 16 Oktober 1965 gestig as 'n afstigting van die Gereformeerde Kerk Eloffsdal-Wonderboom-Suid.",
         buildingTitle: '1974 - Kerkgebou',
         buildingBody: 'Die kerkgebou is op 20 April 1974 amptelik in gebruik geneem. Die teksvers op die gedenkplaat is 1 Korintiërs 3:9: "Want ons is medewerkers van God; die akker van God, die gebou van God is julle."',
         todayTitle: 'Vandag',
-        todayBody: "Onder leiding van ds. Pieter Kurpershoek (vanaf Oktober 2023) bedien ons 'n lewende gemeente van 631 belydende lidmate en 132 dooplidmate.",
+        todayBody: "Onder leiding van ds. Pieter Kurpershoek bedien ons 'n lewende gemeente van 631 belydende lidmate en 132 dooplidmate.",
         oldImageTitle: 'Kerkgebou 1974',
         oldImageBody: 'Kort nadat dit in gebruik geneem is',
         currentImageTitle: 'Kerkgebou Vandag',
@@ -191,7 +191,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
       leadership: {
         title: 'Leierskap',
         ministerName: 'Ds. Pieter Kurpershoek',
-        ministerRole: 'Predikant (vanaf Oktober 2023)',
+        ministerRole: 'Predikant',
         ministerBody: "Ds. Kurpershoek lei ons gemeente as enkelleraar en bring 'n hart vir evangelisasie en gemeenskapsbou na sy bediening.",
         councilTitle: 'Kerkraad',
         councilBody: 'Ons kerkraad bestaan uit toegewyde ouderlinge en diakens wat die gemeente help lei en bedien volgens Bybelse beginsels.',
@@ -223,7 +223,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
           "Twee erwe is deur suster A.E. van der Linde geskenk, en 'n verdere 1 morg grond deur suster C.M van Deventer. Dit is die grond waarop die kerkgebou vandag staan.",
           'In 1972 gee die kerkraad vir argitek Johan de Ridder opdrag om die kerkgebou te ontwerp. Die kerkgebou is op 20 April 1974 amptelik in gebruik geneem.',
         ],
-        modernTitle: 'Moderne Era - Groei en Uitbreiding',
+        modernTitle: 'Moderne era - groei en uitbreiding',
         modernParagraphs: [
           "Die gemeente het gegroei en in 1977 het Magalieskruin van ons afgeskei. In 1978 is die kerkgebou vergroot vanweë 'n steeds toenemende lidmaattal.",
           "'n Kerksaal met plek vir 450 mense en 12 katkisasielokale is in 1981 in gebruik geneem.",
@@ -240,7 +240,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         ],
       },
       visit: {
-        title: 'Kom Besoek Ons',
+        title: 'Kom besoek ons',
         body: 'Ons is geleë in die hart van Wonderboom, Pretoria',
         ministryArea: 'Ons bedieningsgebied lê hoofsaaklik noord van die Magaliesbergreeks met die Apiesrivier as westelike grens, en sluit voorstede soos Annlin, Sinoville, Doornpoort en Wonderboom in.',
         churchBody: 'Eredienste en spesiale geleenthede',
@@ -250,7 +250,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
         accessibilityBody: 'Ons fasiliteite is toeganklik vir rolstoelgebruikers en ons verwelkom alle lidmate ongeag fisiese beperkings.',
       },
       cta: {
-        title: 'Sluit by Ons Gemeente Familie Aan',
+        title: 'Sluit by ons gemeente-familie aan',
         body: 'Ons nooi jou uit om deel te word van ons lewende gemeente waar geloof, hoop en liefde saamkom.',
       },
     },
@@ -394,7 +394,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
     description: 'Opskrifte en terugvoer rondom die publieke kontakvorm.',
     sections: {
       hero: {
-        title: 'Kontak Ons',
+        title: 'Kontak ons',
         body: "Ons is hier om jou te help. Stuur vir ons 'n boodskap of gebruik ons kontakbesonderhede.",
       },
       form: {
@@ -429,7 +429,7 @@ export const CONTENT_PAGE_DEFINITIONS: ContentPageDefinition[] = [
     description: 'Inleidings, personeelinligting en besoekersboodskappe op die kontakblad.',
     sections: {
       hero: {
-        title: 'Kontak Besonderhede',
+        title: 'Kontakbesonderhede',
         body: 'Kontak die kerkkantoor vir algemene navrae, besoekersinligting en praktiese reëlings rakende die gemeente.',
       },
       office: {

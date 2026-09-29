@@ -79,7 +79,7 @@ export function Footer() {
 
           {/* Contact Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Kontak Besonderhede</h3>
+            <h3 className="text-lg font-semibold text-white">Kontakbesonderhede</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-amber-400 mt-1 flex-shrink-0" />
@@ -122,12 +122,12 @@ export function Footer() {
 
           {/* Service Times */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Erediens Tye</h3>
+            <h3 className="text-lg font-semibold text-white">Eredienstye</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <Calendar className="h-4 w-4 text-amber-400 mt-1" />
                 <div className="text-sm">
-                  <p className="text-white font-medium">Sondag Oggend</p>
+                  <p className="text-white font-medium">Sondagoggend</p>
                   <p className="text-amber-200">08:30 - 09:30</p>
                 </div>
               </div>
@@ -135,7 +135,7 @@ export function Footer() {
               <div className="flex items-start space-x-3">
                 <Calendar className="h-4 w-4 text-amber-400 mt-1" />
                 <div className="text-sm">
-                  <p className="text-white font-medium">Sondag Aand</p>
+                  <p className="text-white font-medium">Sondagaand</p>
                   <p className="text-amber-200">18:30 - 19:30</p>
                 </div>
               </div>
@@ -145,43 +145,43 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="hidden space-y-4 md:block">
-            <h3 className="text-lg font-semibold text-white">Vinnige Skakels</h3>
+            <h3 className="text-lg font-semibold text-white">Vinnige skakels</h3>
             <div className="space-y-2">
               <Link 
                 href="/jaarprogram"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Kalender & Gebeure
+                Kalender & gebeure
               </Link>
               <Link 
                 href="/uitsendings"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Video Uitsendings
+                Video-uitsendings
               </Link>
               <Link 
                 href="/diensgroepe"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Raak Betrokke
+                Raak betrokke
               </Link>
               <Link 
                 href="/nuus"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Nuus & Aankondigings
+                Nuus & aankondigings
               </Link>
               <Link 
                 href="/leesstof"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Leesstof & Publikasies
+                Leesstof & publikasies
               </Link>
               <Link 
                 href="/uitsendings"
                 className="flex min-h-9 items-center text-sm text-amber-200 transition-colors hover:text-white"
               >
-                Luister na Preke
+                Luister na preke
               </Link>
             </div>
           </div>

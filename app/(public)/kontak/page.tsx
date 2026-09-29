@@ -360,7 +360,7 @@ export default function ContactPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Kontak Besonderhede</CardTitle>
+                <CardTitle>Kontakbesonderhede</CardTitle>
                 <CardDescription>
                   Ander maniere om ons te kontak
                 </CardDescription>
@@ -424,7 +424,7 @@ export default function ContactPage() {
                       rel="noopener noreferrer"
                       className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-amber-800 hover:text-amber-950"
                     >
-                      Bekyk op kaart
+                      Vind ons op die kaart
                     </a>
                   </div>
                 </div>
@@ -453,12 +453,12 @@ export default function ContactPage() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-foreground">Sondag Oggend</h4>
+                    <h4 className="font-medium text-foreground">Sondagoggend</h4>
                     <p className="text-muted-foreground">08:30 - 09:30</p>
                   </div>
                   
                   <div className="border-l-4 border-amber-600 pl-4">
-                    <h4 className="font-medium text-foreground">Sondag Aand</h4>
+                    <h4 className="font-medium text-foreground">Sondagaand</h4>
                     <p className="text-muted-foreground">18:30 - 19:30</p>
                   </div>
                   

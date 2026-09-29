@@ -188,7 +188,7 @@ export function Navigation() {
               className={cn('h-11', pathname.startsWith('/kontak') && 'ring-2 ring-amber-300 ring-offset-2')}
             >
               <Link href="/kontak">
-                Kontak Ons
+                Kontak ons
               </Link>
             </Button>
             <ThemeSwitcher />
@@ -317,7 +317,7 @@ export function Navigation() {
                     className={cn('h-11 w-full', pathname.startsWith('/kontak') && 'ring-2 ring-amber-300')}
                   >
                     <Link href="/kontak">
-                      Kontak Ons
+                      Kontak ons
                     </Link>
                   </Button>
                   {showAdminLink && (

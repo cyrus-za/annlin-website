@@ -329,7 +329,7 @@ async function YouTubeSection() {
     <section className="mb-12">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Nuutste YouTube uitsendings</h2>
+          <h2 className="text-2xl font-bold text-foreground">Nuutste YouTube-uitsendings</h2>
           <p className="mt-2 text-muted-foreground">
             Die drie mees onlangse opnames vanaf ons YouTube-kanaal.
           </p>
@@ -375,7 +375,7 @@ async function YouTubeSection() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>YouTube uitsendings</CardTitle>
+            <CardTitle>YouTube-uitsendings</CardTitle>
             <CardDescription>
               Ons kon nie die jongste YouTube-video's outomaties laai nie. Gebruik intussen die kanaalskakel.
             </CardDescription>
@@ -545,7 +545,7 @@ export default function UitsendingsPage() {
         icon={<Radio className="h-8 w-8" />}
       />
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <Suspense fallback={<BroadcastSectionSkeleton title="YouTube uitsendings" video />}>
+        <Suspense fallback={<BroadcastSectionSkeleton title="YouTube-uitsendings" video />}>
           <YouTubeSection />
         </Suspense>
         <Suspense fallback={<BroadcastSectionSkeleton title="Kerkdienstgemist opnames" />}>

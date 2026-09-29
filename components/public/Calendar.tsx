@@ -166,7 +166,7 @@ function EventDetailDialog({
                   ) : (
                     <a href={event.sermonUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
-                      Luister na Preek
+                      Luister na preek
                     </a>
                   )}
                 </Button>
@@ -179,7 +179,7 @@ function EventDetailDialog({
                   Wil jy meer weet? Kontak ons vir meer besonderhede.
                 </p>
                 <Button asChild size="sm">
-                  <Link href="/kontak">Kontak Ons</Link>
+                  <Link href="/kontak">Kontak ons</Link>
                 </Button>
               </div>
             </div>
@@ -274,7 +274,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Komende Gebeure</CardTitle>
+          <CardTitle className="text-lg">Komende gebeure</CardTitle>
           <CardDescription>
             Kyk wat aankom in ons gemeente
           </CardDescription>
@@ -329,7 +329,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
               <div className="pt-2">
                 <Button asChild variant="ghost" size="sm" className="w-full">
                   <a href="/jaarprogram">
-                    Bekyk Volledige Kalender →
+                    Sien ons volledige kalender →
                   </a>
                 </Button>
               </div>
@@ -569,7 +569,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
 // Upcoming events component for homepage
 export function UpcomingEvents({
   limit = 5,
-  heading = 'Komende Gebeure',
+  heading = 'Komende gebeure',
   description = 'Sluit by ons aan vir hierdie spesiale geleenthede',
   emptyMessage = 'Geen komende gebeure geskeduleer nie.',
 }: {
@@ -773,7 +773,7 @@ export function UpcomingEvents({
         <div className="text-center mt-12">
           <Button asChild variant="outline" size="lg">
             <Link href="/jaarprogram">
-              Bekyk Volledige Kalender
+              Sien ons volledige kalender
             </Link>
           </Button>
         </div>
