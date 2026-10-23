@@ -23,6 +23,7 @@ import {
 } from '@/lib/tiptap-config'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 import { cn } from '@/lib/utils'
+import { uploadR2Image } from '@/lib/r2-image-upload'
 import {
   Bold,
   Italic,
@@ -195,21 +196,7 @@ export function ArticleEditor({
 
     try {
       setIsUploading(true)
-      
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('type', 'article-image')
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Kon nie prentjie oplaai nie')
-      }
-
-      const { url } = await response.json()
+      const { url } = await uploadR2Image(file)
       setImageUrl(url)
       setImageAlt(file.name.replace(/\.[^/.]+$/, '')) // Remove extension for alt text
       
@@ -376,7 +363,7 @@ export function ArticleEditor({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp"
                   onChange={handleImageUpload}
                   className="hidden"
                 />

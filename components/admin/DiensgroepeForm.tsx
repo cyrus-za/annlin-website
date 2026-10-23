@@ -12,6 +12,7 @@ import { Upload, X, Image } from 'lucide-react'
 import { showSuccessToast, showErrorToast } from '@/lib/toast-helpers'
 import { ServiceGroupGalleryEditor } from './ServiceGroupGalleryEditor'
 import { serviceGroupGalleryInputSchema } from '@/lib/service-group-gallery'
+import { uploadR2Image } from '@/lib/r2-image-upload'
 
 // Validation schema
 const serviceGroupSchema = z.object({
@@ -112,21 +113,7 @@ export function DiensgroepeForm({
 
     try {
       setIsUploading(true)
-      
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('type', 'service-group-thumbnail')
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Kon nie prentjie oplaai nie')
-      }
-
-      const { url } = await response.json()
+      const { url } = await uploadR2Image(file)
       setPreviewUrl(url)
       
       showSuccessToast('Prentjie opgelaai!', 'Jou prentjie is suksesvol opgelaai.')
@@ -366,7 +353,7 @@ export function DiensgroepeForm({
                           <input
                             ref={fileInputRef}
                             type="file"
-                            accept="image/*"
+                            accept="image/png,image/jpeg,image/webp"
                             onChange={handleImageUpload}
                             className="hidden"
                           />
