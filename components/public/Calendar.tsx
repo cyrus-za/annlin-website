@@ -219,9 +219,10 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
       const params = new URLSearchParams({
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
+        // A month can have more than the API's default 20 events.
+        limit: '100',
         sortBy: 'startDate',
         sortOrder: 'asc',
-        ...(limit && { limit: limit.toString() }),
       })
       
       const response = await fetch(`/api/events?${params}`)
@@ -235,7 +236,7 @@ export function PublicCalendar({ compact = false, showUpcoming = false, limit }:
     } finally {
       setLoading(false)
     }
-  }, [limit])
+  }, [])
 
   React.useEffect(() => {
     fetchEvents(currentDate)
